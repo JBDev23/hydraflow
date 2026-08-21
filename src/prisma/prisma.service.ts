@@ -1,4 +1,4 @@
-import 'dotenv/config';
+import '../load-env';
 import { PrismaClient } from '../generated/prisma/client';
 import { PrismaPg } from '@prisma/adapter-pg';
 import { Pool } from 'pg';
@@ -20,6 +20,9 @@ export class PrismaService extends PrismaClient {
       throw new Error('DATABASE_URL is not set');
     }
 
+    // pg is pinned to 8.18.x: adapter-pg can fan-out queries on one PoolClient
+    // inside $transaction, which pg>=8.20 warns about (hard error in pg@9).
+    // Remove the pin when Prisma ships serialized performIO on PgTransaction.
     const pool = new Pool({
       connectionString,
       max: 10,

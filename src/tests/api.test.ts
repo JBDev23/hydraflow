@@ -1,3 +1,4 @@
+import '../load-env';
 import request from 'supertest';
 import { app } from '../index';
 import { prisma } from '../prisma/prisma';
@@ -15,6 +16,13 @@ describe('🚀 API Integration Tests (End-to-End)', () => {
     provider: 'test', 
     providerId: 'jest_123'
   };
+
+  // Evita estado residual (upsert reutiliza el email si un run anterior no limpió)
+  beforeAll(async () => {
+    await prisma.user.deleteMany({
+      where: { email: testUser.email },
+    });
+  });
 
   // Limpieza posterior para que los tests sean repetibles
   afterAll(async () => {

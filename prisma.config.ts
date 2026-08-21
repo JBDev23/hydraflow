@@ -1,4 +1,4 @@
-import "dotenv/config";
+import "./src/load-env";
 import { defineConfig } from "prisma/config";
 
 // prisma generate (postinstall / CI) must not require secrets.

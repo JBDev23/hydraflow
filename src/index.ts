@@ -1,4 +1,4 @@
-import 'dotenv/config';
+import './load-env';
 import express from 'express';
 import type { Request, Response } from 'express'; 
 import cors from 'cors';
@@ -39,46 +39,37 @@ app.use(cors({
   credentials: true,
 }));
 
-app.use(morgan('dev'));
 app.use(express.json({ limit: '100kb' }));
 
-const globalLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000,
-  max: 400,
-  standardHeaders: true,
-  legacyHeaders: false,
-  message: { error: 'Too many requests, try again later' },
-});
+if (!isProd) {
+  app.use(morgan('dev'));
+}
 
 const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
-  max: 40,
+  max: isProd ? 100 : 1000,
   standardHeaders: true,
   legacyHeaders: false,
-  message: { error: 'Too many login attempts, try again later' },
+  message: { error: 'Too many requests, please try again later' },
 });
 
-app.use(globalLimiter);
+app.get('/', (req: Request, res: Response) => {
+  res.json({ status: 'HydraFlow API is running 💧' });
+});
 
-// Rutas
 app.use('/auth', authLimiter, authRouter);
 app.use('/user', userRouter);
-app.use('/water', waterRoutes)
-app.use('/achievements', achievementRoutes)
-app.use('/shop', itemsRoutes)
+app.use('/water', waterRoutes);
+app.use('/achievements', achievementRoutes);
+app.use('/shop', itemsRoutes);
 
-
-// Ruta de prueba
-app.get('/', (req: Request, res: Response) => {
-  res.json({ 
-    message: 'HydraFlow Backend API 💧',
-    status: 'online',
-    timestamp: new Date()
-  });
+app.use((err: Error, _req: Request, res: Response, _next: (err?: unknown) => void) => {
+  console.error('Unhandled error:', err);
+  res.status(500).json({ error: 'Internal server error' });
 });
 
 if (require.main === module) {
-    app.listen(PORT, '0.0.0.0', () => {
-        console.log(`\n🚀 Server running on http://0.0.0.0:${PORT}`);
-    });
+  app.listen(PORT, '0.0.0.0', () => {
+    console.log(`🚀 Server running on http://0.0.0.0:${PORT}`);
+  });
 }
