@@ -40,3 +40,10 @@ yarn-error.*
 # generated native folders
 /ios
 /android
+
+# IDE / OS junk
+.idea/
+**/.idea/
+*.lnk
+*.log
+gradle-build-error.log

@@ -231,7 +231,7 @@ const SupportView = ({ setCurrentView, styles, theme }) => {
       
       exportFile.create({ overwrite: true });
       
-      exportFile.write(csvContent);
+      await exportFile.write(csvContent);
 
       // 4. Abrir la hoja de compartir nativa (iOS/Android)
       const isSharingAvailable = await Sharing.isAvailableAsync();

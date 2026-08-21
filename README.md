@@ -8,14 +8,14 @@
 
 Este repositorio contiene el código **Frontend** (Aplicación Móvil) de Hydraflow, desarrollado con React Native y Expo. Aquí reside toda la interfaz de usuario, las animaciones de nuestra mascota (Hydra), el sistema de gráficos de progreso, y la gestión del almacenamiento local y notificaciones.
 
-⚠️ **Nota:** Este proyecto se encuentra actualmente en **fase de pruebas (Testing)**. 
-👉 *El código del Backend (API) se encuentra en un repositorio separado [Añadir enlace al repo del backend aquí].*
+⚠️ **Nota:** Este proyecto se encuentra actualmente en **fase de pruebas (Testing)**.  
+👉 *El código del Backend (API) se encuentra en un repositorio separado: [hydraflow-backend](https://github.com/JBDev23/hydraflow-backend).*
 
 ---
 
 ## 📩 Solicitud de Acceso Beta
 
-Si quieres probar la aplicación en tu propio teléfono antes de que salga a las tiendas oficiales y ayudarnos a testear su estabilidad, ¡puedes solicitar tu acceso a la beta privada! 
+Si quieres probar la aplicación en tu propio teléfono antes de que salga a las tiendas oficiales y ayudarnos a testear su estabilidad, ¡puedes solicitar tu acceso a la beta privada!
 
 Para unirte, envía un correo electrónico a:
 📬 **[jordibarrachinam@gmail.com](mailto:jordibarrachinam@gmail.com)**
@@ -38,40 +38,43 @@ Para unirte, envía un correo electrónico a:
 
 * **💧 Seguimiento Intuitivo:** Registra tus vasos de agua rápidamente con una interfaz limpia y un anillo de progreso visual.
 * **🐾 Mascota Interactiva (Hydra):** Tu progreso afecta a Hydra. ¡Personalízala con sombreros, gafas y accesorios que desbloqueas al cumplir tus metas!
-* **📊 Estadísticas Detaladas:** Gráficos semanales y calendarios para que no pierdas de vista tu historial de hidratación.
+* **📊 Estadísticas Detalladas:** Gráficos semanales y calendarios para que no pierdas de vista tu historial de hidratación.
 * **🔔 Notificaciones Inteligentes:** Recordatorios push locales para que nunca olvides beber agua durante tu jornada.
-* **🔒 Autenticación Ampliada:** Inicio de sesión tradicional por correo/contraseña *(y soporte planificado para Login Social con Google/Apple)*.
-* **🌍 Preparado para el Mundo:** Estructura base diseñada para añadir soporte multiidioma (i18n) en próximas versiones.
-* **🌙 Soporte Offline y Tema Oscuro:** Funciona sin conexión a internet sincronizando los datos cuando vuelve la red, e incluye soporte nativo para Modo Oscuro/Claro.
+* **🔒 Autenticación con Google:** Inicio de sesión social con Google Sign-In (nativo) y tokens JWT hacia el backend.
+* **🌍 Multiidioma:** Soporte i18n con i18next y `expo-localization`.
+* **🌙 Soporte Offline y Tema Oscuro:** Funciona sin conexión sincronizando los datos cuando vuelve la red, e incluye modo Oscuro/Claro.
 
 ---
 
 ## 💻 Tecnologías Utilizadas
 
-Hydraflow App está construido con las mejores herramientas del ecosistema móvil actual:
-
-* **Framework:** React Native, Expo
+* **Framework:** React Native, Expo SDK 57 (dev client + EAS)
 * **Enrutamiento:** Expo Router (basado en archivos)
-* **Estado Global:** React Context API (`GlobalContext`, `ThemeContext`)
-* **Gráficos y UI:** SVG nativo, animaciones personalizadas.
+* **Estado Global:** React Context API (`Auth`, `User`, `Hydration`, `Offline`, `Theme`, `AppShell`)
+* **Animaciones:** Reanimated 4, gesture-handler
+* **Gráficos y UI:** SVG nativo, animaciones personalizadas
+* **Gestor de paquetes:** pnpm
 
 ---
 
 ## 📖 Estructura del Proyecto
 
-El código fuente está organizado siguiendo el estándar de Expo Router:
-* `app/`: Contiene las pantallas y el sistema de navegación (rutas `(app)` para el panel principal y `(auth)` para el inicio de sesión/onboarding).
-* `components/`: Componentes reutilizables de la interfaz (modales, barras de progreso, iconos, selectores de tiempo).
-* `assets/`: Imágenes, iconos de la app y todos los accesorios SVG de la mascota Hydra.
-* `context/`: Gestión del estado global del usuario y del tema de la aplicación.
-* `services/`: Lógica de conexión externa (peticiones a la API, gestión de notificaciones y almacenamiento offline).
-* `utils/`: Funciones auxiliares (formateadores de fecha, calculadoras de semanas, etc.).
+* `app/`: Pantallas y navegación (rutas `(app)` y `(auth)`).
+* `components/`: Componentes reutilizables de la interfaz.
+* `assets/`: Imágenes, iconos y accesorios SVG de Hydra.
+* `context/`: Estado global partido por dominio + `AppProviders`.
+* `services/`: API, notificaciones, audio y cola offline.
+* `locales/`: Traducciones i18n.
+* `plugins/`: Config plugins de Expo (p. ej. CMake en Windows).
+* `utils/` / `constants/`: Helpers y constantes compartidas.
+
+Las carpetas nativas `/android` e `/ios` se generan con `pnpm prebuild:android` / `expo prebuild` y no se versionan.
 
 ---
 
 ## 🤝 Contribución
 
-¡El proyecto es de código abierto y nos encanta recibir ayuda! 
+¡El proyecto es de código abierto y nos encanta recibir ayuda!
 
 1. Haz un *Fork* del proyecto.
 2. Crea tu rama (`git checkout -b feature/NuevaPantalla`).

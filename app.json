@@ -2,7 +2,7 @@
   "expo": {
     "name": "HydraFlow",
     "slug": "HydraFlow",
-    "version": "1.0.0",
+    "version": "1.1.0",
     "scheme": "hydraflow",
     "orientation": "portrait",
     "icon": "./assets/splash.png",
@@ -50,11 +50,20 @@
       [
         "expo-navigation-bar",
         {
-          "barStyle": "light",
-          "visibility": "visible",
+          "style": "light",
+          "hidden": false,
           "enforceContrast": true
         }
       ],
+      [
+        "expo-build-properties",
+        {
+          "android": {
+            "cmakeVersion": "3.31.6"
+          }
+        }
+      ],
+      "./plugins/withWindowsCmakeObjectPath",
       "@react-native-google-signin/google-signin",
       "expo-asset"
     ],
