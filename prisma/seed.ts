@@ -1,8 +1,7 @@
-import { PrismaClient } from '@prisma/client';
+import { getSeedClient } from './seed-client';
 
-const prisma = new PrismaClient();
+const prisma = getSeedClient();
 
-// Lista de items idéntica a la del Frontend
 const SKIN_LIST = [
   { id: "sunGlasses", category: "glasses", name: { es: "Gafas de sol", en: "Sunglasses" }, price: 5 },
   { id: "pinkGlasses", category: "glasses", name: { es: "Gafas rosas", en: "Pink Glasses" }, price: 8 },
@@ -12,35 +11,97 @@ const SKIN_LIST = [
   { id: "ribbon", category: "hat", name: { es: "Lazo", en: "Ribbon" }, price: 12 },
 ];
 
-async function main() {
-  console.log(`🌱 Sembrando el Catálogo...`);
+const ACHIEVEMENTS = [
+  {
+    id: "first_sip",
+    icon: "droplet",
+    condition: "FIRST_DRINK",
+    name: { es: "Hydra", en: "Hydra" },
+    description: { es: "Registra tu primer vaso de agua", en: "Log your first glass of water" }
+  },
+  {
+    id: "goal_getter",
+    icon: "egg",
+    condition: "GOAL_REACHED_1",
+    name: { es: "El Iniciado", en: "The Initiate" },
+    description: { es: "Completa tu meta diaria por primera vez", en: "Complete your daily goal for the first time" }
+  },
+  {
+    id: "streak_3",
+    icon: "fire",
+    condition: "STREAK_3",
+    name: { es: "En Racha", en: "On Fire" },
+    description: { es: "Mantén una racha de 3 días", en: "Maintain a 3-day streak" }
+  },
+  {
+    id: "level_5",
+    icon: "medal",
+    condition: "LEVEL_5",
+    name: { es: "Veterano", en: "Veteran" },
+    description: { es: "Alcanza el nivel 5", en: "Reach level 5" }
+  },
+  {
+    id: "total_10l",
+    icon: "water",
+    condition: "TOTAL_10L",
+    name: { es: "Camello", en: "Camel" },
+    description: { es: "Bebe un total de 10 Litros", en: "Drink a total of 10 Liters" }
+  }
+];
 
-  // 1. Crear Items de Tienda
+async function seedCatalogItems() {
+  console.log(`Sembrando el Catálogo...`);
   for (const skin of SKIN_LIST) {
-    // Usamos upsert: Si existe lo deja, si no lo crea.
     await prisma.catalogItem.upsert({
       where: { id: skin.id },
       update: {},
       create: {
         id: skin.id,
         category: skin.category,
-        name: skin.name, // Prisma serializa esto a JSON automáticamente
+        name: skin.name,
         price: skin.price,
         isActive: true
       }
     });
-    console.log(`  🛍️ Item listo: ${skin.id}`);
+    console.log(`  Item listo: ${skin.id}`);
   }
+}
 
-  console.log(`✅ Base de datos sembrada correctamente.`);
+async function seedAchievements() {
+  console.log(`Sembrando Logros...`);
+  for (const ach of ACHIEVEMENTS) {
+    await prisma.catalogAchievement.upsert({
+      where: { id: ach.id },
+      update: {
+        icon: ach.icon,
+        condition: ach.condition,
+        name: ach.name,
+        description: ach.description
+      },
+      create: {
+        id: ach.id,
+        icon: ach.icon,
+        condition: ach.condition,
+        name: ach.name,
+        description: ach.description
+      }
+    });
+    console.log(`  Logro creado/actualizado: ${ach.name.es}`);
+  }
+}
+
+async function main() {
+  await seedCatalogItems();
+  await seedAchievements();
+  console.log(`Base de datos sembrada correctamente.`);
 }
 
 main()
   .then(async () => {
-    await prisma.$disconnect();
+    await prisma.disconnect();
   })
   .catch(async (e) => {
     console.error(e);
-    await prisma.$disconnect();
+    await prisma.disconnect();
     process.exit(1);
   });

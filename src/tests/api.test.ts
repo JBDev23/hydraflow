@@ -1,6 +1,6 @@
 import request from 'supertest';
 import { app } from '../index';
-import { prisma } from '../lib/prisma'; // Importamos prisma para limpieza
+import { prisma } from '../prisma/prisma';
 
 // Aumentamos el timeout por si la BD tarda en responder
 jest.setTimeout(10000); 
@@ -22,7 +22,7 @@ describe('🚀 API Integration Tests (End-to-End)', () => {
     await prisma.user.deleteMany({
       where: { email: testUser.email }
     });
-    await prisma.$disconnect();
+    await prisma.disconnect();
   });
 
   // --- 1. AUTENTICACIÓN ---
@@ -30,7 +30,11 @@ describe('🚀 API Integration Tests (End-to-End)', () => {
     test('POST /auth/login - Debe crear usuario y devolver Token', async () => {
       const response = await request(app)
         .post('/auth/login')
-        .send(testUser);
+        .send({
+          provider: 'test',
+          manualEmail: testUser.email,
+          manualName: testUser.name,
+        });
 
       expect(response.status).toBe(200);
       expect(response.body.success).toBe(true);
@@ -70,6 +74,37 @@ describe('🚀 API Integration Tests (End-to-End)', () => {
       expect(response.body.user.profile.weight).toBe(85.5);
       expect(response.body.user.profile.dailyGoal).toBe(3000);
       expect(response.body.user.profile.activityLevel).toBe('active');
+    });
+
+    test('PUT /user/profile - Debe actualizar stats canónicos', async () => {
+      const response = await request(app)
+        .put('/user/profile')
+        .set('Authorization', `Bearer ${token}`)
+        .send({
+          stats: {
+            dropsBalance: 42,
+            currentStreak: 3,
+            level: 2,
+          },
+        });
+
+      expect(response.status).toBe(200);
+      expect(response.body.success).toBe(true);
+
+      // Verificar en BD (GET aplica checkStreakBreak y puede resetear streak)
+      const user = await prisma.user.findUnique({
+        where: { email: testUser.email },
+        include: { gameStats: true },
+      });
+      expect(user?.gameStats?.dropsBalance).toBe(42);
+      expect(user?.gameStats?.currentStreak).toBe(3);
+      expect(user?.gameStats?.level).toBe(2);
+
+      // Restaurar saldo inicial esperado por tests de shop
+      await request(app)
+        .put('/user/profile')
+        .set('Authorization', `Bearer ${token}`)
+        .send({ stats: { dropsBalance: 10 } });
     });
   });
 
@@ -140,7 +175,7 @@ describe('🚀 API Integration Tests (End-to-End)', () => {
         expect(response.status).toBe(200);
         expect(response.body.success).toBe(true);
         // Deberían quedar 2 drops (10 - 8)
-        expect(response.body.data.drops).toBe(2);
+        expect(response.body.data.dropsBalance).toBe(2);
     });
 
     // Test de Equipar

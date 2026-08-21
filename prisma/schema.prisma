@@ -1,11 +1,11 @@
-// 1. Configuración del Generador
+// 1. Configuración del Generador (Prisma 7)
 generator client {
-  provider = "prisma-client-js"
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
 }
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
 }
 
 // --------------------------------------------------------
@@ -81,6 +81,7 @@ model WaterLog {
   amount    Int      // ml (ej: 250)
   timestamp DateTime @default(now())
 
+  @@index([userId, timestamp])
   @@map("water_logs")
 }
 
@@ -157,6 +158,7 @@ model UserItem {
   isEquipped  Boolean  @default(false)
   acquiredAt  DateTime @default(now())
 
+  @@unique([userId, itemId])
   @@map("user_items")
 }
 

@@ -73,45 +73,51 @@ export const processLevelDown = (currentLevel: number, currentXp: number, xpToDe
   };
 };
 
-export const calculateNewStreak = (currentStreak: number, lastActiveDate: Date | null): number => {
-  const today = new Date()
-  today.setHours(0,0,0,0)
-  if(!lastActiveDate) return 1;
+import { getCalendarDayRange, toCalendarDateString } from './dayRange';
 
-  const last = new Date(lastActiveDate)
-  last.setHours(0, 0, 0, 0);
+/** Diff in calendar days between two instants in the user's timezone */
+const calendarDayDiff = (
+  later: Date,
+  earlier: Date,
+  tzOffsetMinutes = 0
+): number => {
+  const a = toCalendarDateString(later, tzOffsetMinutes);
+  const b = toCalendarDateString(earlier, tzOffsetMinutes);
+  const startA = getCalendarDayRange(a, tzOffsetMinutes).start.getTime();
+  const startB = getCalendarDayRange(b, tzOffsetMinutes).start.getTime();
+  return Math.round((startA - startB) / (1000 * 60 * 60 * 24));
+};
 
-  const diffTime = today.getTime() - last.getTime();
-  // Diferencia en días
-  const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+export const calculateNewStreak = (
+  currentStreak: number,
+  lastActiveDate: Date | null,
+  tzOffsetMinutes = 0
+): number => {
+  if (!lastActiveDate) return 1;
+
+  const diffDays = calendarDayDiff(new Date(), lastActiveDate, tzOffsetMinutes);
 
   if (diffDays === 0) {
-    return currentStreak; // Ya bebió hoy, la racha se mantiene igual
+    return currentStreak; // Ya bebió hoy
   } else if (diffDays === 1) {
-    return currentStreak + 1; // Bebió ayer, sumamos racha
+    return currentStreak + 1; // Bebió ayer
   } else {
-    return 1; // Se saltó un día (diff > 1), reiniciamos a 1 (hoy cuenta)
+    return 1; // Saltó un día o más
   }
+};
 
-}
+export const checkStreakBreak = (
+  currentStreak: number,
+  lastActiveDate: Date | null,
+  tzOffsetMinutes = 0
+): number => {
+  if (!lastActiveDate) return 0;
 
-export const checkStreakBreak = (currentStreak: number, lastActiveDate: Date | null): number => {
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
+  const diffDays = calendarDayDiff(new Date(), lastActiveDate, tzOffsetMinutes);
 
-  if (!lastActiveDate) return 0; // Nunca ha bebido
-
-  const last = new Date(lastActiveDate);
-  last.setHours(0, 0, 0, 0);
-
-  const diffTime = today.getTime() - last.getTime();
-  const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
-
-  // Si la diferencia es mayor a 1 día (ayer), la racha se rompió.
   if (diffDays > 1) {
-    return 0; 
+    return 0;
   }
-  
-  // Si fue ayer (1) u hoy (0), la racha se mantiene intacta para mostrarla
+
   return currentStreak;
 };

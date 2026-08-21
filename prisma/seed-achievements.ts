@@ -1,6 +1,6 @@
-import { PrismaClient } from '@prisma/client';
+import { getSeedClient } from './seed-client';
 
-const prisma = new PrismaClient();
+const prisma = getSeedClient();
 
 const ACHIEVEMENTS = [
   {
@@ -41,7 +41,7 @@ const ACHIEVEMENTS = [
 ];
 
 async function main() {
-  console.log(`🏆 Sembrando Logros...`);
+  console.log(`Sembrando Logros...`);
 
   for (const ach of ACHIEVEMENTS) {
     await prisma.catalogAchievement.upsert({
@@ -60,14 +60,14 @@ async function main() {
         description: ach.description
       }
     });
-    console.log(`  ✨ Logro creado/actualizado: ${ach.name.es}`);
+    console.log(`  Logro creado/actualizado: ${ach.name.es}`);
   }
 }
 
 main()
-  .then(async () => await prisma.$disconnect())
+  .then(async () => await prisma.disconnect())
   .catch(async (e) => {
     console.error(e);
-    await prisma.$disconnect();
+    await prisma.disconnect();
     throw e;
   });

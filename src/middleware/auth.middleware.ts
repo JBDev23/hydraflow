@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
+import { getJwtSecret } from '../lib/jwt';
 
 // Extendemos la interfaz Request para incluir userId
 export interface AuthRequest extends Request {
@@ -16,7 +17,7 @@ export const ensureAuth = (req: AuthRequest, res: Response, next: NextFunction) 
   const token = authHeader.split(' ')[1]; 
 
   try {
-    const payload = jwt.verify(token, process.env.JWT_SECRET as string) as { userId: string };
+    const payload = jwt.verify(token, getJwtSecret()) as { userId: string };
     req.userId = payload.userId;
     next();
   } catch (error) {
