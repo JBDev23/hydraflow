@@ -6,37 +6,56 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Hydra from "../../components/Hydra";
 import Slider from "@react-native-community/slider";
 import ToggleButton from "../../components/ToogleButton";
-import { useGlobal } from "../../context/GlobalContext";
+import { useUser } from "../../context/UserContext";
 import { useTheme } from "../../context/ThemeContext";
+import { useTranslation } from "react-i18next";
+import ScrollIndicator from "../../components/ScrollIndicator";
 const screenWidth = Dimensions.get('window').width;
 
-const RULER_HEIGHT = 400; 
-const SEGMENT_HEIGHT = 10; 
-const VISIBLE_ITEMS = Math.ceil((RULER_HEIGHT / SEGMENT_HEIGHT) / 2) + 2; 
+const RULER_HEIGHT = 400;
+const SEGMENT_HEIGHT = 10;
+const VISIBLE_ITEMS = Math.ceil((RULER_HEIGHT / SEGMENT_HEIGHT) / 2) + 2;
 const MIN_HEIGHT = 80;
 const MAX_HEIGHT = 250;
 
-export default function height(){
+export default function height() {
     const router = useRouter()
     const { theme } = useTheme()
     const styles = useMemo(() => createStyles(theme), [theme])
-    const { updateUserProfile, userProfile } = useGlobal();
+    const { updateUserProfile, userProfile } = useUser();
+    const { t } = useTranslation()
 
-    const [ measureUnit, setMeasureUnit ] = useState(0)
-    const [ height, setHeight ] = useState(userProfile?.height ||170)
+    const [measureUnit, setMeasureUnit] = useState(0)
+    const [height, setHeight] = useState(userProfile?.height || 170)
+    const [scrollViewHeight, setScrollViewHeight] = useState(0);
+    const [contentHeight, setContentHeight] = useState(0);
+    const [isScrolledToBottom, setIsScrolledToBottom] = useState(false);
+
+    const isScrollable = contentHeight > scrollViewHeight;
+    const showIndicator = isScrollable && !isScrolledToBottom;
+
+    const handleScroll = (event) => {
+        const { layoutMeasurement, contentOffset, contentSize } = event.nativeEvent;
+        const paddingToBottom = 40;
+
+        const isBottom =
+            layoutMeasurement.height + contentOffset.y >=
+            contentSize.height - paddingToBottom;
+        setIsScrolledToBottom(isBottom);
+    };
 
     const heightRef = useRef(height);
-    
+
     useEffect(() => {
-            heightRef.current = height;
+        heightRef.current = height;
     }, [height])
 
     useFocusEffect(
         useCallback(() => {
 
-        return () => {
-            updateUserProfile({ height: heightRef.current })
-        };
+            return () => {
+                updateUserProfile({ height: heightRef.current })
+            };
         }, [])
     )
 
@@ -51,7 +70,7 @@ export default function height(){
 
     const formatHeight = (cm) => {
         if (measureUnit === 0) return `${cm}`;
-        
+
         const totalInches = cm / 2.54;
         let feet = Math.floor(totalInches / 12);
         let inches = Math.round(totalInches % 12);
@@ -69,17 +88,17 @@ export default function height(){
         const end = Math.ceil(height + VISIBLE_ITEMS);
 
         for (let i = start; i <= end; i++) {
-            if (i < MIN_HEIGHT-20 || i > MAX_HEIGHT+1) continue;
+            if (i < MIN_HEIGHT - 20 || i > MAX_HEIGHT + 1) continue;
 
             const translateY = (height - i) * SEGMENT_HEIGHT;
             const isMajor = i % 10 === 0;
-            const isMedium = i % 5 === 0 && !isMajor; 
+            const isMedium = i % 5 === 0 && !isMajor;
 
             ticks.push(
-                <View 
-                    key={i} 
+                <View
+                    key={i}
                     style={[
-                        styles.tickContainer, 
+                        styles.tickContainer,
                         { transform: [{ translateY }] }
                     ]}
                 >
@@ -88,9 +107,9 @@ export default function height(){
                             {measureUnit === 1 ? formatHeight(i) : i}
                         </Text>
                     )}
-                    
+
                     <View style={[
-                        styles.tickLine, 
+                        styles.tickLine,
                         isMajor ? styles.tickMajor : (isMedium ? styles.tickMedium : styles.tickMinor)
                     ]} />
                 </View>
@@ -100,37 +119,49 @@ export default function height(){
     };
 
     return (
-        <ScrollView style={{flex:1}} contentContainerStyle={styles.container} showsVerticalScrollIndicator={false}>
-            <View style={{position:"relative"}}>
-                <Hydra/>
-                {renderTicks()}
-            </View>
-            <View style={styles.text}>
-                <Text style={styles.title}>¿Cuál es tu altura?</Text>
-            </View>
-            <ToggleButton labels={["CM", "FT"]} value={measureUnit} onValueChange={changeMeasureUnit}/>
-            <View style={{width:screenWidth*0.8, marginBottom: 20}}>
-                <Text style={styles.number}>{measureUnit ? cmToFeetAndInches(height).formatted : height}</Text>
-                <Slider
-                    style={styles.slider}
-                    minimumValue={MIN_HEIGHT} 
-                    maximumValue={MAX_HEIGHT}
-                    step={1}
-                    value={height}
-                    onValueChange={setHeight}
-                    minimumTrackTintColor={theme.colors.primaryMid}
-                    maximumTrackTintColor={theme.colors.text}
-                    thumbTintColor={theme.colors.primaryDark}
-                    onTouchStart={(e) => e.stopPropagation()} 
-                    onTouchEnd={(e) => e.stopPropagation()}
-                />
-            </View>
-            <TouchableOpacity onPress={handleNext} style={styles.button}>
-                <LinearGradient colors={[theme.colors.primary, theme.colors.primaryDark]} >
-                    <Text style={styles.buttonText}>SIGUIENTE</Text>
-                </LinearGradient>
-            </TouchableOpacity>
-        </ScrollView>
+        <>
+            <ScrollView 
+                style={{ flex: 1 }}
+                contentContainerStyle={styles.container}
+                showsVerticalScrollIndicator={false}
+                onLayout={(e) => setScrollViewHeight(e.nativeEvent.layout.height)}
+                onContentSizeChange={(w, h) => setContentHeight(h)}
+                onScroll={handleScroll}
+                scrollEventThrottle={16}
+            >
+                <View style={{ position: "relative" }}>
+                    <Hydra />
+                    {renderTicks()}
+                </View>
+                <View style={styles.text}>
+                    <Text style={styles.title}>{t('ask.height')}</Text>
+                </View>
+                <ToggleButton labels={["CM", "FT"]} value={measureUnit} onValueChange={changeMeasureUnit} />
+                <View style={{ width: screenWidth * 0.8, marginBottom: 20 }}>
+                    <Text style={styles.number}>{formatHeight(height)}</Text>
+                    <Slider
+                        style={styles.slider}
+                        minimumValue={MIN_HEIGHT}
+                        maximumValue={MAX_HEIGHT}
+                        step={1}
+                        value={height}
+                        onValueChange={setHeight}
+                        minimumTrackTintColor={theme.colors.primaryMid}
+                        maximumTrackTintColor={theme.colors.text}
+                        thumbTintColor={theme.colors.primaryDark}
+                        onTouchStart={(e) => e.stopPropagation()}
+                        onTouchEnd={(e) => e.stopPropagation()}
+                    />
+                </View>
+                <TouchableOpacity onPress={handleNext} style={styles.button}>
+                    <LinearGradient colors={[theme.colors.primary, theme.colors.primaryDark]} >
+                        <Text style={styles.buttonText}>{t('buttons.next')}</Text>
+                    </LinearGradient>
+                </TouchableOpacity>
+            </ScrollView>
+            <ScrollIndicator visible={showIndicator}/>
+        </>
+
     )
 }
 
@@ -143,10 +174,10 @@ const createStyles = (theme) => StyleSheet.create({
         paddingBottom: "5%",
         paddingTop: "5%",
     },
-    ruler:{
+    ruler: {
         position: "absolute",
         height: "100%",
-        right: screenWidth*(-0.16),
+        right: screenWidth * (-0.16),
         alignItems: "flex-end",
         height: 250
     },
@@ -157,7 +188,7 @@ const createStyles = (theme) => StyleSheet.create({
         marginLeft: 10
     },
     button: {
-        width: screenWidth*0.5,
+        width: screenWidth * 0.5,
         borderRadius: 10,
         overflow: "hidden",
         alignSelf: "center",
@@ -171,18 +202,18 @@ const createStyles = (theme) => StyleSheet.create({
         color: theme.colors.contrast
     },
     text: {
-        width: screenWidth*0.8,
+        width: screenWidth * 0.8,
         margin: 10,
     },
-    title : {
+    title: {
         fontSize: 30,
         fontFamily: theme.regular,
         textAlign: "center"
     },
     slider: {
-        width:"50%",
-        alignSelf:"center", 
-        transform:[{scale: 2}],
+        width: "50%",
+        alignSelf: "center",
+        transform: [{ scale: 2 }],
         marginTop: 20,
     },
     number: {
@@ -194,20 +225,20 @@ const createStyles = (theme) => StyleSheet.create({
         textShadowRadius: 5,
     },
     tickContainer: {
-        position: 'absolute', 
+        position: 'absolute',
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'flex-end',
         width: '85%',
-        right: screenWidth*(-0.16),
-        height: 20, 
-        marginTop: -10, 
+        right: screenWidth * (-0.16),
+        height: 20,
+        marginTop: -10,
     },
     tickText: {
         fontSize: 17,
         fontFamily: theme.regular,
         color: theme.colors.textSecondary,
-        marginRight: 8, 
+        marginRight: 8,
     },
     tickLine: {
         backgroundColor: theme.colors.textTertiary,

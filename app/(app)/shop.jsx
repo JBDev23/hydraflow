@@ -6,8 +6,11 @@ import { FontAwesome6 } from '@expo/vector-icons';
 import ShopItem from '../../components/ShopItem';
 import Drop from "../../assets/Drop.svg"
 import { useTheme } from '../../context/ThemeContext';
-import { useGlobal } from '../../context/GlobalContext';
+import { useUser } from '../../context/UserContext';
 import { api } from '../../services/api';
+import { useTranslation } from 'react-i18next';
+import { getLocalizedText } from '../../utils/i18nHelpers';
+import { audioService } from '../../services/audioService';
 const screenWidth = Dimensions.get('window').width;
 const screenHeight = Dimensions.get('window').height;
 
@@ -16,13 +19,15 @@ const SKELETONS = Array.from({ length: 6 });
 export default function Shop() {
   const { theme } = useTheme();
   const styles = useMemo(() => createStyles(theme), [theme]);
-  const { userProfile, updateUserProfile } = useGlobal()
+  const { userProfile, updateUserProfile } = useUser()
+  const { t } = useTranslation()
 
   const [shopItems, setShopItems] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [isLoadingApi, setIsLoadingApi] = useState(false)
 
   const ownedSkins = userProfile?.skins?.owned || [];
-  const equipedSkins = userProfile?.skins?.equiped || [];
+  const equippedSkins = userProfile?.skins?.equipped || [];
   const drops = userProfile?.stats?.dropsBalance || 0
 
   const skinsCount = userProfile?.stats?.skinsCount || 0
@@ -36,7 +41,7 @@ export default function Shop() {
       } catch (error) {
         console.error("Error cargando tienda:", error);
       } finally {
-        setIsLoading(false),5000;
+        setIsLoading(false), 5000;
       }
     };
     loadCatalog();
@@ -44,34 +49,35 @@ export default function Shop() {
 
 
   const handleEquip = async (itemId) => {
-    const previousEquipedSkins = [...equipedSkins];
+    const previousEquippedSkins = [...equippedSkins];
 
-    let newEquipedList = [...previousEquipedSkins];
-    
+    let newEquippedList = [...previousEquippedSkins];
+
     const itemToEquip = shopItems.find(i => i.id === itemId);
-    
+
     if (itemToEquip) {
-      if (newEquipedList.includes(itemId)) {
-        newEquipedList = newEquipedList.filter(id => id !== itemId);
+      if (newEquippedList.includes(itemId)) {
+        newEquippedList = newEquippedList.filter(id => id !== itemId);
       } else {
-        newEquipedList = newEquipedList.filter(equippedId => {
+        newEquippedList = newEquippedList.filter(equippedId => {
           const currentItem = shopItems.find(i => i.id === equippedId);
           return currentItem ? currentItem.category !== itemToEquip.category : true;
         });
-        newEquipedList.push(itemId);
+        newEquippedList.push(itemId);
       }
+      audioService.playSound("equipItem")
     }
 
     updateUserProfile({
       skins: {
         owned: ownedSkins,
-        equiped: newEquipedList
+        equipped: newEquippedList
       }
     });
 
     try {
       const updatedUserItems = await api.equipItem(itemId);
-      
+
       if (!updatedUserItems) {
         throw new Error("Error en servidor");
       }
@@ -80,7 +86,7 @@ export default function Shop() {
       updateUserProfile({
         skins: {
           owned: ownedSkins,
-          equiped: previousEquipedSkins
+          equipped: previousEquippedSkins
         }
       });
     }
@@ -88,26 +94,36 @@ export default function Shop() {
 
   const handleBuy = async (itemId) => {
     if (ownedSkins.includes(itemId)) return;
+    setIsLoadingApi(true)
 
-    const response = await api.buyItem(itemId);
+    try {
+      const response = await api.buyItem(itemId);
 
-    if (response) {
-      const updatedUserItems = response.items;
-      
-      const newOwned = updatedUserItems.map(i => i.itemId);
-      const newEquiped = updatedUserItems.filter(i => i.isEquipped).map(i => i.itemId);
+      if (response) {
+        const updatedUserItems = response.items;
 
-      updateUserProfile({
-        skins: {
-          owned: newOwned,
-          equiped: newEquiped
-        },
-        stats: {
-          ...userProfile.stats,
-          dropsBalance: response.drops, 
-          skinsCount: response.skinsCount
-        }
-      });
+        const newOwned = updatedUserItems.map(i => i.itemId);
+        const newEquipped = updatedUserItems.filter(i => i.isEquipped).map(i => i.itemId);
+
+        
+
+        await updateUserProfile({
+          skins: {
+            owned: newOwned,
+            equipped: newEquipped
+          },
+          stats: {
+            ...userProfile.stats,
+            dropsBalance: response.dropsBalance,
+            skinsCount: response.skinsCount
+          }
+        });
+      }
+    } catch (error) {
+      console.warn(error)
+    } finally {
+      audioService.playSound("buyItem")
+      setIsLoadingApi(false)
     }
   };
 
@@ -119,7 +135,7 @@ export default function Shop() {
         </View>
         <View style={styles.statsContainer}>
           <View style={styles.statItem}>
-            <Text style={styles.statText}>Trajes:</Text>
+            <Text style={styles.statText}>{t("shopApp.skins")}:</Text>
             <View style={styles.statContainer}>
               <Text style={styles.statText}>{skinsCount}</Text>
               <GradientIcon size={26} colors={['#FF01AA', '#A099FF']}>
@@ -136,7 +152,7 @@ export default function Shop() {
           </View>
         </View>
       </View>
-      <View style={styles.archievementsContainer}>
+      <View style={styles.achievementsContainer}>
         {isLoading ? (
           SKELETONS.map((_, index) => (
             <ShopItem
@@ -147,22 +163,27 @@ export default function Shop() {
             />
           ))
         ) : (
-          shopItems.map((skin) => (
-            <ShopItem
-              key={skin.id}
-              width={screenWidth * 0.9 * 0.48}
-              height={screenWidth * 0.9 * 0.48}
-              data={{
-                item: skin.id,
-                name: skin.name.es,
-                price: skin.price
-              }}
-              owned={ownedSkins.includes(skin.id)}
-              equiped={equipedSkins.includes(skin.id)}
-              handleEquip={handleEquip}
-              handleBuyed={handleBuy}
-            />
-          ))
+          shopItems.map((skin) => {
+            const name = getLocalizedText(skin.name)
+
+            return (
+              <ShopItem
+                key={skin.id}
+                width={screenWidth * 0.9 * 0.48}
+                height={screenWidth * 0.9 * 0.48}
+                data={{
+                  item: skin.id,
+                  name: name,
+                  price: skin.price
+                }}
+                owned={ownedSkins.includes(skin.id)}
+                equipped={equippedSkins.includes(skin.id)}
+                handleEquip={handleEquip}
+                handleBuyed={handleBuy}
+                isLoadingApi={isLoadingApi}
+                />
+            )
+          })
         )}
       </View>
     </ScrollView>
@@ -217,7 +238,7 @@ const createStyles = (theme) => StyleSheet.create({
     color: theme.colors.text,
     fontSize: 27,
   },
-  archievementsContainer: {
+  achievementsContainer: {
     flex: 1,
     width: screenWidth * 0.9,
     alignSelf: "center",

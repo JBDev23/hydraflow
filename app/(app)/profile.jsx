@@ -7,22 +7,23 @@ import { useCallback, useMemo, useState } from 'react';
 import { LinearGradient } from 'expo-linear-gradient';
 import ProfileItem from '../../components/ProfileItem';
 import { useTheme } from '../../context/ThemeContext';
-import { useGlobal } from '../../context/GlobalContext';
+import { useUser } from '../../context/UserContext';
 import { useFocusEffect } from 'expo-router';
+import { useTranslation } from 'react-i18next';
 
 const screenWidth = Dimensions.get('window').width;
 const screenHeight = Dimensions.get('window').height;
 
 const PROFILE_FIELDS = [
-  { key: 'name', label: 'Nombre:' },
-  { key: 'age', label: 'Edad:' },
-  { key: 'weight', label: 'Peso:' },
-  { key: 'height', label: 'Altura:' },
-  { key: 'gender', label: 'Género:' },
-  { key: 'activity', label: 'Actividad:' },
-  { key: 'wakeTime', label: 'Levantarse:' },
-  { key: 'sleepTime', label: 'Acostarse:' },
-  { key: 'goal', label: 'Meta Diaria:' },
+  { key: 'name', label: 'profileApp.name' },
+  { key: 'age', label: 'profileApp.age' },
+  { key: 'weight', label: 'profileApp.weight' },
+  { key: 'height', label: 'profileApp.height' },
+  { key: 'gender', label: 'profileApp.gender' },
+  { key: 'activity', label: 'profileApp.activity' },
+  { key: 'wakeTime', label: 'profileApp.wakeTime' },
+  { key: 'sleepTime', label: 'profileApp.sleepTime' },
+  { key: 'goal', label: 'profileApp.goal' },
 ];
 
 const StatBadge = ({ value, size, iconName, colors, CustomIcon, theme }) => {
@@ -44,7 +45,8 @@ const StatBadge = ({ value, size, iconName, colors, CustomIcon, theme }) => {
 export default function Profile() {
   const { theme } = useTheme();
   const styles = useMemo(() => createStyles(theme), [theme]);
-  const { userProfile, updateUserProfile, refreshUser } = useGlobal()
+  const { userProfile, updateUserProfile, refreshUser } = useUser()
+  const {t} = useTranslation()
 
   useFocusEffect(
     useCallback(() => {
@@ -73,10 +75,10 @@ export default function Profile() {
         </View>
         <View style={styles.statContainer}>
           <View style={{ width: "100%" }}>
-            <Text style={styles.statText}>Hola {name.length > 15 ? name.slice(0,15) + "..." : name}</Text>
+            <Text style={styles.statText}>{t("greeting")} {name.length > 15 ? name.slice(0,15) + "..." : name}</Text>
           </View>
           <View style={{ width: "100%" }}>
-            <Text style={styles.statText}>Nivel {level}</Text>
+            <Text style={styles.statText}>{t('profileApp.level')} {level}</Text>
           </View>
           <View style={styles.progressBar}>
             <LinearGradient

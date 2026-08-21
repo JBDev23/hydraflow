@@ -1,0 +1,259 @@
+{
+  "main": {
+    "slogan": "Your hydration companion",
+    "motivator": "One sip closer to the goal!"
+  },
+  "indexAuth": {
+    "title": "Welcome",
+    "subTitle1": "I am",
+    "subTitle2": "your hydration assistant"
+  },
+  "activity": {
+    "sedentary": "Sedentary",
+    "moderate": "Moderate (1-2 days)",
+    "active": "Active (3-4 days)",
+    "highActive": "Very Active (5+ days)"
+  },
+  "plan": {
+    "createTitle": "Creating your plan",
+    "createSubTitle": "Almost there...",
+    "readyTitle": "Your plan is ready!!",
+    "readySubTitle": "Based on your data, this is your ideal goal"
+  },
+  "ask": {
+    "name": "What is your name?",
+    "age": "What is your age?",
+    "weight": "What is your weight?",
+    "gender": "To adjust your plan",
+    "height": "What is your height?",
+    "activity": "How active are you?",
+    "sleep": "What is your sleep schedule?"
+  },
+  "edit": {
+    "wakeTime": "What time do you wake up?",
+    "sleepTime": "What time do you go to bed?",
+    "goal": "Choose your goal",
+    "goalRecommended": "Recommended:"
+  },
+  "settings": {
+    "yes": "YES",
+    "no": "NO",
+    "smart": "Smart",
+    "drop": "Drop",
+    "frog": "Frog",
+    "bird": "Bird",
+    "flute": "Flute",
+    "reminders": "Reminders",
+    "frequency": "Frequency",
+    "sound": "Sound",
+    "saveChanges": "Save changes",
+    "unitMeasure": "Measurement unit",
+    "unitWeight": "Weight unit",
+    "soundEffects": "Sound effects",
+    "vibration": "Vibration",
+    "theme": "Theme",
+    "light": "Light",
+    "dark": "Dark",
+    "system": "System",
+    "language": "Language",
+    "spanish": "Spanish",
+    "catalan": "Català",
+    "english": "English",
+    "privacyPolicy": "Privacy Policy",
+    "termsConditions": "Terms and Conditions",
+    "legalNotice": "Legal Notice",
+    "aboutUs": "About us",
+    "exportData": "Export data (csv)",
+    "feedback": "Send comments",
+    "deleteAccount": "Delete / Reset account",
+    "dangerZone": "Danger Zone",
+    "deleteAllData": "Delete all data?",
+    "deleteWarning": "This action is irreversible. All your progress, history, and settings will be lost.",
+    "cancel": "Cancel",
+    "wait": "Wait...",
+    "deleteButton": "DELETE",
+    "myProfile": "My profile",
+    "notifications": "Notifications",
+    "preferences": "Preferences",
+    "customize": "Customize",
+    "tutorial": "Tutorial",
+    "support": "Support and data",
+    "account": "Account",
+    "logout": "Log Out",
+    "logoutQuestion": "Log out?",
+    "logoutWarning": "This action will close your session. You will need to log in again to continue your progress.",
+    "logoutButton": "LOG OUT",
+    "settings": "Settings"
+  },
+  "loginAuth": {
+    "googleButton": "Continue with Google",
+    "terms": "By continuing, you agree to our Terms and Privacy Policy.",
+    "serverConnect": "Connecting to the server..."
+  },
+  "indexApp":{
+    "remaining": "remaining",
+    "goalCompleted": "Goal achieved!"
+  },
+  "statsApp":{
+    "average": "AVERAGE",
+    "total": "TOTAL",
+    "streak": "Streak",
+    "goal": "Goals",
+    "liters": "Liters",
+    "toggleLabels": {
+      "day": "D",
+      "week": "W",
+      "month": "M"
+    }
+  },
+  "achievementsApp": {
+    "level": "Level",
+    "achievements": "Achievements"
+  },
+  "shopApp": {
+    "skins": "Skins",
+    "owned": "Owned"
+  },
+  "profileApp": {
+    "level": "Level",
+    "name": "Name:",
+    "age": "Age:",
+    "weight": "Weight:",
+    "height": "Height:",
+    "gender": "Gender:",
+    "activity": "Activity:",
+    "wakeTime": "Wake up:",
+    "sleepTime": "Bedtime:",
+    "goal": "Daily Goal:"
+  },
+  "profile": {
+    "male": "Male",
+    "female": "Female", 
+    "other": "Other",
+    "sedentary": "Sedentary",
+    "moderate": "Moderate",
+    "active": "Active",
+    "highActive": "Very Active"
+  },
+  "alerts": {
+    "googleAlert": "Failed to sign in with Google."
+  },
+  "loading": "Loading...",
+  "greeting": "Hello",
+  "buttons": {
+    "start": "START",
+    "startDrink": "START DRINKING",
+    "next": "NEXT",
+    "end": "FINISH",
+    "skip": "SKIP",
+    "equip": "EQUIP",
+    "buy": "BUY",
+    "remove": "REMOVE",
+    "otherGender": "Other / Prefer not to say"
+  },
+  "screen": {
+    "stats": "Statistics",
+    "achievements": "Achievements",
+    "shop": "Shop",
+    "profile": "Profile",
+    "settings": "Settings"
+  },
+  "days": {
+    "short": {
+      "sun": "SUN",
+      "mon": "MON",
+      "tue": "TUE",
+      "wed": "WED",
+      "thu": "THU",
+      "fri": "FRI",
+      "sat": "SAT"
+    }
+  },
+  "months": {
+    "short": {
+      "jan": "JAN",
+      "feb": "FEB",
+      "mar": "MAR",
+      "apr": "APR",
+      "may": "MAY",
+      "jun": "JUN",
+      "jul": "JUL",
+      "aug": "AUG",
+      "sep": "SEP",
+      "oct": "OCT",
+      "nov": "NOV",
+      "dec": "DEC"
+    },
+    "long": {
+      "jan": "January",
+      "feb": "February",
+      "mar": "March",
+      "apr": "April",
+      "may": "May",
+      "jun": "June",
+      "jul": "July",
+      "aug": "August",
+      "sep": "September",
+      "oct": "October",
+      "nov": "November",
+      "dec": "December"
+    }
+  },
+  "toast": {
+    "experience": "experience",
+    "goalCompleted": "!!Goal completed!!",
+    "newStreak": "!!You're on a streak!!",
+    "unavailableExport": "You don't have any water logs to export yet.",
+    "unavailableShare": "The sharing feature is not available on this device.",
+    "generateError": "A problem occurred while generating the file.",
+    "unavailableEmail": "Could not open the email app automatically. You can write to us at: ",
+    "offlineSave": "Saved offline. It will sync when connected.",
+    "offlineMode": "Offline mode",
+    "conecctionError": "Connection error. This action requires internet.",
+    "syncData": "data synchronized"
+  },
+  "tutorial": {
+    "steps": [
+      {
+        "title": "Welcome to HydraFlow!",
+        "description": "Your personal hydration companion. Here you can track your water intake in a fun and visual way.",
+        "icon": "hand-sparkles"
+      },
+      {
+        "title": "Your Hydra Pet",
+        "description": "Hydra reacts to your progress. Keep it happy by reaching your daily goals!",
+        "icon": "face-smile-wink"
+      },
+      {
+        "title": "Log Water",
+        "description": "Use the quick buttons or long-press to log every glass you drink.",
+        "icon": "glass-water"
+      },
+      {
+        "title": "Track your Streak",
+        "description": "Check the calendar above to see your perfect days and keep your streak going.",
+        "icon": "calendar-check"
+      },
+      {
+        "title": "Check your statistics",
+        "description": "View your daily, weekly, or monthly statistics in the stats tab to improve every day.",
+        "icon": "chart-simple"
+      },
+      {
+        "title": "Unlock achievements",
+        "description": "Your effort is rewarded, admire your milestones in the achievements tab.",
+        "icon": "trophy"
+      },
+      {
+        "title": "Customize Hydra",
+        "description": "Customize Hydra with fun skins.",
+        "icon": "basket-shopping"
+      },
+      {
+        "title": "Update your data",
+        "description": "Update your data for better accuracy in the profile tab.",
+        "icon": "user"
+      }
+    ]
+  }
+}

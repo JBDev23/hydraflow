@@ -3,6 +3,7 @@ import { Modal, View, Text, StyleSheet, TouchableOpacity, Dimensions, Animated }
 import { FontAwesome6 } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useTheme } from '../context/ThemeContext';
+import { useTranslation } from 'react-i18next';
 const { width, height } = Dimensions.get('window');
 
 export default function TutorialOverlay({ 
@@ -13,6 +14,7 @@ export default function TutorialOverlay({
     changeTab
 }) {
     const { theme } = useTheme();
+    const { t } = useTranslation();
     const styles = useMemo(() => createStyles(theme), [theme]);
 
     const [currentStepIndex, setCurrentStepIndex] = useState(0);
@@ -99,13 +101,13 @@ export default function TutorialOverlay({
 
                     <View style={styles.actions}>
                         <TouchableOpacity onPress={onSkip}>
-                            <Text style={styles.skipText}>Saltar</Text>                            
+                            <Text style={styles.skipText}>{t('buttons.skip')}</Text>                            
                         </TouchableOpacity>
 
                         <TouchableOpacity onPress={handleNext} >
                             <LinearGradient colors={[theme.colors.primary, theme.colors.primaryDark]} style={styles.nextButton}>
                                 <Text style={styles.nextText}>
-                                    {currentStepIndex === steps.length - 1 ? "Empezar" : "Siguiente"}
+                                    {currentStepIndex === steps.length - 1 ? t('buttons.start') : t('buttons.next')}
                                 </Text>
                                 <FontAwesome6 name="arrow-right" size={14} color={theme.colors.contrast} style={{marginLeft: 8}}/>
                             </LinearGradient>

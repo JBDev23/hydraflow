@@ -8,15 +8,15 @@ import PinkGlasses from "../assets/hydra/PinkGlasses.svg"
 import BowTie from "../assets/hydra/BowTie.svg"
 import Ribbon from "../assets/hydra/Ribbon.svg"
 import { Animated, Dimensions, Easing, StyleSheet } from "react-native";
-import { useGlobal } from "../context/GlobalContext";
+import { useUser } from "../context/UserContext";
 const screenWidth = Dimensions.get('window').width;
 
 export default function Hydra({anim="default", height=screenWidth*0.6, showSkins=false}){
-    const { userProfile } = useGlobal()
+    const { userProfile } = useUser()
 
     const [ state, setState ] = useState("idle")
 
-    const skins = userProfile?.skins?.equiped || [];
+    const skins = userProfile?.skins?.equipped || [];
     
     const bounce = useRef(new Animated.Value(0)).current
     const scale = useRef(new Animated.Value(1)).current

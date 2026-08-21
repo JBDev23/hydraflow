@@ -1,19 +1,20 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { formatDateForBackend } from "../utils/dateFormatter";
 import { offlineManager } from "./offline";
-import { Platform, ToastAndroid } from "react-native";
-
-const API_URL = "http://192.168.1.134:3000";
-//const API_URL = "http://192.168.0.16:3000";
-//const API_URL = "http://10.236.35.102:3000";
-
+import i18n from "../app/i18n";
+import { toProfileUpdatePayload } from "./profilePayload";
+import { showToast } from "../utils/toast";
+import { calculateXpGain } from "../utils/xp";
+const API_URL = process.env.EXPO_PUBLIC_API_URL || "https://hydraflow-backend-production.up.railway.app"; 
 let sessionExpiredCallback = null;
+let isSyncing = false;
 
 // Función auxiliar para obtener cabeceras con el token
 const getHeaders = async () => {
   const token = await AsyncStorage.getItem("auth_token");
   return {
     "Content-Type": "application/json",
+    "X-Timezone-Offset": String(new Date().getTimezoneOffset()),
     ...(token ? { Authorization: `Bearer ${token}` } : {}),
   };
 };
@@ -51,22 +52,13 @@ const rawFetch = async (endpoint, method, body) => {
 };
 
 const notifyOffline = () => {
-  if (Platform.OS === "android") {
-    ToastAndroid.show(
-      "☁️ Guardado offline. Se sincronizará al conectar.",
-      ToastAndroid.SHORT,
-    );
-  }
+  showToast("☁️ " + i18n.t("toast.offlineSave"));
 };
 
 const notifyError = (
-  msg = "⚠️ Error de conexión. Esta acción requiere internet.",
+  msg = "⚠️ " + i18n.t("toast.conecctionError"),
 ) => {
-  if (Platform.OS === "android") {
-    ToastAndroid.show(msg, ToastAndroid.SHORT);
-  } else {
-    console.warn(msg);
-  }
+  showToast(msg);
 };
 
 export const api = {
@@ -75,32 +67,37 @@ export const api = {
   },
 
   // Login / Registro Social
-  login: async (credentials) => {
+  login: async (payload) => {
     try {
       const response = await fetch(`${API_URL}/auth/login`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(credentials),
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
       });
       const data = await response.json();
-      if (!response.ok)
+      
+      if (!response.ok) {
         throw new Error(data.error || `Error ${response.status}`);
+      }
       return data;
     } catch (error) {
-      console.error("❌ Error Login:", error);
-      notifyError("No se pudo iniciar sesión. Revisa tu conexión.");
+      console.error("❌ Error API Login:", error);
       throw error;
     }
   },
 
   // Guardar datos del usuario (Peso, Altura, Skins...)
   updateUser: async (data) => {
+    const payload = toProfileUpdatePayload(data);
+    if (Object.keys(payload).length === 0) {
+      return { success: true, skipped: true };
+    }
     try {
-      return await rawFetch('/user/profile', 'PUT', data);
+      return await rawFetch('/user/profile', 'PUT', payload);
     } catch (error) {
       if (error.message === "Sesión expirada") return null;
       console.error("Error Update:", error);
-      await offlineManager.addToQueue({ type: "UPDATE_USER", payload: data });
+      await offlineManager.addToQueue({ type: "UPDATE_USER", payload });
       notifyOffline();
       return { success: true, offline: true };
     }
@@ -120,7 +117,10 @@ export const api = {
       return {
         success: true,
         offline: true,
-        gamification: null,
+        gamification: {
+          xpGained: calculateXpGain(amount),
+          offlineOptimistic: true,
+        },
       };
     }
   },
@@ -136,22 +136,50 @@ export const api = {
         method: "GET",
         headers: headers,
       });
+
+      if (response.status === 401) {
+        if (sessionExpiredCallback) {
+          sessionExpiredCallback();
+        }
+        // Interceptor ya hace logout; no re-lanzar para evitar ruido en la UI
+        return null;
+      }
+
       const data = await response.json();
-      if (!response.ok) throw new Error(data.error);
+      if (!response.ok) throw new Error(data.error || `Error ${response.status}`);
       return data.total || 0;
     } catch (error) {
-      return 0;
+      console.error("Error getDailyMetrics:", error);
+      // null = fallo de red/API; no confundir con "0 ml bebidos"
+      return null;
     }
   },
 
   revertLog: async () => {
     try {
-    const data = await rawFetch('/water/log', 'DELETE');
-    return data; 
+      return await rawFetch('/water/log', 'DELETE');
     } catch (error) {
-      console.error("Error log", error);
-      notifyError("No se pudo deshacer. Requiere conexión.");
-      return null;
+      if (error.message === "Sesión expirada") return null;
+
+      // Prefer canceling a pending offline drink over queuing DELETE
+      const cancelled = await offlineManager.cancelLastPendingLogWater();
+      if (cancelled?.amount != null) {
+        notifyOffline();
+        return {
+          success: true,
+          offline: true,
+          cancelledPending: true,
+          deletedAmount: cancelled.amount,
+        };
+      }
+
+      await offlineManager.addToQueue({ type: "REVERT_LOG", payload: {} });
+      notifyOffline();
+      return {
+        success: true,
+        offline: true,
+        gamification: null,
+      };
     }
   },
 
@@ -213,7 +241,7 @@ export const api = {
       }
 
       const jsonResponse = await response.json();
-      if (!response.ok) throw new Error(data.error);
+      if (!response.ok) throw new Error(jsonResponse.error);
 
       const graphData = jsonResponse.data;
 
@@ -287,7 +315,12 @@ export const api = {
   buyItem: async (itemId) => {
     try {
       const data = await rawFetch('/shop/buy', 'POST', { itemId });
-      return data.data; 
+      const result = data.data || {};
+      return {
+        items: result.items,
+        skinsCount: result.skinsCount,
+        dropsBalance: result.dropsBalance,
+      };
     } catch (error) {
       if (error.message === "Sesión expirada") return null;
       console.error("Error buying item:", error);
@@ -309,49 +342,93 @@ export const api = {
   },
 
   syncOfflineQueue: async () => {
-    await new Promise((resolve) => setTimeout(resolve, 2000));
+    // 🔒 COMPROBAR CANDADO: Si ya está sincronizando, abortamos esta llamada extra
+    if (isSyncing) return false; 
+    
+    // Cerramos el candado inmediatamente
+    isSyncing = true;
 
-    const queue = await offlineManager.getQueue();
-    if (queue.length === 0) return;
+    try {
+      // Retraso para dar tiempo a que la red sea estable
+      await new Promise((resolve) => setTimeout(resolve, 2000));
 
-    console.log(`🔄 Sincronizando ${queue.length} acciones offline...`);
+      const queue = await offlineManager.getQueue();
+      if (queue.length === 0) return false;
 
-    let syncCount = 0;
+      let syncCount = 0;
 
-    for (const action of queue) {
-      try {
-        if (action.type === "LOG_WATER") {
-          await rawFetch("/water/log", "POST", action.payload);
-        } else if (action.type === "UPDATE_USER") {
-          await rawFetch("/user/profile", "PUT", action.payload);
+      for (const action of queue) {
+        try {
+          if (action.type === "LOG_WATER") {
+            await rawFetch("/water/log", "POST", action.payload);
+          } else if (action.type === "REVERT_LOG") {
+            await rawFetch("/water/log", "DELETE");
+          } else if (action.type === "UPDATE_USER") {
+            const payload = toProfileUpdatePayload(action.payload);
+            if (Object.keys(payload).length > 0) {
+              await rawFetch("/user/profile", "PUT", payload);
+            }
+          }
+
+          await offlineManager.removeFromQueue(action.id);
+          syncCount++;
+        } catch (error) {
+          if (error.message === "Sesión expirada") {
+            console.log("Sincronización detenida: Sesión expirada.");
+            break;
+          }
+          console.error(
+            `Error sincronizando acción ${action.type} (Se mantendrá en cola):`,
+            error,
+          );
         }
-
-        await offlineManager.removeFromQueue(action.id);
-        syncCount++;
-      } catch (error) {
-        if (error.message === "Sesión expirada") {
-          console.log("Sincronización detenida: Sesión expirada.");
-          break;
-        }
-        console.error(
-          `Error sincronizando acción ${action.type} (Se mantendrá en cola):`,
-          error,
-        );
       }
-    }
 
-    if (syncCount > 0) {
-      if (Platform.OS === "android") {
-        ToastAndroid.show(
-          `✅ ${syncCount} datos sincronizados`,
-          ToastAndroid.SHORT,
-        );
+      if (syncCount > 0) {
+        showToast(`✅ ${syncCount} ${i18n.t("toast.syncData")}`);
+        return true; // Triggers OfflineProvider onSyncSuccess → refreshUser + hydrationEpoch
       }
-      return true;
-    }
 
-    return false;
+      return false;
+      
+    } finally {
+      // 🔓 ABRIR CANDADO: Se ejecuta SIEMPRE al final, aunque haya fallado algo dentro del try
+      isSyncing = false;
+    }
   },
 
-  // Aquí añadiremos más métodos en el futuro (getStats, etc.)
+  deleteAccount: async () => {
+    try {
+      const headers = await getHeaders();
+      const response = await fetch(`${API_URL}/user/account`, {
+        method: 'DELETE',
+        headers: headers,
+      });
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.error);
+      sessionExpiredCallback();
+      return true; 
+    } catch (error) {
+      console.error("Error deleting account:", error);
+      notifyError("No se pudo eliminar la cuenta. Revisa tu conexión.");
+      return false;
+    }
+  },
+
+  exportUserData: async () => {
+    try {
+      const headers = await getHeaders();
+      const response = await fetch(`${API_URL}/water/export`, {
+        method: 'GET',
+        headers: headers,
+      });
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.error);
+      return data.logs;
+    } catch (error) {
+      console.error("Error exporting data:", error);
+      return null;
+    }
+  }
+
 };

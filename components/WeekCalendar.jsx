@@ -4,7 +4,7 @@ import { FontAwesome6 } from "@expo/vector-icons";
 import { useTheme } from "../context/ThemeContext";
 import { api } from "../services/api";
 import { formatDateForBackend } from "../utils/dateFormatter";
-import { useGlobal } from "../context/GlobalContext";
+import { useUser } from "../context/UserContext";
 
 const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
 
@@ -42,7 +42,7 @@ const Day = React.memo(({ date, isToday, isGoalReached, changeDay, isSelected, s
 export default function WeekCalendar({ onMonthChange, selectedDay, onSelectedDayChange }) {
     const { theme } = useTheme();
     const styles = useMemo(() => createStyles(theme), [theme]);
-    const {userProfile} = useGlobal()
+    const {userProfile} = useUser()
 
     const [currentMonday, setCurrentMonday] = useState(() => {
         const today = new Date();
@@ -67,7 +67,6 @@ export default function WeekCalendar({ onMonthChange, selectedDay, onSelectedDay
 
     useEffect(() => {
         if (weekDays.length > 0) {
-            
             onMonthChange(weekDays[0].getMonth());
         }
     }, [currentMonday, onMonthChange]);
@@ -84,12 +83,20 @@ export default function WeekCalendar({ onMonthChange, selectedDay, onSelectedDay
 
     const getTotals = async(start, end) => {
         const newTotals = await api.getRangeMetrics(start, end)
-        setTotals(newTotals)
+        setTotals(newTotals || {}) // Protegemos también por si la API devuelve null
     }
 
     useEffect(()=>{
         getTotals(weekDays[0], weekDays[6])
     }, [weekDays])
+
+    // --- PROTECCIÓN CONTRA NULL ---
+    // Nos aseguramos de tener siempre un objeto Date válido para que el renderizado no crashee
+    const safeSelectedDay = useMemo(() => {
+        if (!selectedDay) return new Date();
+        const d = new Date(selectedDay);
+        return isNaN(d.getTime()) ? new Date() : d;
+    }, [selectedDay]);
 
     return (
         <View style={styles.container}>
@@ -98,14 +105,17 @@ export default function WeekCalendar({ onMonthChange, selectedDay, onSelectedDay
                 onPress={() => changeWeek(-1)} 
                 style={styles.icon}
             >
-                <FontAwesome6 name="angle-left" size={18} color={theme.colors.text} />
+                <FontAwesome6 name="angle-left" size={screenHeight*0.02} color={theme.colors.text} />
             </TouchableOpacity>
 
             <View style={styles.daysContainer}>
                 {weekDays.map((day) => {
                     const isToday = day.toDateString() === new Date().toDateString();
                     const isGoalReached = totals[formatDateForBackend(day)] >= userProfile?.goal
-                    const isSelected = selectedDay.toDateString() == day.toDateString()
+                    
+                    // Utilizamos nuestra fecha segura aquí
+                    const isSelected = safeSelectedDay.toDateString() === day.toDateString()
+                    
                     return (
                         <Day 
                             key={day.toISOString()} 
@@ -126,7 +136,7 @@ export default function WeekCalendar({ onMonthChange, selectedDay, onSelectedDay
                 onPress={() => changeWeek(1)} 
                 style={styles.icon}
             >
-                <FontAwesome6 name="angle-right" size={18} color={theme.colors.text} />
+                <FontAwesome6 name="angle-right" size={screenHeight*0.02} color={theme.colors.text} />
             </TouchableOpacity>
         </View>
     );
@@ -143,7 +153,6 @@ const createStyles = (theme) => StyleSheet.create({
         alignSelf: "center",
         position: "relative",
         padding: 10,
-        marginBottom: 5,
         elevation: 5
     },
     daysContainer: {
@@ -159,12 +168,12 @@ const createStyles = (theme) => StyleSheet.create({
     text: {
         fontFamily: theme.regular,
         color: theme.colors.text,
-        fontSize: 21
+        fontSize: screenHeight*0.025
     },
     numberContainer: {
         borderRadius: 10,
-        width: 32,
-        height: 32,
+        width: screenHeight*0.04,
+        height: screenHeight*0.04,
         justifyContent: "center",
         alignItems: "center",
         marginTop: 2

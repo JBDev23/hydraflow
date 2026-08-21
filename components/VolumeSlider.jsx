@@ -5,7 +5,7 @@ import { useTheme } from "../context/ThemeContext";
 const screenWidth = Dimensions.get('window').width;
 const screenHeight = Dimensions.get('window').height;
 
-export default function MultipleToggle({volume, setVolume}){
+export default function VolumeSlider({volume, setVolume}){
 
     const { theme } = useTheme();
     const styles = useMemo(() => createStyles(theme), [theme]);
@@ -22,7 +22,7 @@ export default function MultipleToggle({volume, setVolume}){
             const endX = e.nativeEvent.pageX;
             const diff = -(endX - startX);
 
-            let targetValue = volume - diff/20;
+            let targetValue = Math.round(volume - diff/20);
     
             if (targetValue > 100) targetValue = 100;
             if (targetValue < 0) targetValue = 0;
@@ -52,7 +52,7 @@ export default function MultipleToggle({volume, setVolume}){
                 <View style={styles.progressBar}>
                     <LinearGradient
                     style={[styles.progressFill, {width: `${volume}%`}]}
-                    colors={['#79D8FE','#6989E2']} 
+                    colors={[theme.colors.primary, theme.colors.primaryDark]} 
                     start={{x:0, y:0}}
                     end={{x:1, y:0}}
                     />

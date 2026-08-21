@@ -11,7 +11,8 @@ import PinkGlasses from "../assets/hydra/PinkGlasses.svg"
 import BowTie from "../assets/hydra/BowTie.svg"
 import Ribbon from "../assets/hydra/Ribbon.svg"
 import { useTheme } from "../context/ThemeContext";
-import { useGlobal } from "../context/GlobalContext";
+import { useUser } from "../context/UserContext";
+import { useTranslation } from "react-i18next";
 const screenWidth = Dimensions.get('window').width;
 
 const CARD_COLORS = ['#FF00AA', 'rgba(17, 0, 255, 0.4)'];
@@ -25,15 +26,17 @@ export default function ShopItem({
         price: 5
     },
     owned = false,
-    equiped = false,
+    equipped = false,
     date = "26/01/26",
     handleEquip,
     handleBuyed,
-    isLoading = false
+    isLoading = false,
+    isLoadingApi=false
 }) {
     const { theme } = useTheme();
     const styles = useMemo(() => createStyles(theme), [theme]);
-    const { userProfile } = useGlobal()
+    const { userProfile } = useUser()
+    const {t} = useTranslation()
 
     const drops = userProfile?.stats.dropsBalance
     const canAfford = drops >= data.price;
@@ -54,14 +57,21 @@ export default function ShopItem({
     };
 
     const onAction = () => {
-        setModalVisible(false);
         if (owned) {
             handleEquip(data.item);
+            setModalVisible(false);
         } else {
             if (canAfford) handleBuyed(data.item);
         }
         
     };
+
+    useEffect(()=>{
+        if(!isLoadingApi) {
+            setModalVisible(false);
+        }
+            
+    }, [isLoadingApi])
 
     const pulseAnim = useRef(new Animated.Value(0.5)).current;
 
@@ -89,13 +99,14 @@ export default function ShopItem({
         );
     }
 
-    const renderModalContent = () => (
+    const renderModalContent = () => {
+        return (
         <View style={styles.item}>
             {renderItem(200)}
             {owned ? (
                 <>
                     <Text style={[styles.title, { fontSize: 40, lineHeight: 40 }]}>{data.name}</Text>
-                    <Text style={[styles.date, { fontSize: 25 }]}>Adquirido: {date}</Text>
+                    <Text style={[styles.date, { fontSize: 25 }]}>{t('shopApp.owned')}: {date}</Text>
                 </>
             ) : (
                 <>
@@ -112,19 +123,27 @@ export default function ShopItem({
 
             <TouchableOpacity
                 onPress={onAction}
-                disabled={!owned && !canAfford}
-                style={[styles.mButton, (!owned && !canAfford) && { opacity: 0.5 }]}
+                disabled={!owned && !canAfford &&isLoadingApi}
+                style={[styles.mButton, (!owned && !canAfford &&isLoadingApi) && { opacity: 0.5 }]}
             >
                 <LinearGradient
                     colors={[theme.colors.primary, theme.colors.primaryDark]}
                 >
-                    <Text style={styles.buttonText}>
-                        {owned ? (equiped ? "QUITAR" : "EQUIPAR") : "COMPRAR"}
-                    </Text>
+                    {isLoadingApi ? 
+                        <Text style={styles.buttonText}>
+                            {t('loading')}
+                        </Text>
+                    :
+                        <Text style={styles.buttonText}>
+                            {owned ? (equipped ? t('buttons.remove') : t('buttons.equip')) : t('buttons.buy')}
+                        </Text>
+                    }
+                    
                 </LinearGradient>
             </TouchableOpacity>
         </View>
     );
+    }
 
     return (
         <View style={styles.wrapper}>
@@ -157,7 +176,7 @@ export default function ShopItem({
 
             {owned &&
                 <View style={styles.checkContainer}>
-                    {equiped && (
+                    {equipped && (
                         <FontAwesome6 name="check" color={theme.colors.primaryDark} size={21} />
                     )}
                 </View>

@@ -1,14 +1,14 @@
 import React, { createContext, useState, useEffect, useContext } from 'react';
 import { useColorScheme } from 'react-native';
 import { lightTheme, darkTheme } from '../constants/theme.js';
-import { useGlobal } from './GlobalContext';
+import { useUser } from './UserContext';
 
 export const ThemeContext = createContext();
 
 export const ThemeProvider = ({ children }) => {
-  const systemScheme = useColorScheme(); 
-  
-  const { userProfile, updateUserProfile } = useGlobal();
+  const systemScheme = useColorScheme();
+
+  const { userProfile, updateUserProfile } = useUser();
   const preferences = userProfile?.preferences || {};
 
   const getThemeMode = () => {
@@ -21,7 +21,7 @@ export const ThemeProvider = ({ children }) => {
 
   useEffect(() => {
     let activeMode = themeMode;
-    
+
     if (themeMode === 'system') {
       activeMode = systemScheme;
     }
@@ -29,13 +29,11 @@ export const ThemeProvider = ({ children }) => {
     setTheme(activeMode === 'dark' ? darkTheme : lightTheme);
   }, [themeMode, systemScheme]);
 
-  // 4. Actualizar el tema guarda directamente en el GlobalContext (y por ende en BBDD/Storage)
   const toggleTheme = (newMode) => {
     updateUserProfile({
       preferences: {
         ...preferences,
         theme: newMode,
-        // Sincronizamos el booleano también para que tu switch de settings funcione
         darkMode: newMode === 'dark'
       }
     });

@@ -1,21 +1,29 @@
-import React, { useContext, useEffect, useState, useMemo } from 'react';
-import { View, Text, StyleSheet, ScrollView, Dimensions, TouchableOpacity } from 'react-native';
+import React, { useEffect, useState, useMemo } from 'react';
+import { View, Text, StyleSheet, ScrollView, Dimensions, TouchableOpacity, Linking, Platform } from 'react-native';
 import { FontAwesome6 } from '@expo/vector-icons';
+import { useTranslation } from 'react-i18next';
 import ToggleButton from '../../components/ToogleButton';
 import MultipleToggle from '../../components/MultipleToggle';
 import VolumeSlider from '../../components/VolumeSlider';
 import CustomModal from '../../components/CustomModal';
 import { TERMS_AND_CONDITIONS, DATA_USAGE, PRIVACY_POLICY, ABOUT_US } from "../../utils/legalText";
-import { AppContext } from './_layout';
-import { useGlobal } from '../../context/GlobalContext';
+import { useAuth } from '../../context/AuthContext';
+import { useUser } from '../../context/UserContext';
+import { useAppShell } from '../../context/AppShellContext';
 import { useTheme } from '../../context/ThemeContext';
+import { api } from '../../services/api';
+import { showToast } from '../../utils/toast';
+
+import * as FileSystem from 'expo-file-system';
+import { File } from 'expo-file-system';
+import * as Sharing from 'expo-sharing';
 
 const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
 
 
 const ToggleOption = ({ title, options, value, onValueChange, styles, theme }) => {
   const labels = options.map(opt => opt.label);
-  
+
   const selectedIndex = options.findIndex(opt => opt.value === value);
   const safeIndex = selectedIndex === -1 ? 0 : selectedIndex;
 
@@ -31,24 +39,24 @@ const ToggleOption = ({ title, options, value, onValueChange, styles, theme }) =
       <View style={[styles.menuItemLabel, { width: screenWidth * 0.9 * 0.60 }]}>
         <Text style={styles.itemTitle}>{title}</Text>
       </View>
-      
+
       {isBinary ? (
         <View style={styles.binaryToggleContainer}>
-          <ToggleButton 
+          <ToggleButton
             value={safeIndex}
-            onValueChange={handleToggleChange} 
+            onValueChange={handleToggleChange}
             labels={labels}
-            optionWidth={screenWidth * 0.9 * 0.35 * 0.5} 
-            fontSize={22} 
+            optionWidth={screenWidth * 0.9 * 0.35 * 0.5}
+            fontSize={22}
             borderRadius={30}
           />
         </View>
       ) : (
-        <MultipleToggle 
-          width={screenWidth * 0.9 * 0.375} 
+        <MultipleToggle
+          width={screenWidth * 0.9 * 0.375}
           options={labels}
           value={safeIndex}
-          onValueChange={handleToggleChange} 
+          onValueChange={handleToggleChange}
         />
       )}
     </View>
@@ -56,24 +64,25 @@ const ToggleOption = ({ title, options, value, onValueChange, styles, theme }) =
 };
 
 const NotificationsView = ({ setCurrentView, styles, theme, userSettings, updateSettings }) => {
+  const { t } = useTranslation();
 
   const REMINDER_OPTS = [
-    { label: "SI", value: true },
-    { label: "NO", value: false }
+    { label: t("settings.yes"), value: true },
+    { label: t("settings.no"), value: false }
   ];
-  
+
   const FREQUENCY_OPTS = [
-    { label: "Inteligente", value: "smart" },
+    { label: t("settings.smart"), value: "smart" },
     { label: "30 min", value: "30" },
     { label: "1h", value: "60" },
     { label: "2h", value: "120" }
   ];
 
   const SOUND_OPTS = [
-    { label: "Gota", value: "drop" },
-    { label: "Rana", value: "frog" },
-    { label: "Pájaro", value: "bird" },
-    { label: "Flauta", value: "flute" }
+    { label: t("settings.drop"), value: "drop" },
+    { label: t("settings.frog"), value: "frog" },
+    { label: t("settings.bird"), value: "bird" },
+    { label: t("settings.flute"), value: "flute" }
   ];
 
   const [reminders, setReminders] = useState(userSettings?.notifications?.enabled ?? true);
@@ -93,20 +102,22 @@ const NotificationsView = ({ setCurrentView, styles, theme, userSettings, update
 
   return (
     <View style={styles.subViewContainer}>
-      <ToggleOption styles={styles} theme={theme} value={reminders} onValueChange={setReminders} options={REMINDER_OPTS} title="Recordatorios" />
-      <ToggleOption styles={styles} theme={theme} value={frequency} onValueChange={setFrequency} options={FREQUENCY_OPTS} title="Frecuencia" />
-      <ToggleOption styles={styles} theme={theme} value={sound} onValueChange={setSound} options={SOUND_OPTS} title="Sonido" />
-      
+      <ToggleOption styles={styles} theme={theme} value={reminders} onValueChange={setReminders} options={REMINDER_OPTS} title={t("settings.reminders")} />
+      <ToggleOption styles={styles} theme={theme} value={frequency} onValueChange={setFrequency} options={FREQUENCY_OPTS} title={t("settings.frequency")} />
+      <ToggleOption styles={styles} theme={theme} value={sound} onValueChange={setSound} options={SOUND_OPTS} title={t("settings.sound")} />
+
       <View style={{ flex: 1 }} />
-      
+
       <TouchableOpacity onPress={handleSave} style={styles.menuItem}>
-        <Text style={[styles.menuText, { color: theme.colors.success || "#32C843" }]}>Guardar cambios</Text>
+        <Text style={[styles.menuText, { color: theme.colors.success || "#32C843" }]}>{t("settings.saveChanges")}</Text>
       </TouchableOpacity>
     </View>
   );
 };
 
 const PreferencesView = ({ setCurrentView, styles, theme, userSettings, updateSettings }) => {
+  const { t } = useTranslation();
+
   const UNIT_OPTS = [
     { label: "CM", value: "cm" },
     { label: "FT", value: "ft" }
@@ -116,23 +127,23 @@ const PreferencesView = ({ setCurrentView, styles, theme, userSettings, updateSe
     { label: "LB", value: "lb" }
   ];
   const BOOL_OPTS = [
-    { label: "SI", value: true },
-    { label: "NO", value: false }
+    { label: t("settings.yes"), value: true },
+    { label: t("settings.no"), value: false }
   ];
   const THEME_OPTS = [
-    { label: "Claro", value: "light"},
-    { label: "Oscuro", value: "dark"},
-    { label: "Sistema", value: "system"}
+    { label: t("settings.light"), value: "light" },
+    { label: t("settings.dark"), value: "dark" },
+    { label: t("settings.system"), value: "system" }
   ];
   const LANG_OPTS = [
-    { label: "Español", value: "es" },
-    { label: "Català", value: "ca" },
-    { label: "English", value: "en" }
+    { label: t("settings.spanish"), value: "es" },
+    { label: t("settings.catalan"), value: "ca" },
+    { label: t("settings.english"), value: "en" }
   ];
 
   const [unitDist, setUnitDist] = useState(userSettings?.preferences?.unitDist || "cm");
   const [unitWeight, setUnitWeight] = useState(userSettings?.preferences?.unitWeight || "kg");
-  const [soundEffect, setSoundEffect] = useState(userSettings?.preferences?.soundEffects ?? true);
+  const [soundEffects, setSoundEffects] = useState(userSettings?.preferences?.soundEffects ?? true);
   const [volume, setVolume] = useState(userSettings?.preferences?.volume || 50);
   const [vibration, setVibration] = useState(userSettings?.preferences?.vibration ?? true);
   const [appTheme, setAppTheme] = useState(userSettings?.preferences?.theme ?? "light");
@@ -143,7 +154,7 @@ const PreferencesView = ({ setCurrentView, styles, theme, userSettings, updateSe
       preferences: {
         unitDist,
         unitWeight,
-        soundEffects: soundEffect,
+        soundEffects,
         volume,
         vibration,
         theme: appTheme,
@@ -155,40 +166,103 @@ const PreferencesView = ({ setCurrentView, styles, theme, userSettings, updateSe
 
   return (
     <View style={styles.subViewContainer}>
-      <ToggleOption styles={styles} theme={theme} value={unitDist} onValueChange={setUnitDist} options={UNIT_OPTS} title="Unidad medida" />
-      <ToggleOption styles={styles} theme={theme} value={unitWeight} onValueChange={setUnitWeight} options={WEIGHT_OPTS} title="Unidad peso" />
-      <ToggleOption styles={styles} theme={theme} value={soundEffect} onValueChange={setSoundEffect} options={BOOL_OPTS} title="Efectos sonido" />
+      <ToggleOption styles={styles} theme={theme} value={unitDist} onValueChange={setUnitDist} options={UNIT_OPTS} title={t("settings.unitMeasure")} />
+      <ToggleOption styles={styles} theme={theme} value={unitWeight} onValueChange={setUnitWeight} options={WEIGHT_OPTS} title={t("settings.unitWeight")} />
+      <ToggleOption styles={styles} theme={theme} value={soundEffects} onValueChange={setSoundEffects} options={BOOL_OPTS} title={t("settings.soundEffects")} />
 
       <View style={styles.sliderContainer}>
         <VolumeSlider volume={volume} setVolume={setVolume} />
       </View>
 
-      <ToggleOption styles={styles} theme={theme} value={vibration} onValueChange={setVibration} options={BOOL_OPTS} title="Vibración" />
-      <ToggleOption styles={styles} theme={theme} value={appTheme} onValueChange={setAppTheme} options={THEME_OPTS} title="Tema" />
-      <ToggleOption styles={styles} theme={theme} value={language} onValueChange={setLanguage} options={LANG_OPTS} title="Idioma" />
+      <ToggleOption styles={styles} theme={theme} value={vibration} onValueChange={setVibration} options={BOOL_OPTS} title={t("settings.vibration")} />
+      <ToggleOption styles={styles} theme={theme} value={appTheme} onValueChange={setAppTheme} options={THEME_OPTS} title={t("settings.theme")} />
+      <ToggleOption styles={styles} theme={theme} value={language} onValueChange={setLanguage} options={LANG_OPTS} title={t("settings.language")} />
 
       <View style={{ flex: 1 }} />
       <TouchableOpacity onPress={handleSave} style={styles.menuItem}>
-        <Text style={[styles.menuText, { color: theme.colors.success || "#32C843" }]}>Guardar cambios</Text>
+        <Text style={[styles.menuText, { color: theme.colors.success || "#32C843" }]}>{t("settings.saveChanges")}</Text>
       </TouchableOpacity>
     </View>
   );
 };
 
 const SupportView = ({ setCurrentView, styles, theme }) => {
+  const { t } = useTranslation();
   const [modalVisible, setModalVisible] = useState(false);
   const [pageIndex, setPageIndex] = useState(0);
 
   const INFO_PAGES = [
-    { title: "Política de privacidad", content: PRIVACY_POLICY },
-    { title: "Términos y condiciones", content: TERMS_AND_CONDITIONS },
-    { title: "Aviso legal", content: DATA_USAGE },
-    { title: "Sobre nosotros", content: ABOUT_US }
+    { title: t("settings.privacyPolicy"), content: PRIVACY_POLICY },
+    { title: t("settings.termsConditions"), content: TERMS_AND_CONDITIONS },
+    { title: t("settings.legalNotice"), content: DATA_USAGE },
+    { title: t("settings.aboutUs"), content: ABOUT_US }
   ];
 
   const openModal = (index) => {
     setPageIndex(index);
     setModalVisible(true);
+  };
+
+  const handleExport = async () => {
+    try {
+      // 1. Obtener historial del backend
+      const logs = await api.exportUserData();
+
+      if (!logs || logs.length === 0) {
+        showToast(t("toast.unavailableExport"));
+        return;
+      }
+
+      // 2. Construir el contenido del archivo CSV
+      const header = "Fecha,Hora,Cantidad (ml)\n";
+      const rows = logs.map(log => {
+        const dateObj = new Date(log.timestamp);
+        const dateStr = dateObj.toLocaleDateString('es-ES');
+        const timeStr = dateObj.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
+        return `${dateStr},${timeStr},${log.amount}`;
+      }).join("\n");
+
+      const csvContent = header + rows;
+
+      // 3. Crear el archivo temporal usando la API moderna (new File().write())
+      const fileName = `HydraFlow_Export_${new Date().getTime()}.csv`;
+      
+      const exportFile = new File(FileSystem.Paths.document, fileName);
+      
+      exportFile.create({ overwrite: true });
+      
+      exportFile.write(csvContent);
+
+      // 4. Abrir la hoja de compartir nativa (iOS/Android)
+      const isSharingAvailable = await Sharing.isAvailableAsync();
+      if (isSharingAvailable) {
+        await Sharing.shareAsync(exportFile.uri, {
+          mimeType: 'text/csv',
+          dialogTitle: 'Exportar datos de hidratación',
+          UTI: 'public.comma-separated-values-text' // Para compatibilidad iOS
+        });
+      } else {
+        showToast(t("toast.unavailableShare"));
+      }
+
+    } catch (error) {
+      console.error("Error al exportar:", error);
+      showToast(t("toast.generateError"));
+    }
+  };
+
+  const handleFeedback = () => {
+    const email = "jordibarrachinam@gmail.com"; 
+    const subject = "Feedback HydraFlow";
+    const body = `Hola equipo de HydraFlow,\n\n[Escribe aquí tu sugerencia, idea o error encontrado]\n\n\n---\nDetalles técnicos:\nPlataforma: ${Platform.OS}\nVersión: 1.0.0`;
+    
+    const mailtoUrl = `mailto:${email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    
+    // Linking intentará abrir la app de correo nativa
+    Linking.openURL(mailtoUrl).catch((err) => {
+      console.error("Error opening email app:", err);
+      showToast(t("toast.unavailableEmail") + email, { duration: 'long' });
+    });
   };
 
   const renderMenuItem = (label, onPress) => (
@@ -200,11 +274,12 @@ const SupportView = ({ setCurrentView, styles, theme }) => {
 
   return (
     <View style={styles.subViewContainer}>
-      {renderMenuItem("Exportar datos (csv)", () => {})}
-      {renderMenuItem("Política de privacidad", () => openModal(0))}
-      {renderMenuItem("Términos y condiciones", () => openModal(1))}
-      {renderMenuItem("Aviso legal", () => openModal(2))}
-      {renderMenuItem("Sobre nosotros", () => openModal(3))}
+      {renderMenuItem(t("settings.exportData"), handleExport)}
+      {renderMenuItem(t("settings.feedback"), handleFeedback)}
+      {renderMenuItem(t("settings.privacyPolicy"), () => openModal(0))}
+      {renderMenuItem(t("settings.termsConditions"), () => openModal(1))}
+      {renderMenuItem(t("settings.legalNotice"), () => openModal(2))}
+      {renderMenuItem(t("settings.aboutUs"), () => openModal(3))}
 
       <CustomModal
         visible={modalVisible}
@@ -220,9 +295,66 @@ const SupportView = ({ setCurrentView, styles, theme }) => {
   );
 };
 
+const AccountView = ({ styles, theme }) => {
+  const { t } = useTranslation();
+  const [deleteModalVisible, setDeleteModalVisible] = useState(false);
+  const [deleteDisabled, setDeleteDisabled] = useState(true);
+
+  useEffect(() => {
+    let timer;
+    if (deleteModalVisible) {
+      setDeleteDisabled(true);
+      timer = setTimeout(() => setDeleteDisabled(false), 3000);
+    }
+    return () => clearTimeout(timer);
+  }, [deleteModalVisible]);
+
+  return (
+    <View style={styles.subViewContainer}>
+      <TouchableOpacity onPress={() => setDeleteModalVisible(true)} style={[styles.menuItem, styles.dangerItem]}>
+        <Text style={[styles.menuText, { color: theme.colors.error || "red" }]}>{t("settings.deleteAccount")}</Text>
+      </TouchableOpacity>
+
+      <CustomModal
+        visible={deleteModalVisible}
+        onClose={() => setDeleteModalVisible(false)}
+        title={t("settings.dangerZone")}
+        borderColor={theme.colors.error || "red"}
+      >
+        <View style={styles.deleteModalContent}>
+          <Text style={[styles.title, { color: theme.colors.error || "red", fontSize: 25 }]}>
+            {t("settings.deleteAllData")}
+          </Text>
+          <Text style={styles.subtitle}>
+            {t("settings.deleteWarning")}
+          </Text>
+
+          <View style={styles.modalButtons}>
+            <TouchableOpacity onPress={() => setDeleteModalVisible(false)} style={styles.modalButton}>
+              <Text style={styles.menuText}>{t("settings.cancel")}</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              disabled={deleteDisabled}
+              onPress={() => api.deleteAccount()}
+              style={[styles.modalButton, { opacity: deleteDisabled ? 0.3 : 1 }]}
+            >
+              <Text style={[styles.menuText, { color: theme.colors.error || "red", fontWeight: 'bold' }]}>
+                {deleteDisabled ? t("settings.wait") : t("settings.deleteButton")}
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </CustomModal>
+    </View>
+
+  )
+}
+
 const MainSettingsView = ({ setCurrentView, styles, theme }) => {
-  const { clearAllData, login } = useGlobal();
-  const { changeTab, startTutorial } = useContext(AppContext);
+  const { t } = useTranslation();
+  const { logout } = useAuth();
+  const { changeTab, startTutorial } = useAppShell();
   const [deleteModalVisible, setDeleteModalVisible] = useState(false);
   const [deleteDisabled, setDeleteDisabled] = useState(true);
 
@@ -238,57 +370,56 @@ const MainSettingsView = ({ setCurrentView, styles, theme }) => {
   return (
     <View style={styles.subViewContainer}>
       <TouchableOpacity onPress={() => changeTab(4)} style={styles.menuItem}>
-        <Text style={styles.menuText}>Mi perfil</Text>
+        <Text style={styles.menuText}>{t("settings.myProfile")}</Text>
       </TouchableOpacity>
       <TouchableOpacity onPress={() => setCurrentView("notifications")} style={styles.menuItem}>
-        <Text style={styles.menuText}>Notificaciones</Text>
+        <Text style={styles.menuText}>{t("settings.notifications")}</Text>
       </TouchableOpacity>
       <TouchableOpacity onPress={() => setCurrentView("preferences")} style={styles.menuItem}>
-        <Text style={styles.menuText}>Preferencias</Text>
+        <Text style={styles.menuText}>{t("settings.preferences")}</Text>
       </TouchableOpacity>
       <TouchableOpacity onPress={() => changeTab(3)} style={styles.menuItem}>
-        <Text style={styles.menuText}>Personalizar</Text>
+        <Text style={styles.menuText}>{t("settings.customize")}</Text>
       </TouchableOpacity>
       <TouchableOpacity onPress={startTutorial} style={styles.menuItem}>
-        <Text style={styles.menuText}>Tutorial</Text>
+        <Text style={styles.menuText}>{t("settings.tutorial")}</Text>
       </TouchableOpacity>
       <TouchableOpacity onPress={() => setCurrentView("support")} style={styles.menuItem}>
-        <Text style={styles.menuText}>Soporte y datos</Text>
+        <Text style={styles.menuText}>{t("settings.support")}</Text>
       </TouchableOpacity>
-      <TouchableOpacity onPress={() => login("jordi@test.com", "Jordi Backend")} style={styles.menuItem}>
-        <Text style={styles.menuText}>Cuenta</Text>
+      <TouchableOpacity onPress={() => setCurrentView("account")} style={styles.menuItem}>
+        <Text style={styles.menuText}>{t("settings.account")}</Text>
       </TouchableOpacity>
-      
+
       <TouchableOpacity onPress={() => setDeleteModalVisible(true)} style={[styles.menuItem, styles.dangerItem]}>
-        <Text style={[styles.menuText, { color: theme.colors.error || "red" }]}>Eliminar / Reiniciar</Text>
+        <Text style={[styles.menuText, { color: theme.colors.error || "red" }]}>{t("settings.logout")}</Text>
       </TouchableOpacity>
 
       <CustomModal
         visible={deleteModalVisible}
         onClose={() => setDeleteModalVisible(false)}
-        title="Zona de Peligro"
         borderColor={theme.colors.error || "red"}
       >
         <View style={styles.deleteModalContent}>
           <Text style={[styles.title, { color: theme.colors.error || "red", fontSize: 25 }]}>
-            ¿Eliminar todos los datos?
+            {t("settings.logoutQuestion")}
           </Text>
           <Text style={styles.subtitle}>
-            Esta acción es irreversible. Se perderá todo tu progreso, historial y configuraciones.
+            {t("settings.logoutWarning")}
           </Text>
-          
+
           <View style={styles.modalButtons}>
             <TouchableOpacity onPress={() => setDeleteModalVisible(false)} style={styles.modalButton}>
-              <Text style={styles.menuText}>Cancelar</Text>
+              <Text style={styles.menuText}>{t("settings.cancel")}</Text>
             </TouchableOpacity>
-            
-            <TouchableOpacity 
-              disabled={deleteDisabled} 
-              onPress={clearAllData} 
+
+            <TouchableOpacity
+              disabled={deleteDisabled}
+              onPress={logout}
               style={[styles.modalButton, { opacity: deleteDisabled ? 0.3 : 1 }]}
             >
               <Text style={[styles.menuText, { color: theme.colors.error || "red", fontWeight: 'bold' }]}>
-                {deleteDisabled ? "Espera..." : "ELIMINAR"}
+                {deleteDisabled ? t("settings.wait") : t("settings.logoutButton")}
               </Text>
             </TouchableOpacity>
           </View>
@@ -303,44 +434,50 @@ export default function Settings() {
   const styles = useMemo(() => createStyles(theme), [theme]);
   const [currentView, setCurrentView] = useState("home");
 
-  const { userProfile, updateUserProfile } = useGlobal();
+  const { userProfile, updateUserProfile } = useUser();
 
   const updateSettings = (newSettings) => {
-    const updatedProfile = { 
-        ...userProfile,
-        notifications: {
-            ...userProfile?.notifications,
-            ...newSettings.notifications
-        },
-        preferences: {
-            ...userProfile?.preferences,
-            ...newSettings.preferences
-        }
-    };
-    updateUserProfile(updatedProfile);
+    const patch = {};
+    if (newSettings.notifications) {
+      patch.notifications = {
+        ...userProfile?.notifications,
+        ...newSettings.notifications,
+      };
+    }
+    if (newSettings.preferences) {
+      patch.preferences = {
+        ...userProfile?.preferences,
+        ...newSettings.preferences,
+      };
+    }
+    updateUserProfile(patch);
   };
 
+  const { t } = useTranslation();
+
   const viewConfig = useMemo(() => {
-    switch(currentView) {
-      case "notifications": return { title: "Notificaciones" };
-      case "preferences": return { title: "Preferencias" };
-      case "support": return { title: "Soporte y datos" };
-      default: return { title: "Configuración" };
+    switch (currentView) {
+      case "notifications": return { title: t("settings.notifications") };
+      case "preferences": return { title: t("settings.preferences") };
+      case "support": return { title: t("settings.support") };
+      case "account": return { title: t("settings.account") };
+      default: return { title: t("settings.settings") };
     }
-  }, [currentView]);
+  }, [currentView, t]);
 
   const renderContent = () => {
-    const props = { 
-      setCurrentView, 
-      styles, 
-      theme, 
-      userSettings: userProfile, 
+    const props = {
+      setCurrentView,
+      styles,
+      theme,
+      userSettings: userProfile,
       updateSettings
     };
-    switch(currentView) {
+    switch (currentView) {
       case "notifications": return <NotificationsView {...props} />;
       case "preferences": return <PreferencesView {...props} />;
       case "support": return <SupportView {...props} />;
+      case "account": return <AccountView {...props} />;
       default: return <MainSettingsView {...props} />;
     }
   };
@@ -349,9 +486,9 @@ export default function Settings() {
     <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer} showsVerticalScrollIndicator={false}>
       <View style={styles.header}>
         {currentView !== "home" && (
-          <TouchableOpacity 
-            hitSlop={20} 
-            onPress={() => setCurrentView("home")} 
+          <TouchableOpacity
+            hitSlop={20}
+            onPress={() => setCurrentView("home")}
             style={styles.backButton}
           >
             <FontAwesome6 name="angle-left" size={28} color={theme.colors.text} />
@@ -359,9 +496,9 @@ export default function Settings() {
         )}
         <Text style={styles.headerTitle}>{viewConfig.title}</Text>
       </View>
-      
+
       {renderContent()}
-      
+
       <Text style={styles.versionText}>HydraFlow v1.0.0</Text>
     </ScrollView>
   );
@@ -437,7 +574,7 @@ const createStyles = (theme) => StyleSheet.create({
     width: "100%",
     justifyContent: "space-between",
     alignItems: "center",
-    marginBottom: screenHeight*0.015
+    marginBottom: screenHeight * 0.015
   },
   menuItemLabel: {
     borderRadius: 20,

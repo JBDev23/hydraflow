@@ -7,17 +7,36 @@ import Hydra from "../../components/Hydra";
 import HorizontalSelector from "../../components/HorizontalSelector";
 import ToggleButton from "../../components/ToogleButton";
 import { useTheme } from "../../context/ThemeContext";
-import { useGlobal } from "../../context/GlobalContext";
+import { useUser } from "../../context/UserContext";
+import { useTranslation } from "react-i18next";
+import ScrollIndicator from "../../components/ScrollIndicator";
 export const screenWidth = Dimensions.get('window').width;
 
-export default function weight(){
+export default function weight() {
     const router = useRouter()
     const { theme } = useTheme()
     const styles = useMemo(() => createStyles(theme), [theme])
-    const { updateUserProfile, userProfile } = useGlobal();
+    const { updateUserProfile, userProfile } = useUser();
+    const { t } = useTranslation()
 
-    const [ measureUnit, setMeasureUnit ] = useState(0)
-    const [ weight, setWeight ] = useState(userProfile?.weight || 70)
+    const [measureUnit, setMeasureUnit] = useState(0)
+    const [weight, setWeight] = useState(userProfile?.weight || 70)
+    const [scrollViewHeight, setScrollViewHeight] = useState(0);
+    const [contentHeight, setContentHeight] = useState(0);
+    const [isScrolledToBottom, setIsScrolledToBottom] = useState(false);
+
+    const isScrollable = contentHeight > scrollViewHeight;
+    const showIndicator = isScrollable && !isScrolledToBottom;
+
+    const handleScroll = (event) => {
+        const { layoutMeasurement, contentOffset, contentSize } = event.nativeEvent;
+        const paddingToBottom = 40;
+
+        const isBottom =
+            layoutMeasurement.height + contentOffset.y >=
+            contentSize.height - paddingToBottom;
+        setIsScrolledToBottom(isBottom);
+    };
 
     const weightRef = useRef(weight);
 
@@ -29,7 +48,7 @@ export default function weight(){
         if (newIndex === measureUnit) return
 
         setMeasureUnit(newIndex)
-        
+
         if (newIndex === 1) {
             setWeight(Math.round(weight * 2.205))
         } else {
@@ -40,14 +59,14 @@ export default function weight(){
     useFocusEffect(
         useCallback(() => {
 
-        return () => {
-            let weightToSave = weightRef.current
-                
-            if (measureUnit === 1) {
-                weightToSave = Math.round(weightRef.current / 2.205)
-            }
-            updateUserProfile({ weight: weightToSave })
-        };
+            return () => {
+                let weightToSave = weightRef.current
+
+                if (measureUnit === 1) {
+                    weightToSave = Math.round(weightRef.current / 2.205)
+                }
+                updateUserProfile({ weight: weightToSave })
+            };
         }, [])
     );
 
@@ -59,24 +78,35 @@ export default function weight(){
     const maxVal = measureUnit === 0 ? 200 : 440
 
     return (
-        <ScrollView style={{flex:1}} contentContainerStyle={styles.container} showsVerticalScrollIndicator={false}>
-            <Hydra/>
-            <View style={styles.text}>
-                <Text style={styles.title}>¿Cuál es tu peso?</Text>
-            </View>
-            <ToggleButton labels={["KG", "LB"]} value={measureUnit} onValueChange={changeMeasureUnit}/>
-            <HorizontalSelector min={minVal} max={maxVal} value={weight} onValueChange={setWeight}/>
-            <TouchableOpacity onPress={handleNext} style={styles.button}>
-                <LinearGradient colors={[theme.colors.primary,theme.colors.primaryDark]} >
-                    <Text style={styles.buttonText}>SIGUIENTE</Text>
-                </LinearGradient>
-            </TouchableOpacity>
-        </ScrollView>
-    )
+        <>
+            <ScrollView 
+                style={{ flex: 1 }}
+                contentContainerStyle={styles.container}
+                showsVerticalScrollIndicator={false}
+                onLayout={(e) => setScrollViewHeight(e.nativeEvent.layout.height)}
+                onContentSizeChange={(w, h) => setContentHeight(h)}
+                onScroll={handleScroll}
+                scrollEventThrottle={16}
+            >                
+                <Hydra />
+                <View style={styles.text}>
+                    <Text style={styles.title}>{t('ask.weight')}</Text>
+                </View>
+                <ToggleButton labels={["KG", "LB"]} value={measureUnit} onValueChange={changeMeasureUnit} />
+                <HorizontalSelector min={minVal} max={maxVal} value={weight} onValueChange={setWeight} />
+                <TouchableOpacity onPress={handleNext} style={styles.button}>
+                    <LinearGradient colors={[theme.colors.primary, theme.colors.primaryDark]} >
+                        <Text style={styles.buttonText}>{t('buttons.next')}</Text>
+                    </LinearGradient>
+                </TouchableOpacity>
+            </ScrollView>
+            <ScrollIndicator visible={showIndicator} />
+        </>
+    )    
 }
 
 const createStyles = (theme) => StyleSheet.create({
-    container : {
+    container: {
         backgroundColor: theme.colors.background,
         justifyContent: "center",
         alignItems: "center",
@@ -85,24 +115,24 @@ const createStyles = (theme) => StyleSheet.create({
         paddingTop: "5%",
     },
     button: {
-        width: screenWidth*0.5,
+        width: screenWidth * 0.5,
         borderRadius: 10,
         overflow: "hidden",
         alignSelf: "center",
     },
-    buttonText : {
+    buttonText: {
         fontSize: 30,
         fontFamily: theme.regular,
         alignSelf: "center",
         textAlign: "center",
         color: theme.colors.contrast
     },
-    text : {
-        width: screenWidth*0.8,
+    text: {
+        width: screenWidth * 0.8,
         margin: 10,
         color: theme.colors.text
     },
-    title : {
+    title: {
         fontSize: 30,
         fontFamily: theme.regular,
         textAlign: "center"

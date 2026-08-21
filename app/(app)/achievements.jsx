@@ -6,8 +6,10 @@ import { FontAwesome6 } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import Achievement from '../../components/Achievement';
 import { useTheme } from '../../context/ThemeContext';
-import { useGlobal } from '../../context/GlobalContext';
+import { useUser } from '../../context/UserContext';
 import { api } from '../../services/api';
+import { useTranslation } from 'react-i18next';
+import { getLocalizedText } from '../../utils/i18nHelpers';
 const screenWidth = Dimensions.get('window').width;
 const screenHeight = Dimensions.get('window').height;
 
@@ -16,12 +18,13 @@ const SKELETONS = Array.from({ length: 6 });
 export default function Achievements() {
   const { theme } = useTheme();
   const styles = useMemo(() => createStyles(theme), [theme]);
-  const { userProfile, refreshUser } = useGlobal()
+  const { userProfile, refreshUser } = useUser()
+  const {t} = useTranslation()
 
   const [achievements, setAchievements] = useState([])
   const [isLoading, setIsLoading] = useState(false)
 
-  const stats = userProfile?.stats || { level: 1, progress: 0, archievementsCount: 0 };
+  const stats = userProfile?.stats || { level: 1, progress: 0, achievementsCount: 0 };
   const userAchievements = userProfile?.achievements || [];
   const achievementCount = stats.achievementsCount || 0;
   const level = stats.level || 1;
@@ -60,7 +63,7 @@ export default function Achievements() {
         </View>
         <View style={styles.levelContainer}>
           <View style={{ width: "100%" }}>
-            <Text style={styles.statText}>Nivel {level}</Text>
+            <Text style={styles.statText}>{t("achievementsApp.level")} {level}</Text>
           </View>
           <View style={styles.progressBar}>
             <LinearGradient
@@ -71,7 +74,7 @@ export default function Achievements() {
             />
           </View>
           <View style={styles.statItem}>
-            <Text style={styles.statText}>Logros:</Text>
+            <Text style={styles.statText}>{t("achievementsApp.achievements")}:</Text>
             <View style={styles.statContainer}>
               <Text style={styles.statText}>{achievementCount}</Text>
               <GradientIcon size={26} colors={['#FFD700', 'rgba(255,215,0,0.28)']}>
@@ -94,7 +97,8 @@ export default function Achievements() {
         ) : (
           achievements.map((ach) => {
             const { completed, date } = getAchievementStatus(ach.id);
-
+            const achName = getLocalizedText(ach.name)
+            const achDescription = getLocalizedText(ach.description)
             return (
               <Achievement
                 key={ach.id}
@@ -102,8 +106,8 @@ export default function Achievements() {
                 height={screenWidth * 0.9 * 0.48}
                 data={{
                   icon: ach.icon,
-                  name: ach.name.es,
-                  description: ach.description.es
+                  name: achName,
+                  description: achDescription
                 }}
                 isCompleted={completed}
                 date={date}

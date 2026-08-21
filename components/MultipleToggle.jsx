@@ -1,8 +1,9 @@
 import { FontAwesome6 } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
-import { useRef, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import { Dimensions, Modal } from "react-native";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { useTheme } from "../context/ThemeContext";
 
 const screenWidth = Dimensions.get('window').width;
 const screenHeight = Dimensions.get('window').height;
@@ -15,6 +16,8 @@ export default function MultipleToggle({
 }) {
 
     const [ visible, setVisible ] = useState(false)
+    const { theme } = useTheme();
+    const styles = useMemo(() => createStyles(theme), [theme]);
 
     const onClose = () => setVisible(false)
 
@@ -34,13 +37,13 @@ export default function MultipleToggle({
     return (
         <>
             <TouchableOpacity ref={buttonRef} onPress={openMenu} style={[styles.container, {width}]}>
-                <LinearGradient colors={['#79D8FE','#6989E2']} style={{borderRadius: 30, paddingHorizontal: 10, flexDirection: "row", justifyContent: "center", alignItems: "center"}}>
+                <LinearGradient colors={[theme.colors.primary,theme.colors.primaryDark]} style={{borderRadius: 30, paddingHorizontal: 10, flexDirection: "row", justifyContent: "center", alignItems: "center"}}>
                     <View style={{flex: 1}}></View>
                     <Text style={styles.optionText}>
                         {selectedLabel.length > 5 ? selectedLabel.slice(0,5) + "..." : selectedLabel}
                     </Text>
                     <View style={{flex: 1}}></View>
-                    <FontAwesome6 name="angle-down" color="white" size={21}/>
+                    <FontAwesome6 name="angle-down" color={theme.colors.contrast} size={21}/>
                 </LinearGradient>
             </TouchableOpacity>
             <Modal
@@ -87,17 +90,17 @@ export default function MultipleToggle({
     )
 }
 
-const styles = StyleSheet.create({
+const createStyles = (theme) => StyleSheet.create({
     container: {
         borderRadius: 30, 
         borderWidth: 5, 
-        borderColor: "#EEEEEE"
+        borderColor: theme.colors.border
     },
     optionText: {
-        fontFamily: 'Aldrich_400Regular',
+        fontFamily: theme.regular,
         fontSize: 21,
         alignSelf: "center",
-        color: "#fff"
+        color: theme.colors.contrast
     },
     overlay: {
         flex: 1,
@@ -107,7 +110,7 @@ const styles = StyleSheet.create({
     },
     dropdown: {
         position: 'absolute',
-        backgroundColor: 'white',
+        backgroundColor: theme.colors.background,
         borderRadius: 20,
         shadowColor: "#000",
         shadowOffset: { width: 0, height: 4 },
@@ -127,13 +130,14 @@ const styles = StyleSheet.create({
         borderBottomColor: '#EEEEEE',
     },
     itemSelected: {
-        backgroundColor: '#F0F8FF',
+        backgroundColor: theme.colors.surface,
     },
     itemText: {
         fontFamily: 'Aldrich_400Regular',
         fontSize: 18,
+        color: theme.colors.text
     },
     itemTextSelected: {
-        color: '#6989E2',
+        color: theme.colors.primaryDark,
     }
 })

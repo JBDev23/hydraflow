@@ -1,0 +1,259 @@
+{
+  "main": {
+    "slogan": "El teu company d'hidratació",
+    "motivator": "Un glop més a prop de la meta!"
+  },
+  "indexAuth": {
+    "title": "Benvingut",
+    "subTitle1": "Soc",
+    "subTitle2": "el teu assistent d'hidratació"
+  },
+  "activity": {
+    "sedentary": "Sedentari",
+    "moderate": "Moderat (1-2 dies)",
+    "active": "Actiu (3-4 dies)",
+    "highActive": "Molt actiu (5+ dies)"
+  },
+  "plan": {
+    "createTitle": "Creant el teu pla",
+    "createSubTitle": "Falta molt poc...",
+    "readyTitle": "El teu pla està llest!!",
+    "readySubTitle": "Basant-me en les teves dades, aquesta és la teva meta ideal"
+  },
+  "ask": {
+    "name": "Quin és el teu nom?",
+    "age": "Quina és la teva edat?",
+    "weight": "Quin és el teu pes?",
+    "gender": "Per ajustar el teu pla",
+    "height": "Quina és la teva alçada?",
+    "activity": "Quant et mous?",
+    "sleep": "Quin és el teu horari de son?"
+  },
+  "edit": {
+    "wakeTime": "A quina hora et lleves?",
+    "sleepTime": "A quina hora te'n vas a dormir?",
+    "goal": "Tria la teva meta",
+    "goalRecommended": "Recomanat:"
+  },
+  "settings": {
+    "yes": "SÍ",
+    "no": "NO",
+    "smart": "Intel·ligent",
+    "drop": "Gota",
+    "frog": "Granota",
+    "bird": "Ocell",
+    "flute": "Flauta",
+    "reminders": "Recordatoris",
+    "frequency": "Freqüència",
+    "sound": "So",
+    "saveChanges": "Desar canvis",
+    "unitMeasure": "Unitat de mesura",
+    "unitWeight": "Unitat de pes",
+    "soundEffects": "Efectes de so",
+    "vibration": "Vibració",
+    "theme": "Tema",
+    "light": "Clar",
+    "dark": "Fosc",
+    "system": "Sistema",
+    "language": "Idioma",
+    "spanish": "Español",
+    "catalan": "Català",
+    "english": "English",
+    "privacyPolicy": "Política de privadesa",
+    "termsConditions": "Termes i condicions",
+    "legalNotice": "Avís legal",
+    "aboutUs": "Sobre nosaltres",
+    "exportData": "Exportar dades (csv)",
+    "feedback": "Enviar comentaris",
+    "deleteAccount": "Eliminar / Reiniciar compte",
+    "dangerZone": "Zona de perill",
+    "deleteAllData": "Eliminar totes les dades?",
+    "deleteWarning": "Aquesta acció és irreversible. Es perdrà tot el teu progrés, historial i configuracions.",
+    "cancel": "Cancel·lar",
+    "wait": "Espera...",
+    "deleteButton": "ELIMINAR",
+    "myProfile": "El meu perfil",
+    "notifications": "Notificacions",
+    "preferences": "Preferències",
+    "customize": "Personalitzar",
+    "tutorial": "Tutorial",
+    "support": "Suport i dades",
+    "account": "Compte",
+    "logout": "Tancar sessió",
+    "logoutQuestion": "Tancar sessió?",
+    "logoutWarning": "Aquesta acció tancarà la teva sessió. Hauràs de tornar a iniciar sessió per continuar amb el teu progrés.",
+    "logoutButton": "TANCAR SESSIÓ",
+    "settings": "Configuració"
+  },
+  "loginAuth": {
+    "googleButton": "Continuar amb Google",
+    "terms": "En continuar, acceptes els nostres Termes i Política de privadesa.",
+    "serverConnect": "Connectant amb el servidor..."
+  },
+  "indexApp":{
+    "remaining": "restants",
+    "goalCompleted": "Meta assolida!"
+  },
+  "statsApp":{
+    "average": "MITJANA",
+    "total": "TOTAL",
+    "streak": "Ratxa",
+    "goal": "Metes",
+    "liters": "Litres",
+    "toggleLabels": {
+      "day": "D",
+      "week": "S",
+      "month": "M"
+    }
+  },
+  "achievementsApp": {
+    "level": "Nivell",
+    "achievements": "Triomfs"
+  },
+  "shopApp": {
+    "skins": "Vestits",
+    "owned": "Adquirit"
+  },
+  "profileApp": {
+    "level": "Nivell",
+    "name": "Nom:",
+    "age": "Edat:",
+    "weight": "Pes:",
+    "height": "Alçada:",
+    "gender": "Gènere:",
+    "activity": "Activitat:",
+    "wakeTime": "Llevar-se:",
+    "sleepTime": "Anar a dormir:",
+    "goal": "Meta diària:"
+  },
+  "profile": {
+    "male": "Home",
+    "female": "Dona", 
+    "other": "Altre",
+    "sedentary": "Sedentari",
+    "moderate": "Moderat",
+    "active": "Actiu",
+    "highActive": "Molt actiu"
+  },
+  "alerts": {
+    "googleAlert": "No s'ha pogut iniciar sessió amb Google."
+  },
+  "loading": "Carregant...",
+  "greeting": "Hola",
+  "buttons": {
+    "start": "COMENÇAR",
+    "startDrink": "COMENÇA A BEURE",
+    "next": "SEGÜENT",
+    "end": "ACABAR",
+    "skip": "OMETRE",
+    "equip": "EQUIPAR",
+    "buy": "COMPRAR",
+    "remove": "TREURE",
+    "otherGender": "Altre / Prefereixo no dir-ho"
+  },
+  "screen": {
+    "stats": "Estadístiques",
+    "achievements": "Triomfs",
+    "shop": "Botiga",
+    "profile": "Perfil",
+    "settings": "Ajustos"
+  },
+  "days": {
+    "short": {
+      "sun": "DIU",
+      "mon": "DIL",
+      "tue": "DIM",
+      "wed": "DIC",
+      "thu": "DIJ",
+      "fri": "DIV",
+      "sat": "DIS"
+    }
+  },
+  "months": {
+    "short": {
+      "jan": "GEN",
+      "feb": "FEB",
+      "mar": "MAR",
+      "apr": "ABR",
+      "may": "MAI",
+      "jun": "JUN",
+      "jul": "JUL",
+      "aug": "AGO",
+      "sep": "SET",
+      "oct": "OCT",
+      "nov": "NOV",
+      "dec": "DES"
+    },
+    "long": {
+      "jan": "Gener",
+      "feb": "Febrer",
+      "mar": "Març",
+      "apr": "Abril",
+      "may": "Maig",
+      "jun": "Juny",
+      "jul": "Juliol",
+      "aug": "Agost",
+      "sep": "Setembre",
+      "oct": "Octubre",
+      "nov": "Novembre",
+      "dec": "Desembre"
+    }
+  },
+  "toast": {
+    "experience": "experiència",
+    "goalCompleted": "!!Fita aconseguida!!",
+    "newStreak": "!!Estàs en ratxa!!",
+    "unavailableExport": "Encara no tens registres d'aigua per exportar.",
+    "unavailableShare": "La funció de compartir no està disponible en aquest dispositiu.",
+    "generateError": "Hi ha hagut un problema en generar el fitxer.",
+    "unavailableEmail": "No s'ha pogut obrir l'aplicació de correu automàticament. Ens pots escriure a: ",
+    "offlineSave": "Desat fora de línia. Se sincronitzarà en connectar-se.",
+    "offlineMode": "Mode fora de línia",
+    "conecctionError": "Error de connexió. Aquesta acció requereix internet.",
+    "syncData": "dades sincronitzades"
+  },
+  "tutorial": {
+    "steps": [
+      {
+        "title": "Benvingut a HydraFlow!",
+        "description": "El teu company personal d'hidratació. Aquí podràs registrar el teu consum d'aigua de manera divertida i visual.",
+        "icon": "hand-sparkles"
+      },
+      {
+        "title": "La teva mascota Hydra",
+        "description": "L'Hydra reacciona al teu progrés. Mantingues-lo feliç assolint les teves metes diàries!",
+        "icon": "face-smile-wink"
+      },
+      {
+        "title": "Registra aigua",
+        "description": "Utilitza els botons ràpids o mantingues premut per registrar cada got que beguis.",
+        "icon": "glass-water"
+      },
+      {
+        "title": "Segueix la teva ratxa",
+        "description": "Consulta el calendari superior per veure els teus dies perfectes i mantenir la ratxa.",
+        "icon": "calendar-check"
+      },
+      {
+        "title": "Mira les teves estadístiques",
+        "description": "Visualitza les teves estadístiques diàries, setmanals o mensuals a la pestanya d'estadístiques per millorar cada dia.",
+        "icon": "chart-simple"
+      },
+      {
+        "title": "Aconsegueix triomfs",
+        "description": "El teu esforç té recompensa. Admira els teus triomfs a la pestanya de triomfs.",
+        "icon": "trophy"
+      },
+      {
+        "title": "Personalitza l'Hydra",
+        "description": "Personalitza l'Hydra amb divertits vestits.",
+        "icon": "basket-shopping"
+      },
+      {
+        "title": "Actualitza les teves dades",
+        "description": "Actualitza les teves dades per obtenir una millor precisió a la pestanya de perfil.",
+        "icon": "user"
+      }
+    ]
+  }
+}

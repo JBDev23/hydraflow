@@ -5,16 +5,36 @@ import { useRouter } from "expo-router";
 import Hydra from "../../components/Hydra";
 import { useTheme } from "../../context/ThemeContext";
 import { useMemo, useRef, useState } from "react";
-import { useGlobal } from "../../context/GlobalContext";
+import { useUser } from "../../context/UserContext";
+import { useTranslation } from "react-i18next";
+import ScrollIndicator from "../../components/ScrollIndicator";
 const screenWidth = Dimensions.get('window').width;
 
 export default function Onboarding() {
     const router = useRouter()
-    const { updateUserProfile } = useGlobal()
+    const { updateUserProfile } = useUser()
     const { theme } = useTheme()
     const styles = useMemo(() => createStyles(theme), [theme])
 
+    const  {t} = useTranslation()
+
     const [name, setName] = useState("");
+    const [scrollViewHeight, setScrollViewHeight] = useState(0);
+    const [contentHeight, setContentHeight] = useState(0);
+    const [isScrolledToBottom, setIsScrolledToBottom] = useState(false);
+
+    const isScrollable = contentHeight > scrollViewHeight;
+    const showIndicator = isScrollable && !isScrolledToBottom;
+
+    const handleScroll = (event) => {
+        const { layoutMeasurement, contentOffset, contentSize } = event.nativeEvent;
+        const paddingToBottom = 40;
+
+        const isBottom =
+            layoutMeasurement.height + contentOffset.y >=
+            contentSize.height - paddingToBottom;
+        setIsScrolledToBottom(isBottom);
+    };
 
     const handleNext = () => {
         if (name.trim().length === 0) {
@@ -57,26 +77,37 @@ export default function Onboarding() {
             behavior={Platform.OS === "ios" ? "padding" : "height"}
             style={{ flex: 1 }}
         >
-            <ScrollView style={{ flex: 1, backgroundColor: theme.colors.background }} contentContainerStyle={styles.container} keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false}>
+            <ScrollView 
+                style={{ flex: 1, backgroundColor: theme.colors.background }} 
+                contentContainerStyle={styles.container} 
+                keyboardShouldPersistTaps="handled" 
+                showsVerticalScrollIndicator={false}
+                onLayout={(e) => setScrollViewHeight(e.nativeEvent.layout.height)}
+                onContentSizeChange={(w, h) => setContentHeight(h)}
+                onScroll={handleScroll}
+                scrollEventThrottle={16}
+
+            >
                 <Hydra />
                 <View style={styles.text}>
-                    <Text style={styles.title}>Bienvenido</Text>
-                    <Text style={styles.subtitle}>Yo soy <Text style={{ color: theme.colors.primaryDark }}>Hydra</Text>, tu asistente de hidratación</Text>
+                    <Text style={styles.title}>{t('indexAuth.title')}</Text>
+                    <Text style={styles.subtitle}>{t('indexAuth.subTitle1')} <Text style={{ color: theme.colors.primaryDark }}>Hydra</Text>, {t('indexAuth.subTitle2')}</Text>
                 </View>
                 <View style={styles.form}>
                     <View style={styles.formElem}>
-                        <Text style={styles.label}>¿Cuál es tu nombre?</Text>
+                        <Text style={styles.label}>{t('ask.name')}</Text>
                         <Animated.View style={{transform: [{translateX: wrongAnim}]}}>
-                            <TextInput defaultValue="" style={styles.input} onChangeText={setName} placeholder="ej: Hydra" />
+                            <TextInput defaultValue="" style={styles.input} onChangeText={setName} placeholder="ex: Hydra" />
                         </Animated.View>
                     </View>
                 </View>
                 <TouchableOpacity onPress={handleNext} style={styles.button}>
                     <LinearGradient colors={[theme.colors.primary, theme.colors.primaryDark]} >
-                        <Text style={styles.buttonText}>Empezar</Text>
+                        <Text style={styles.buttonText}>{t('buttons.start')}</Text>
                     </LinearGradient>
                 </TouchableOpacity>
             </ScrollView>
+            <ScrollIndicator visible={showIndicator}/>
         </KeyboardAvoidingView>
 
     )
@@ -85,7 +116,6 @@ export default function Onboarding() {
 const createStyles = (theme) => StyleSheet.create({
     container: {
         backgroundColor: theme.colors.background,
-        justifyContent: "center",
         alignItems: "center",
         flexGrow: 1,
         paddingBottom: "5%",
@@ -120,10 +150,13 @@ const createStyles = (theme) => StyleSheet.create({
         fontSize: 25,
         fontFamily: theme.regular,
         borderColor: theme.colors.textTertiary,
+        color: theme.colors.text,
         borderWidth: 1,
         borderRadius: 10,
-        height: 55,
+        height: 60, 
         paddingLeft: 10,
+        paddingVertical: 0, 
+        includeFontPadding: false,
         marginTop: 5,
         backgroundColor: theme.colors.background,
         shadowColor: "#000",

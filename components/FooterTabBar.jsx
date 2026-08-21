@@ -4,6 +4,8 @@ import { TouchableOpacity } from "react-native";
 import { Text, View, StyleSheet, Animated, Dimensions, Easing } from "react-native";
 import { getFormattedDate } from "../utils/dateFormatter"
 import { useTheme } from "../context/ThemeContext";
+import { useTranslation } from "react-i18next";
+import { audioService } from "../services/audioService";
 
 const screenWidth = Dimensions.get('window').width;
 const screenHeight = Dimensions.get('window').height;
@@ -13,6 +15,7 @@ const ICONS = ["house", "chart-simple", "trophy", "basket-shopping", "user", "ge
 const FooterTabBar = forwardRef(({ wave1 = 0, wave2 = 0, state, descriptors, navigation, selectedDay }, ref) => {
     const { theme } = useTheme();
     const styles = useMemo(() => createStyles(theme), [theme]);
+    const {t} = useTranslation()
 
     const formatedDate = getFormattedDate(selectedDay)
     
@@ -69,6 +72,7 @@ const FooterTabBar = forwardRef(({ wave1 = 0, wave2 = 0, state, descriptors, nav
         if (isChanging) return;
         
         setIsChanging(true);
+        audioService.playSound("swipe")
         const isFocused = state.index === route.index;
 
         Animated.sequence([
@@ -84,7 +88,7 @@ const FooterTabBar = forwardRef(({ wave1 = 0, wave2 = 0, state, descriptors, nav
                 duration: 350,
                 useNativeDriver: true,
             })
-        ]).start(() => setIsChanging(false));
+        ]).start();
 
         const event = navigation.emit({
             type: 'tabPress',
@@ -98,7 +102,12 @@ const FooterTabBar = forwardRef(({ wave1 = 0, wave2 = 0, state, descriptors, nav
             } else {
                 navigation.navigate(route.name, { merge: true });
             }
+            
         }, 200);
+
+        setTimeout(()=>{
+            setIsChanging(false)
+        }, 700)
     };
 
     const rotate1 = swayAnim.interpolate({ inputRange: [0, 1], outputRange: ['-2deg', '2deg'] });
@@ -107,13 +116,14 @@ const FooterTabBar = forwardRef(({ wave1 = 0, wave2 = 0, state, descriptors, nav
     return (
         <View style={styles.footerContainer}>
             <TouchableOpacity 
+                disabled={isChanging}
                 hitSlop={{ top: 20, bottom: 20, left: 20, right: 20 }} 
                 onPress={() => handlePress(currentRoute)} 
                 activeOpacity={1}
                 style={[styles.icon, { alignSelf: "center", top: -screenHeight * 0.02 }]}
             >
                 <FontAwesome6 
-                    size={32} 
+                    size={screenHeight*0.035} 
                     name={currentIcon} 
                     color={theme.colors.contrast} 
                     solid
@@ -121,12 +131,13 @@ const FooterTabBar = forwardRef(({ wave1 = 0, wave2 = 0, state, descriptors, nav
             </TouchableOpacity>
 
             <TouchableOpacity 
+                disabled={isChanging}
                 hitSlop={{ top: 20, bottom: 20, left: 20, right: 20 }} 
                 onPress={() => handlePress(prevRoute)} 
                 style={[styles.icon, { left: screenWidth * 0.1, top: screenHeight * 0.05 }]}
             >
                 <FontAwesome6 
-                    size={25} 
+                    size={screenHeight*0.03} 
                     name={prevIcon} 
                     color={theme.colors.contrastLight} 
                     solid
@@ -134,12 +145,13 @@ const FooterTabBar = forwardRef(({ wave1 = 0, wave2 = 0, state, descriptors, nav
             </TouchableOpacity>
 
             <TouchableOpacity 
+                disabled={isChanging}
                 hitSlop={{ top: 20, bottom: 20, left: 20, right: 20 }} 
                 onPress={() => handlePress(nextRoute)} 
                 style={[styles.icon, { right: screenWidth * 0.1, top: screenHeight * 0.05 }]}
             >
                 <FontAwesome6 
-                    size={25} 
+                    size={screenHeight*0.03} 
                     name={nextIcon} 
                     color={theme.colors.contrastLight} 
                     solid
@@ -156,7 +168,7 @@ const FooterTabBar = forwardRef(({ wave1 = 0, wave2 = 0, state, descriptors, nav
                         :
                         <Text style={styles.title}>{options.title}</Text>
                     }
-                    <Text style={styles.subTitle}>"¡Un sorbo más cerca de la meta!"</Text>
+                    <Text style={styles.subTitle}>"{t('main.motivator')}"</Text>
                 </Animated.View>
             </Animated.View>
             
@@ -205,15 +217,15 @@ const createStyles = (theme) => StyleSheet.create({
     },
     title: {
         fontFamily: theme.regular,
-        fontSize: 25,
+        fontSize: screenHeight*0.025,
         alignSelf: "center",
         color: theme.colors.contrast,
         top: "10%",
-        marginBottom: 20
+        marginBottom: screenHeight*0.02
     },
     subTitle: {
         fontFamily: theme.regular,
-        fontSize: 16,
+        fontSize: screenHeight*0.02,
         alignSelf: "center",
         color: theme.colors.contrast,
     },

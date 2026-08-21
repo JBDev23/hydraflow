@@ -6,11 +6,14 @@ const PALETTE = {
   gold: '#FFD700',
   white: '#FFFFFF',
   lightWhite: 'rgba(255, 255, 255, 0.6)',
-  black: '#121212',
+  black: '#120E1E',
   grayLight: '#EEEEEE',
   grayMedium: '#B9B9B9',
   grayDark: 'rgba(0,0,0,0.6)',
-  darkSurface: '#1E1E1E',
+  darkSurface: '#1D172E',
+  purpleLight: "#D9B8FF",
+  purpleMid: "#B185FF",
+  purpleDark: "#8357DE"
 };
 
 export const FONTS = {
@@ -41,11 +44,11 @@ export const lightTheme = {
 export const darkTheme = {
   mode: 'dark',
   colors: {
-    primary: PALETTE.blueLight,
-    primaryDark: PALETTE.blueDark,
-    primaryMid: PALETTE.blueMid,
+    primary: PALETTE.purpleLight,
+    primaryDark: PALETTE.purpleDark,
+    primaryMid: PALETTE.purpleMid,
     background: PALETTE.black,
-    surface: PALETTE.black,      
+    surface: PALETTE.darkSurface,      
     text: PALETTE.white,      
     textSecondary: PALETTE.grayLight,
     textTertiary: PALETTE.grayMedium,

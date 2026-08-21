@@ -4,12 +4,14 @@ import { useEffect, useMemo, useState } from 'react';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import { useTheme } from '../../context/ThemeContext';
+import { useTranslation } from 'react-i18next';
 const screenWidth = Dimensions.get('window').width;
 
 export default function creatingPlan() {
     const router = useRouter()
     const { theme } = useTheme()
     const styles = useMemo(() => createStyles(theme), [theme])
+    const  {t} = useTranslation()
 
     const [ progress, setProgress ] = useState(0)
 
@@ -57,8 +59,8 @@ export default function creatingPlan() {
 
             <View style={styles.container}>
                 <HydraS width={screenWidth*0.8} height={screenWidth*0.8}/>
-                <Text style={styles.title}>Creando tu plan</Text>
-                <Text style={styles.subtitle}>Queda muy poco...</Text>
+                <Text style={styles.title}>{t('plan.createTitle')}</Text>
+                <Text style={styles.subtitle}>{t('plan.createSubTitle')}</Text>
             </View>
         </View>
     )

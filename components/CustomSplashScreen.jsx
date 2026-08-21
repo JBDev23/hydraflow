@@ -13,7 +13,7 @@ export default function CustomSplashScreen({progress, style}) {
     const styles = useMemo(() => createStyles(theme), [theme])
 
     return (
-        <SafeAreaView style={[styles.container]}>
+        <SafeAreaView style={styles.container}>
             <View style={styles.header}>
                 <View style={styles.progressBar}>
                     <LinearGradient style={[styles.progressFill, {width: `${progress}%`}]}
@@ -30,8 +30,10 @@ export default function CustomSplashScreen({progress, style}) {
                         height={screenWidth * 0.8} 
                     />
                 </View>
-                <Text style={styles.title}>HydraFlow</Text>
-                <Text style={styles.subtitle}>Hidratación inteligente</Text>
+                <View style={styles.textContainer}>
+                    <Text style={styles.title}>HydraFlow</Text>
+                    <Text style={styles.subtitle}>Hidratación inteligente</Text>
+                </View>
             </View>
             <Footer/>
         </SafeAreaView>
@@ -67,23 +69,37 @@ const createStyles = (theme) => StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
         paddingTop: screenHeight * 0.05,
+        width: screenWidth,
     },
     logoContainer: {
         marginBottom: 20,
+    },
+    textContainer: {
+        width: '100%',
+        paddingHorizontal: 20,
+        alignItems: 'center',
+        justifyContent: 'center',
     },
     title : {
         fontSize: 45,
         fontFamily: theme.regular,
         color: theme.colors.text,
         textAlign: "center",
+        width: "100%",
         textShadowColor: 'rgba(0, 0, 0, 0.25)',
         textShadowOffset: { width: 0, height: 4 },
         textShadowRadius: 5,
+
+        includeFontPadding: false, 
+        paddingHorizontal: 5 
     },
     subtitle : {
         fontSize: 25,
         color: theme.colors.textSecondary,
         fontFamily: theme.regular,
-        textAlign: "center"
+        textAlign: "center",
+        width: "100%",
+        includeFontPadding: false, 
+        paddingHorizontal: 5 
     },
 })

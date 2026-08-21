@@ -4,23 +4,21 @@ import * as SplashScreen from 'expo-splash-screen';
 import { useEffect, useState } from 'react';
 import CustomSplashScreen from '../components/CustomSplashScreen';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { ThemeProvider } from '../context/ThemeContext.jsx';
-import { GlobalProvider, useGlobal } from '../context/GlobalContext.jsx';
+import { AppProviders } from '../context/AppProviders.jsx';
+import { useAuth } from '../context/AuthContext.jsx';
+import { useUser } from '../context/UserContext.jsx';
+import ToastHost from '../components/ToastHost';
+import './i18n';
 
 SplashScreen.preventAutoHideAsync();
 
 function AppNavigator() {
-  const { 
-    isLoading: isGlobalLoading,
-    userProfile, 
-    updateUserProfile, 
-    clearAllData 
-  } = useGlobal();
-
+  const { isLoading: isGlobalLoading, authToken } = useAuth();
+  const { userProfile } = useUser();
 
   const [progress, setProgress] = useState(0);
   const [isSplashAnimationDone, setIsSplashAnimationDone] = useState(false);
-  
+
   const segments = useSegments();
   const router = useRouter();
 
@@ -52,31 +50,35 @@ function AppNavigator() {
 
   useEffect(() => {
     if (progress >= 100) {
-      
       setTimeout(() => {
         setIsSplashAnimationDone(true);
       }, 200);
     }
   }, [progress]);
 
-
   useEffect(() => {
     if (isGlobalLoading || !fontsLoaded || !isSplashAnimationDone) return;
-    
-    const inAuthGroup = segments[0] === '(auth)';
-    const isOnboardingCompleted = userProfile?.onboardingCompleted;    
 
-    if (!isOnboardingCompleted && !inAuthGroup) {
+    const inAuthGroup = segments[0] === '(auth)';
+    const isOnboardingCompleted = userProfile?.onboardingCompleted;
+    const isLoggedIn = Boolean(authToken);
+
+    if (!isLoggedIn && !inAuthGroup) {
       router.replace('/(auth)');
-    } else if (isOnboardingCompleted && inAuthGroup) {
+      return;
+    }
+
+    if (isLoggedIn && !isOnboardingCompleted && !inAuthGroup) {
+      router.replace('/(auth)');
+    } else if (isLoggedIn && isOnboardingCompleted && inAuthGroup) {
       router.replace('/(app)');
     }
-  }, [userProfile, segments, isGlobalLoading, fontsLoaded, isSplashAnimationDone]);
+  }, [userProfile, authToken, segments, isGlobalLoading, fontsLoaded, isSplashAnimationDone]);
 
   if (!isSplashAnimationDone) {
     return (
-        <CustomSplashScreen 
-            progress={Math.round(progress)} 
+        <CustomSplashScreen
+            progress={Math.round(progress)}
         />
     );
   }
@@ -90,10 +92,9 @@ function AppNavigator() {
 
 export default function RootLayout() {
   return (
-    <GlobalProvider>
-      <ThemeProvider>
-        <AppNavigator />
-      </ThemeProvider>
-    </GlobalProvider>
+    <AppProviders>
+      <AppNavigator />
+      <ToastHost />
+    </AppProviders>
   );
 }

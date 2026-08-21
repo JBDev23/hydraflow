@@ -5,29 +5,66 @@ import CustomModal from "./CustomModal";
 import EditModal from "./EditModal";
 import { FontAwesome6 } from "@expo/vector-icons";
 import { useTheme } from "../context/ThemeContext";
+import { useTranslation } from "react-i18next";
+import { useUser } from "../context/UserContext";
 const screenWidth = Dimensions.get('window').width;
 const screenHeight = Dimensions.get('window').height;
 
-const VALUE_MAP = {
-    male: "Hombre",
-    female: "Mujer",
-    other: "Otro",
-    sedentary: "Sedentario",
-    moderate: "Moderado",
-    active: "Activo",
-    highActive: "Muy activo"
-};
-
 export default function ProfileItem({ value, field, changeUser }) {
     const { theme } = useTheme();
+    const {t} = useTranslation()
+    const {userProfile} = useUser()
+
+    const unitWeight = userProfile?.preferences?.unitWeight || "kg";
+    const unitDist = userProfile?.preferences?.unitDist || "cm";
+    
+    const VALUE_MAP = useMemo(() => ({
+        male: t("profile.male"),
+        female: t("profile.female"),
+        other: t("profile.other"),
+        sedentary: t("profile.sedentary"),
+        moderate: t("profile.moderate"),
+        active: t("profile.active"),
+        highActive: t("profile.highActive")
+    }), [t]);
+    
     const styles = useMemo(() => createStyles(theme), [theme]);
 
     const [modalVisible, setModalVisible] = useState(false)
 
+    const kgToLb = (kg) => Math.round(kg * 2.20462);
+    const lbToKg = (lb) => Math.round(lb / 2.20462);
+    
+    const cmToInches = (cm) => Math.round(cm / 2.54);
+    const inchesToCm = (inches) => Math.round(inches * 2.54);
+
+    const formatFtIn = (totalInches) => {
+        if (!totalInches) return "0' 0\"";
+        const ft = Math.floor(totalInches / 12);
+        const inc = totalInches % 12;
+        return `${ft}' ${inc}"`;
+    };
+
     const onSave = (newVal) => {
-        changeUser(field.key, newVal);
+        let finalVal = newVal;
+        
+        if (field.key === 'weight' && unitWeight === 'lb') {
+            finalVal = lbToKg(newVal);
+        }
+        if (field.key === 'height' && unitDist === 'ft') {
+            finalVal = inchesToCm(newVal);
+        }
+        
+        changeUser(field.key, finalVal);
         setModalVisible(false);
     };
+
+    const editValue = useMemo(() => {
+        if (!value && value !== 0) return value;
+        if (field.key === 'weight' && unitWeight === 'lb') return kgToLb(value);
+        if (field.key === 'height' && unitDist === 'ft') return cmToInches(value);
+        return value; 
+    }, [value, field.key, unitWeight, unitDist]);
 
     const formatTimeToString = (timeObj) => {
         if (!timeObj) return "00:00";
@@ -37,21 +74,28 @@ export default function ProfileItem({ value, field, changeUser }) {
     };
 
     const displayValue = useMemo(() => {
+        if (field.key === 'weight') return `${editValue} ${unitWeight}`;
+        if (field.key === 'height') {
+            return unitDist === 'ft' ? formatFtIn(editValue) : `${editValue} cm`;
+        }
+
         if (typeof value === 'object' && value !== null) {
             return formatTimeToString(value);
         }
+        
         if (VALUE_MAP[value]) {
-            return VALUE_MAP[value];
+            return VALUE_MAP[value]; 
         }
-        let val = value.length > 9 ? value.slice(0,8) + "..." : value
-        return val;
-    }, [value]);
+
+        let val = value?.toString() || "";
+        return val.length > 9 ? val.slice(0,8) + "..." : val;
+    }, [value, editValue, field.key, unitWeight, unitDist, VALUE_MAP]);
 
     return (
         <>
             <View key={field.key} style={styles.profileContainer}>
                 <View style={styles.profileItem}>
-                    <Text style={styles.profileItemText}>{field.label}</Text>
+                    <Text style={styles.profileItemText}>{t(field.label)}</Text>
                     <Text style={[styles.statText, { color: theme.colors.textTertiary }]}>
                         {displayValue}
                     </Text>
@@ -67,7 +111,7 @@ export default function ProfileItem({ value, field, changeUser }) {
                 onClose={() => setModalVisible(false)}
                 borderColor={theme.colors.primaryDark}
             >
-                <EditModal item={field.key} value={value} handleChange={onSave} />
+                <EditModal item={field.key} value={editValue} handleChange={onSave} />
             </CustomModal>
         </>
     )

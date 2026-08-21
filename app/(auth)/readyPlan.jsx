@@ -2,16 +2,17 @@ import { LinearGradient } from "expo-linear-gradient";
 import { View, Text, TouchableOpacity, StyleSheet, Dimensions } from "react-native";
 import Hydra from "../../components/Hydra";
 import ConfettiCannon from 'react-native-confetti-cannon';
-import { useGlobal } from "../../context/GlobalContext";
+import { useUser } from "../../context/UserContext";
 import { useTheme } from "../../context/ThemeContext";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { isLoading } from "expo-font";
+import { useTranslation } from "react-i18next";
 export const screenWidth = Dimensions.get('window').width;
 
 export default function readyPlan() {
     const { theme } = useTheme()
     const styles = useMemo(() => createStyles(theme), [theme])
-    const { userProfile, updateUserProfile, calculateIdealGoal } = useGlobal();
+    const { userProfile, updateUserProfile, calculateIdealGoal } = useUser();
+    const  {t} = useTranslation()
 
     const [ isLoading, setIsLoading ] = useState(false) 
     const [ goal, setGoal ] = useState(userProfile?.goal || 2000)
@@ -30,19 +31,19 @@ export default function readyPlan() {
         <View style={styles.container}>
             <Hydra anim="joy"/>
             <View style={styles.text}>
-                <Text style={styles.title}>¡¡Tu plan está listo!!</Text>
+                <Text style={styles.title}>{t('plan.readyTitle')}</Text>
             </View>
             <View style={styles.goalContainer}>
                 <Text style={styles.goalTitle}>{goal}</Text>
                 <Text style={styles.goalSubTitle}>ml</Text>
             </View>
             <View style={styles.text}>
-                <Text style={styles.subTitle}>Basandome en tus datos esta es tu meta ideal</Text>
-                {isLoading && <Text style={styles.subTitle}>Cargando...</Text>}
+                <Text style={styles.subTitle}>{t('plan.readySubTitle')}</Text>
+                {isLoading && <Text style={styles.subTitle}>{t('loading')}</Text>}
             </View>
             <TouchableOpacity onPress={handleFinish} style={styles.button}>
                 <LinearGradient colors={[theme.colors.primary, theme.colors.primaryDark]} >
-                    <Text style={styles.buttonText}>EMPIEZA A BEBER</Text>
+                    <Text style={styles.buttonText}>{t('buttons.startDrink')}</Text>
                 </LinearGradient>
             </TouchableOpacity>
             <View style={styles.confContainer} pointerEvents="none">

@@ -1,6 +1,8 @@
+import { getTranslatedDaysArray, getTranslatedShortMonthsArray } from "./i18nHelpers";
+
 export const getFormattedDate = (date = new Date()) => {
-  const days = ['DOM', 'LUN', 'MAR', 'MIE', 'JUE', 'VIE', 'SAB'];
-  const months = ['ENE', 'FEB', 'MAR', 'ABR', 'MAY', 'JUN', 'JUL', 'AGO', 'SEP', 'OCT', 'NOV', 'DIC'];
+  const days = getTranslatedDaysArray()
+  const months = getTranslatedShortMonthsArray()
 
   const dayName = days[date.getDay()];
   const dayNumber = date.getDate();

@@ -1,10 +1,9 @@
 import { router, Stack, usePathname } from "expo-router";
 import { StatusBar } from "expo-status-bar";
-import { View, Platform, Text, StyleSheet, Keyboard, TouchableOpacity, Easing, Animated, Dimensions } from "react-native";
+import { View, Text, StyleSheet, Keyboard, TouchableOpacity, Easing, Animated, Dimensions } from "react-native";
 import Footer from "../../components/Footer";
 import { useEffect, useMemo, useRef, useState } from "react";
-import * as NavigationBar from 'expo-navigation-bar';
-import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { LinearGradient } from "expo-linear-gradient";
 import { FontAwesome6 } from "@expo/vector-icons";
 import AuhtProgressBar from "../../components/AuthProgressBar";
@@ -220,7 +219,7 @@ export default function AuthLayout() {
     <View style={styles.container} onTouchStart={onTouchStart} onTouchEnd={onTouchEnd}>
       <StatusBar style="dark" />
       <View style={[styles.header, { paddingTop: insets.top }]} onLayout={(event) => { setHeaderHeight(event.nativeEvent.layout.height) }}>
-        {showNav && (
+        {showNav && currentScreenInfo.title !== "age" && (
           <TouchableOpacity hitSlop={20} onPress={handleBack} style={styles.backButton}>
             <FontAwesome6 name="angle-left" size={20} color={theme.colors.text} />
           </TouchableOpacity>

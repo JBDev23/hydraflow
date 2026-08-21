@@ -1,22 +1,20 @@
-import { useEffect, useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Dimensions, ActivityIndicator, Alert, ScrollView } from 'react-native';
 import { FontAwesome6 } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import Hydra from '../../components/Hydra';
-import { useGlobal } from '../../context/GlobalContext';
+import { useAuth } from '../../context/AuthContext';
 import { useTheme } from '../../context/ThemeContext';
 import * as WebBrowser from 'expo-web-browser';
-import * as Google from 'expo-auth-session/providers/google';
-import { makeRedirectUri } from 'expo-auth-session';
+import { GoogleSignin, statusCodes } from '@react-native-google-signin/google-signin';
+import i18n from '../i18n';
+import { useTranslation } from 'react-i18next';
 
 WebBrowser.maybeCompleteAuthSession();
 
 const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
 
-const GOOGLE_CLIENT_ID = "141326216291-b2b4q0h85vichh1u5usbq6tmca4jpf1s.apps.googleusercontent.com";
-
-const EXPO_USERNAME = "@jbdev23";
-const REDIRECT_URI = `https://auth.expo.io/${EXPO_USERNAME}/HydraFlow`;
+const WEB_CLIENT_ID = process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID;
 
 // Botón Social Reutilizable
 const SocialButton = ({ icon, text, color, textColor, onPress, theme }) => {
@@ -40,54 +38,80 @@ export default function Login() {
     const router = useRouter();
     const { theme } = useTheme();
     const styles = useMemo(() => createStyles(theme), [theme])
-    const { login, isLoading } = useGlobal();
+    const { login, isLoading } = useAuth();
+    const  {t} = useTranslation()
 
-    const redirectUri = makeRedirectUri({
-        scheme: 'hydraflow',
-        useProxy: true,
-    });
+    const [isSigningIn, setIsSigningIn] = useState(false);
 
-
-    const [request, response, promptAsync] = Google.useAuthRequest({
-        clientId: GOOGLE_CLIENT_ID,
-        androidClientId: GOOGLE_CLIENT_ID,
-        iosClientId: GOOGLE_CLIENT_ID,
-        webClientId: GOOGLE_CLIENT_ID,
-        redirectUri: redirectUri,
-        scopes: ['profile', 'email'],
-    });
-
+    // Configuración Inicial
     useEffect(() => {
-        if (response?.type === 'success') {
-            const id_token = response.params?.id_token || response.authentication?.idToken;
-            // Ya tenemos el token de Google, enviémoslo a nuestro backend
-            handleBackendHandshake(id_token);
+        if (!WEB_CLIENT_ID) {
+            console.error('Missing EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID');
+            return;
         }
-    }, [response]);
+        GoogleSignin.configure({
+            webClientId: WEB_CLIENT_ID, // Necesario para obtener el idToken
+            offlineAccess: true,
+        });
+    }, []);
 
-    // --- SIMULACIÓN DE LOGIN SOCIAL ---
-    const handleSocialLogin = async (provider) => {
-        let fakeUser = provider === 'google'
-            ? { email: "jordi@gmail.com", name: "Jordi Google" }
-            : { email: "jordi@apple.com", name: "Jordi Apple" };
-
-        const profile = await login(fakeUser.email, fakeUser.name);
-
-        if (profile) {
-            // LÓGICA DE REDIRECCIÓN
-            if (profile.onboardingCompleted) {
-                router.replace('/(app)'); // Usuario antiguo -> Home
-            } else {
-                router.replace('/(auth)/age'); // Usuario nuevo -> Onboarding
-            }
-        } else {
-            Alert.alert("Error", "No se pudo conectar con el servidor.");
+    const showGoogleError = (detail) => {
+        const message = t('alerts.googleAlert');
+        if (__DEV__ && detail) {
+            console.error('Google login error:', detail);
+            Alert.alert('Error', `${message}\n\n${detail}`);
+            return;
         }
+        Alert.alert('Error', message);
     };
 
-    const handleBackendHandshake = async (googleToken) => {
-        // Llamamos a nuestro GlobalContext pasando el token en lugar del email
-        const profile = await login(googleToken, "google"); // "google" es el provider
+    const handleGoogleLogin = async () => {
+        if (!WEB_CLIENT_ID) {
+            showGoogleError('Missing EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID');
+            return;
+        }
+        if (isSigningIn || isLoading) return;
+
+        setIsSigningIn(true);
+        try {
+            await GoogleSignin.hasPlayServices({ showPlayServicesUpdateDialog: true });
+
+            try {
+                await GoogleSignin.signOut();
+            } catch {
+                // No session yet — ignore
+            }
+
+            const userInfo = await GoogleSignin.signIn();
+            const googleToken = userInfo.data?.idToken || userInfo.idToken;
+
+            if (googleToken) {
+                await handleBackendHandshake(googleToken, i18n.language);
+            } else {
+                showGoogleError('No idToken returned (check webClientId + Android SHA-1)');
+            }
+        } catch (error) {
+            const code = error?.code;
+            const message = String(error?.message || '');
+            const isBenign =
+                code === statusCodes.SIGN_IN_CANCELLED ||
+                code === statusCodes.IN_PROGRESS ||
+                code === 'SIGN_IN_CANCELLED' ||
+                code === 'IN_PROGRESS' ||
+                /sign-?in in progress/i.test(message) ||
+                /cancelled/i.test(message);
+
+            if (isBenign) return;
+
+            const detail = error?.message || error?.code || String(error);
+            showGoogleError(detail);
+        } finally {
+            setIsSigningIn(false);
+        }
+    };
+    
+    const handleBackendHandshake = async (googleToken, lang) => {
+        const profile = await login(googleToken, "google", lang);
 
         if (profile) {
             if (profile.onboardingCompleted) {
@@ -96,7 +120,7 @@ export default function Login() {
                 router.replace('/(auth)/age');
             }
         } else {
-            Alert.alert("Error", "No se pudo conectar con el servidor.");
+            showGoogleError('Backend login failed');
         }
     };
 
@@ -106,57 +130,30 @@ export default function Login() {
             <View style={styles.header}>
                 <Hydra />
                 <Text style={[styles.title, { color: theme.colors.text }]}>HydraFlow</Text>
-                <Text style={styles.subtitle}>Tu compañero de hidratación</Text>
+                <Text style={styles.subtitle}>{t('main.slogan')}</Text>
             </View>
 
             <View style={styles.footer}>
-                {isLoading ? (
+                {isLoading || isSigningIn ? (
                     <View style={styles.loadingContainer}>
                         <ActivityIndicator size="large" color={theme.colors.primary} />
-                        <Text style={{ marginTop: 10, color: theme.colors.textSecondary }}>Conectando con el servidor...</Text>
+                        <Text style={{ marginTop: 10, color: theme.colors.textSecondary }}>{t("loginAuth.serverConnect")}</Text>
                     </View>
                 ) : (
                     <>
                         <SocialButton
                             icon="google"
-                            text="Continuar con Google"
+                            text={t('loginAuth.googleButton')}
                             color="#FFFFFF"
                             textColor="#000000"
-                            onPress={() => {
-                                promptAsync();
-                            }}
+                            onPress={handleGoogleLogin}
                             theme={theme}
                         />
-
-                        <SocialButton
-                            icon="google"
-                            text="Continuar con Google"
-                            color="#FFFFFF"
-                            textColor="#000000"
-                            onPress={() => handleSocialLogin('google')}
-                            theme={theme}
-                        />
-
-                        <SocialButton
-                            icon="apple"
-                            text="Continuar con Apple"
-                            color="#000000"
-                            textColor="#FFFFFF"
-                            onPress={() => handleSocialLogin('apple')}
-                            theme={theme}
-                        />
-
-                        <TouchableOpacity
-                            style={styles.guestButton}
-                            onPress={() => router.push('/(auth)/age')}
-                        >
-                            <Text style={styles.guestText}>Continuar como Invitado</Text>
-                        </TouchableOpacity>
                     </>
                 )}
 
                 <Text style={styles.termsText}>
-                    Al continuar, aceptas nuestros Términos y Política de Privacidad.
+                    {t('loginAuth.terms')}
                 </Text>
             </View>
         </ScrollView>
@@ -187,7 +184,9 @@ const createStyles = (theme) => StyleSheet.create({
         marginTop: 5,
     },
     footer: {
+        flex: 1,
         width: '100%',
+        justifyContent: "center",
         paddingHorizontal: 30,
         gap: 15,
     },
@@ -226,6 +225,7 @@ const createStyles = (theme) => StyleSheet.create({
         fontSize: 15,
         color: theme.colors.textSecondary,
         paddingHorizontal: 20,
+        paddingTop: screenHeight*0.025
     },
     loadingContainer: {
         alignItems: 'center',

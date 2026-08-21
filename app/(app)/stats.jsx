@@ -9,13 +9,15 @@ import { useFocusEffect } from 'expo-router';
 import Hydra from '../../components/Hydra';
 import GradientIcon from '../../components/GradientIcon';
 import { useTheme } from '../../context/ThemeContext';
-import { useGlobal } from '../../context/GlobalContext';
+import { useUser } from '../../context/UserContext';
 import { api } from '../../services/api';
+import { useTranslation } from 'react-i18next';
+import { getTranslatedLongMonthsArray } from '../../utils/i18nHelpers';
 const screenWidth = Dimensions.get('window').width;
 const screenHeight = Dimensions.get('window').height;
 
-const DATA_NAME = ["TOTAL", "PROMEDIO", "PROMEDIO"]
-const MONTHS = ["ENERO", "FEBRERO", "MARZO", "ABRIL", "MAYO", "JUNIO", "JULIO", "AGOSTO", "SEPTIEMBRE", "OCTUBRE", "NOVIEMBRE", "DICIEMBRE"]
+const DATA_NAME = ["statsApp.total", "statsApp.average", "statsApp.average"]
+const MONTHS = getTranslatedLongMonthsArray()
 
 
 const StatItem = ({ label, value, icon, colors, theme }) => {
@@ -36,7 +38,10 @@ const StatItem = ({ label, value, icon, colors, theme }) => {
 export default function Stats() {
   const { theme } = useTheme();
   const styles = useMemo(() => createStyles(theme), [theme]);
-  const { userProfile } = useGlobal()
+  const { userProfile } = useUser()
+  const {t} = useTranslation()
+
+  const TOGGLE_LABELS = [t("statsApp.toggleLabels.day"), t("statsApp.toggleLabels.week"), t("statsApp.toggleLabels.month")]
 
   const goal = userProfile?.goal || 2000
 
@@ -58,8 +63,6 @@ export default function Stats() {
   const monthWeeks = useMemo(() => getWeeksForMonth(date.getMonth(), date.getFullYear()), [date]);
 
   const [metric, setMetric] = useState(0)
-
-  const dataQuantity = [1800, 1170, 10.85];
 
   const setNewStats = async() => {
     let newStats
@@ -143,14 +146,14 @@ export default function Stats() {
   const renderDateLabel = () => {
     if (period === 0) return getFormattedDate(date);
     if (period === 1) return `${week[0].toLocaleDateString()} - ${week[6].toLocaleDateString()}`;
-    return `${MONTHS[date.getMonth()]} - ${date.getFullYear()}`;
+    return `${MONTHS[date.getMonth()].toUpperCase()} - ${date.getFullYear()}`;
   };
 
   return (
     <ScrollView style={{ flex: 1 }} contentContainerStyle={styles.container} showsVerticalScrollIndicator={false}>
       <View style={styles.toggleContainer}>
         <ToggleButton
-          labels={["D", "S", "M"]}
+          labels={TOGGLE_LABELS}
           value={period} onValueChange={(i) => setTimeout(() => setPeriod(i), 200)}
           optionWidth={(screenWidth * 0.9) / 3}
           fontSize={30}
@@ -159,7 +162,7 @@ export default function Stats() {
       </View>
       <View onTouchStart={onTouchStart} onTouchEnd={onTouchEnd}>
         <View style={styles.headerData}>
-          <Text style={styles.texto}>{DATA_NAME[period]}: </Text>
+          <Text style={styles.texto}>{t(DATA_NAME[period])}: </Text>
           <Text style={[styles.texto, { color: theme.colors.primaryDark }]}>{metric}</Text>
         </View>
         <Animated.View style={{ transform: [{ translateX: translateA }] }}>
@@ -185,21 +188,21 @@ export default function Stats() {
 
         <View style={styles.statGrid}>
            <StatItem 
-              label="Racha" 
+              label={t('statsApp.streak')} 
               value={streak}
               icon="fire-flame-curved" 
               colors={['#FF0000', '#F9F918']} 
               theme={theme}
           />
           <StatItem 
-              label="Metas" 
+              label={t('statsApp.goal')}  
               value={goals} 
               icon="droplet" 
               colors={['#79D8FE', '#6989E2']} 
               theme={theme}
           />
           <StatItem 
-              label="Litros" 
+              label={t('statsApp.liters')}  
               value={totalVolume} 
               icon="water" 
               colors={['#79D8FE', '#7AACFE']} 

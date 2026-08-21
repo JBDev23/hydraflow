@@ -22,12 +22,23 @@ export const NameEditor = ({ value, onChange }) => {
     );
 };
 
-export const SliderEditor = ({ value, onChange, min, max, step }) => {
+export const SliderEditor = ({ value, onChange, min, max, step, unit }) => {
     const { theme } = useTheme();
     const styles = useMemo(() => createStyles(theme), [theme]);
+
+    const displayValue = useMemo(() => {
+        const val = typeof value === 'number' ? value : min;
+        if (unit === 'ft') {
+            const ft = Math.floor(val / 12);
+            const inc = val % 12;
+            return `${ft}' ${inc}"`;
+        }
+        return val;
+    }, [value, unit, min]);
+
     return (
         <View style={styles.sliderContainer}>
-            <Text style={styles.number}>{value}</Text>
+            <Text style={styles.number}>{displayValue}</Text>
             <Slider
                 style={styles.slider}
                 minimumValue={min}
@@ -43,7 +54,7 @@ export const SliderEditor = ({ value, onChange, min, max, step }) => {
     );
 };
 
-export const WeightEditor = ({ value, onChange }) => {
+export const WeightEditor = ({ value, onChange, min, max }) => {
     const { theme } = useTheme();
     const styles = useMemo(() => createStyles(theme), [theme]);
     return (
@@ -54,6 +65,8 @@ export const WeightEditor = ({ value, onChange }) => {
                 fontSize={40}
                 value={value}
                 onValueChange={onChange}
+                min={min}
+                max={max}
             />
         </View>
     )
