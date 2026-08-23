@@ -1,0 +1,277 @@
+{
+  "main": {
+    "slogan": "Tu compañero de hidratación",
+    "motivator": "¡Un sorbo más cerca de la meta!"
+  },
+  "indexAuth": {
+    "title": "Bienvenido",
+    "subTitle1": "Yo soy",
+    "subTitle2": "tu asistente de hidratación"
+  },
+  "activity": {
+    "sedentary": "Sedentario",
+    "moderate": "Moderado (1-2 días)",
+    "active": "Activo (3-4 días)",
+    "highActive": "Muy Activo (5+ días)"
+  },
+  "plan": {
+    "createTitle": "Creando tu plan",
+    "createSubTitle": "Queda muy poco...",
+    "readyTitle": "¡¡Tu plan está listo!!",
+    "readySubTitle": "Basandome en tus datos esta es tu meta ideal"
+  },
+  "ask": {
+    "name": "¿Cuál es tu nombre?",
+    "age": "¿Cuál es tu edad?",
+    "weight": "¿Cuál es tu peso?",
+    "gender": "Para ajustar tu plan",
+    "height": "¿Cuál es tu altura?",
+    "activity": "¿Cuanto te mueves?",
+    "sleep": "¿Cuál es tu horario de sueño?"
+  },
+  "edit": {
+    "wakeTime": "¿A qué hora te levantas?",
+    "sleepTime": "¿A qué hora te acuestas?",
+    "goal": "Elige tu meta",
+    "goalRecommended": "Recomendado:"
+  },
+  "settings": {
+    "yes": "SI",
+    "no": "NO",
+    "smart": "Inteligente",
+    "drop": "Gota",
+    "frog": "Rana",
+    "bird": "Pájaro",
+    "flute": "Flauta",
+    "reminders": "Recordatorios",
+    "frequency": "Frecuencia",
+    "sound": "Sonido",
+    "saveChanges": "Guardar cambios",
+    "unitMeasure": "Unidad medida",
+    "unitWeight": "Unidad peso",
+    "soundEffects": "Efectos sonido",
+    "vibration": "Vibración",
+    "theme": "Tema",
+    "light": "Claro",
+    "dark": "Oscuro",
+    "system": "Sistema",
+    "language": "Idioma",
+    "spanish": "Español",
+    "catalan": "Català",
+    "english": "English",
+    "privacyPolicy": "Política de privacidad",
+    "termsConditions": "Términos y condiciones",
+    "legalNotice": "Aviso legal",
+    "aboutUs": "Sobre nosotros",
+    "exportData": "Exportar datos (csv)",
+    "exportCsvDate": "Fecha",
+    "exportCsvTime": "Hora",
+    "exportCsvAmount": "Cantidad (ml)",
+    "exportDialogTitle": "Exportar datos de hidratación",
+    "feedback": "Enviar comentarios",
+    "deleteAccount": "Eliminar / Reiniciar cuenta",
+    "dangerZone": "Zona de Peligro",
+    "deleteAllData": "¿Eliminar todos los datos?",
+    "deleteWarning": "Esta acción es irreversible. Se perderá todo tu progreso, historial y configuraciones.",
+    "cancel": "Cancelar",
+    "wait": "Espera...",
+    "deleteButton": "ELIMINAR",
+    "myProfile": "Mi perfil",
+    "notifications": "Notificaciones",
+    "preferences": "Preferencias",
+    "customize": "Personalizar",
+    "tutorial": "Tutorial",
+    "support": "Soporte y datos",
+    "account": "Cuenta",
+    "logout": "Cerrar Sesión",
+    "logoutQuestion": "¿Cerrar sesión?",
+    "logoutWarning": "Esta acción cerrará tu cuenta, tendrás que volver a iniciar sesión para continuar con tu progreso",
+    "logoutButton": "CERRAR SESIÓN",
+    "settings": "Configuración"
+  },
+  "loginAuth": {
+    "googleButton": "Continuar con Google",
+    "terms": "Al continuar, aceptas nuestros Términos y Política de Privacidad.",
+    "serverConnect": "Conectando con el servidor..."
+  },
+  "indexApp": {
+    "remaining": "restantes",
+    "goalCompleted": "¡Meta alcanzada!",
+    "custom": "Personalizado"
+  },
+  "statsApp": {
+    "average": "PROMEDIO",
+    "total": "TOTAL",
+    "streak": "Racha",
+    "goal": "Metas",
+    "liters": "Litros",
+    "toggleLabels": {
+      "day": "D",
+      "week": "S",
+      "month": "M"
+    }
+  },
+  "achievementsApp": {
+    "level": "Nivel",
+    "achievements": "Logros"
+  },
+  "shopApp": {
+    "skins": "Trajes",
+    "owned": "Adquirido"
+  },
+
+  "profileApp": {
+    "level": "Nivel",
+    "name": "Nombre:",
+    "age": "Edad:",
+    "weight": "Peso:",
+    "height": "Altura:",
+    "gender": "Género:",
+    "activity": "Actividad:",
+    "wakeTime": "Levantarse:",
+    "sleepTime": "Acostarse:",
+    "goal": "Meta Diaria:"
+  },
+
+  "profile": {
+    "male": "Hombre",
+    "female": "Mujer",
+    "other": "Otro",
+    "sedentary": "Sedentario",
+    "moderate": "Moderado",
+    "active": "Activo",
+    "highActive": "Muy Activo"
+  },
+
+  "alerts": {
+    "googleAlert": "No se pudo iniciar sesión con Google."
+  },
+
+  "loading": "Cargando...",
+  "greeting": "Hola",
+
+  "buttons": {
+    "start": "EMPEZAR",
+    "startDrink": "EMPIEZA A BEBER",
+    "next": "SIGUIENTE",
+    "end": "TERMINAR",
+    "skip": "SALTAR",
+    "equip": "EQUIPAR",
+    "buy": "COMPRAR",
+    "remove": "QUITAR",
+    "otherGender": "Otro / Prefiero no decirlo"
+  },
+
+  "screen": {
+    "stats": "Estadísticas",
+    "achievements": "Logros",
+    "shop": "Tienda",
+    "profile": "Perfi",
+    "settings": "Ajustes"
+  },
+
+  "days": {
+    "short": {
+      "sun": "DOM",
+      "mon": "LUN",
+      "tue": "MAR",
+      "wed": "MIE",
+      "thu": "JUE",
+      "fri": "VIE",
+      "sat": "SAB"
+    }
+  },
+  "months": {
+    "short": {
+      "jan": "ENE",
+      "feb": "FEB",
+      "mar": "MAR",
+      "apr": "ABR",
+      "may": "MAY",
+      "jun": "JUN",
+      "jul": "JUL",
+      "aug": "AGO",
+      "sep": "SEP",
+      "oct": "OCT",
+      "nov": "NOV",
+      "dec": "DIC"
+    },
+    "long": {
+      "jan": "Enero",
+      "feb": "Febrero",
+      "mar": "Marzo",
+      "apr": "Abril",
+      "may": "Mayo",
+      "jun": "Junio",
+      "jul": "Julio",
+      "aug": "Agosto",
+      "sep": "Septiembre",
+      "oct": "Octubre",
+      "nov": "Noviembre",
+      "dec": "Diciembre"
+    }
+  },
+  "toast": {
+    "experience": "experiencia",
+    "goalCompleted": "!!Meta conseguida!!",
+    "newStreak": "!!Estás en racha!!",
+    "unavailableExport": "Aún no tienes registros de agua para exportar.",
+    "unavailableShare": "La función de compartir no está disponible en este dispositivo.",
+    "generateError": "Ocurrió un problema al generar el archivo.",
+    "unavailableEmail": "No se pudo abrir la aplicación de correo automáticamente. Puedes escribirnos a: ",
+    "offlineSave": "Guardado offline. Se sincronizará al conectar.",
+    "offlineMode": "Modo offline",
+    "conecctionError": "Error de conexión. Esta acción requiere internet.",
+    "syncData": "datos sincronizados",
+    "loadStatsError": "No se pudieron cargar las estadísticas.",
+    "loadAchievementsError": "No se pudieron cargar los logros.",
+    "loadShopError": "No se pudo cargar la tienda.",
+    "purchaseError": "Error en la compra. Revisa tu conexión o saldo.",
+    "equipError": "No se pudo equipar. Requiere conexión.",
+    "deleteAccountError": "No se pudo eliminar la cuenta. Revisa tu conexión."
+  },
+  "tutorial": {
+    "steps": [
+      {
+        "title": "¡Bienvenido a HydraFlow!",
+        "description": "Tu compañero personal de hidratación. Aquí podrás registrar tu consumo de agua de forma divertida y visual.",
+        "icon": "hand-sparkles"
+      },
+      {
+        "title": "Tu Mascota Hydra",
+        "description": "Hydra reacciona a tu progreso. ¡Mantenlo feliz alcanzando tus metas diarias!",
+        "icon": "face-smile-wink"
+      },
+      {
+        "title": "Registra Agua",
+        "description": "Usa los botones rápidos o mantén pulsado para registrar cada vaso que bebas.",
+        "icon": "glass-water"
+      },
+      {
+        "title": "Sigue tu Racha",
+        "description": "Consulta el calendario superior para ver tus días perfectos y mantener la racha.",
+        "icon": "calendar-check"
+      },
+      {
+        "title": "Mira tus estadísticas",
+        "description": "Mira tus estadísticas diarias, semanales o mensuales en la pestaña de estadísticas para mejorar cada día.",
+        "icon": "chart-simple"
+      },
+      {
+        "title": "Consigue logros",
+        "description": "Tu esfuerzo tiene recompensa, admira tus logros en la pestaña de logros.",
+        "icon": "trophy"
+      },
+      {
+        "title": "Personaliza a Hydra",
+        "description": "Personaliza a Hydra con divertidos disfraces",
+        "icon": "basket-shopping"
+      },
+      {
+        "title": "Actualiza tus datos",
+        "description": "Actualiza tus datos para obtener una mejor precisión en la pestaña de perfil",
+        "icon": "user"
+      }
+    ]
+  }
+}

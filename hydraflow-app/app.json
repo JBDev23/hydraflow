@@ -1,0 +1,80 @@
+{
+  "expo": {
+    "name": "HydraFlow",
+    "slug": "HydraFlow",
+    "version": "1.1.0",
+    "scheme": "hydraflow",
+    "orientation": "portrait",
+    "icon": "./assets/splash.png",
+    "userInterfaceStyle": "automatic",
+    "backgroundColor": "#6989E2",
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.jbdev23.hydraflow"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#ffffff"
+      },
+      "package": "com.jbdev23.hydraflow",
+      "softwareKeyboardLayoutMode": "resize",
+      "permissions": ["RECEIVE_BOOT_COMPLETED", "SCHEDULE_EXACT_ALARM"]
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "plugins": [
+      "expo-router",
+      "expo-font",
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/notification-icon.png",
+          "color": "#6989E2",
+          "defaultChannel": "hydration-reminders"
+        }
+      ],
+      "expo-audio",
+      [
+        "expo-splash-screen",
+        {
+          "image": "./assets/splash.png",
+          "backgroundColor": "#6989E2",
+          "resizeMode": "contain"
+        }
+      ],
+      [
+        "expo-navigation-bar",
+        {
+          "style": "light",
+          "hidden": false,
+          "enforceContrast": true
+        }
+      ],
+      [
+        "expo-build-properties",
+        {
+          "android": {
+            "cmakeVersion": "3.31.6"
+          }
+        }
+      ],
+      "./plugins/withWindowsCmakeObjectPath",
+      "@react-native-google-signin/google-signin",
+      "expo-asset"
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "bfc46776-8359-4393-89d3-56e3f4f4264b"
+      }
+    },
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/bfc46776-8359-4393-89d3-56e3f4f4264b",
+      "enableBsdiffPatchSupport": true
+    }
+  }
+}

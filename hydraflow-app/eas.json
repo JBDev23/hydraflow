@@ -1,0 +1,41 @@
+{
+  "cli": {
+    "version": ">= 18.0.1",
+    "appVersionSource": "remote"
+  },
+  "build": {
+    "development": {
+      "developmentClient": true,
+      "distribution": "internal",
+      "android": {
+        "buildType": "apk"
+      },
+      "ios": {
+        "simulator": true
+      },
+      "env": {
+        "EXPO_PUBLIC_API_URL": "https://hydraflow-backend-production.up.railway.app",
+        "EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID": "141326216291-b2b4q0h85vichh1u5usbq6tmca4jpf1s.apps.googleusercontent.com"
+      },
+      "channel": "development"
+    },
+    "preview": {
+      "distribution": "internal",
+      "channel": "preview",
+      "android": {
+        "buildType": "apk"
+      },
+      "env": {
+        "EXPO_PUBLIC_API_URL": "https://hydraflow-backend-production.up.railway.app",
+        "EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID": "141326216291-b2b4q0h85vichh1u5usbq6tmca4jpf1s.apps.googleusercontent.com"
+      }
+    },
+    "production": {
+      "autoIncrement": true,
+      "channel": "production"
+    }
+  },
+  "submit": {
+    "production": {}
+  }
+}
