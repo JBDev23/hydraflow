@@ -183,9 +183,11 @@ export function AppShellProvider() {
 
   useEffect(() => {
     if (!showAchModal && achievementQueue.length > 0) {
-      setCurrentAchievement(achievementQueue[0]);
-      setShowAchModal(true);
-      setAchievementQueue((prev) => prev.slice(1));
+      queueMicrotask(() => {
+        setCurrentAchievement(achievementQueue[0]);
+        setShowAchModal(true);
+        setAchievementQueue((prev) => prev.slice(1));
+      });
     }
   }, [achievementQueue, showAchModal]);
 

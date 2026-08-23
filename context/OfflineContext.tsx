@@ -4,6 +4,7 @@ import React, {
   useEffect,
   useContext,
   useRef,
+  useLayoutEffect,
   type MutableRefObject,
   type ReactNode,
 } from 'react';
@@ -41,7 +42,9 @@ export const OfflineProvider = ({ children, onSyncSuccessRef }: OfflineProviderP
     }
   };
 
-  handleSyncRef.current = handleSync;
+  useLayoutEffect(() => {
+    handleSyncRef.current = handleSync;
+  });
 
   useEffect(() => {
     const unsubscribe = NetInfo.addEventListener((state) => {

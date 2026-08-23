@@ -187,22 +187,22 @@ export const calculateIdealGoal = (
   const height = parseFloat(String(profile.height)) || 0;
   const age = parseFloat(String(profile.age)) || 0;
 
-  if (profile.gender == 'male') {
+  if (profile.gender === 'male') {
     tmb = 10 * weight + 6.25 * height - 5 * age + 5;
-  } else if (profile.gender == 'female') {
+  } else if (profile.gender === 'female') {
     tmb = 10 * weight + 6.25 * height - 5 * age - 161;
   } else {
     tmb = 10 * weight + 6.25 * height - 5 * age - 78;
   }
 
   let factor = 1.2;
-  if (profile.activity == 'sedentary') {
+  if (profile.activity === 'sedentary') {
     factor = 1.2;
-  } else if (profile.activity == 'moderate') {
+  } else if (profile.activity === 'moderate') {
     factor = 1.375;
-  } else if (profile.activity == 'active') {
+  } else if (profile.activity === 'active') {
     factor = 1.55;
-  } else if (profile.activity == 'highActive') {
+  } else if (profile.activity === 'highActive') {
     factor = 1.725;
   }
 

@@ -18,6 +18,7 @@ const getDeviceLanguage = (): string => {
   return 'es';
 };
 
+// eslint-disable-next-line import/no-named-as-default-member -- default i18n instance is the intended API
 void i18n.use(initReactI18next).init({
   lng: getDeviceLanguage(),
   fallbackLng: 'es',

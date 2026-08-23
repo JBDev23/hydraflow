@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState, type ComponentProps } from 'react';
+import { useCallback, useEffect, useMemo, useState, type ComponentProps } from 'react';
 import {
   View,
   Text,
@@ -12,7 +12,7 @@ import {
 } from 'react-native';
 import ToggleButton from '../../components/ToggleButton';
 import Chart from '../../components/Chart';
-import { getWeeksForMonth, getWeekDays } from '../../utils/weekCalculator';
+import { getWeekDays } from '../../utils/weekCalculator';
 import { getFormattedDate } from '../../utils/dateFormatter';
 import { FontAwesome6 } from '@expo/vector-icons';
 import { useFocusEffect } from 'expo-router';
@@ -93,15 +93,14 @@ export default function Stats() {
     ceil: 100,
   });
 
-  const translateA = useRef(new Animated.Value(0)).current;
+  const translateA = useMemo(() => new Animated.Value(0), []);
   const [touchStartX, setTouchStartX] = useState(0);
 
   const week = useMemo(() => getWeekDays(date), [date]);
-  const monthWeeks = useMemo(() => getWeeksForMonth(date.getMonth(), date.getFullYear()), [date]);
 
   const [metric, setMetric] = useState<number | string>(0);
 
-  const setNewStats = async () => {
+  const loadStats = useCallback(async () => {
     let newStats: ChartState | null = null;
     switch (period) {
       case 0: {
@@ -129,11 +128,20 @@ export default function Stats() {
       setChartConfig(newStats);
       setMetric(newStats.metric ?? 0);
     }
-  };
+  }, [period, date, goal]);
 
   useEffect(() => {
-    setNewStats();
-  }, [period, date, goal, monthWeeks]);
+    let cancelled = false;
+
+    void (async () => {
+      await loadStats();
+      if (cancelled) return;
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [loadStats]);
 
   const handleDateChange = (direction: number) => {
     animChart(direction);

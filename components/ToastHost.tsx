@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { Animated, Modal, StyleSheet, Text, View } from 'react-native';
 import { registerToastHost } from '../utils/toast';
 
@@ -6,7 +6,7 @@ const BOTTOM_OFFSET = 96;
 
 export default function ToastHost() {
   const [message, setMessage] = useState<string | null>(null);
-  const opacity = useRef(new Animated.Value(0)).current;
+  const opacity = useMemo(() => new Animated.Value(0), []);
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const durationRef = useRef(2200);
 

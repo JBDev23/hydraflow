@@ -3,6 +3,7 @@ import React, {
   useState,
   useContext,
   useRef,
+  useLayoutEffect,
   type Dispatch,
   type MutableRefObject,
   type ReactNode,
@@ -37,10 +38,15 @@ export const HydrationProvider = ({ children, hydrationApiRef }: HydrationProvid
   const [selectedDay, setSelectedDay] = useState(() => new Date());
 
   const dailyWaterRef = useRef(0);
-  dailyWaterRef.current = dailyWater;
-
   const userProfileRef = useRef(userProfile);
-  userProfileRef.current = userProfile;
+
+  useLayoutEffect(() => {
+    dailyWaterRef.current = dailyWater;
+  }, [dailyWater]);
+
+  useLayoutEffect(() => {
+    userProfileRef.current = userProfile;
+  }, [userProfile]);
 
   const refreshDailyWater = async (): Promise<number> => {
     try {
@@ -63,12 +69,14 @@ export const HydrationProvider = ({ children, hydrationApiRef }: HydrationProvid
     dailyWaterRef.current = 0;
   };
 
-  hydrationApiRef.current = {
-    refreshDailyWater,
-    bumpHydrationEpoch,
-    resetDailyWater,
-    getDailyWater: () => dailyWaterRef.current,
-  };
+  useLayoutEffect(() => {
+    hydrationApiRef.current = {
+      refreshDailyWater,
+      bumpHydrationEpoch,
+      resetDailyWater,
+      getDailyWater: () => dailyWaterRef.current,
+    };
+  });
 
   const updateDailyWater = (newAmount: number) => {
     setDailyWater(newAmount);

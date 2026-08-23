@@ -5,7 +5,6 @@ import { Dimensions, Modal, StyleSheet, Text, TouchableOpacity, View } from 'rea
 import { useTheme } from '../context/ThemeContext';
 import type { Theme } from '../types';
 
-const screenWidth = Dimensions.get('window').width;
 const screenHeight = Dimensions.get('window').height;
 
 type MultipleToggleProps = {

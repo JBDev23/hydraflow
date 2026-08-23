@@ -1,4 +1,4 @@
-import React, { createContext, useState, useEffect, useContext, type ReactNode } from 'react';
+import React, { createContext, useMemo, useContext, type ReactNode } from 'react';
 import { useColorScheme } from 'react-native';
 import { lightTheme, darkTheme } from '../constants/theme';
 import { useUser } from './UserContext';
@@ -27,16 +27,10 @@ export const ThemeProvider = ({ children }: ThemeProviderProps) => {
   };
 
   const themeMode = getThemeMode();
-  const [theme, setTheme] = useState<Theme>(lightTheme);
 
-  useEffect(() => {
-    let activeMode: string | null | undefined = themeMode;
-
-    if (themeMode === 'system') {
-      activeMode = systemScheme;
-    }
-
-    setTheme(activeMode === 'dark' ? darkTheme : lightTheme);
+  const theme = useMemo(() => {
+    const activeMode = themeMode === 'system' ? systemScheme : themeMode;
+    return activeMode === 'dark' ? darkTheme : lightTheme;
   }, [themeMode, systemScheme]);
 
   const toggleTheme = (newMode: ThemeModePreference) => {

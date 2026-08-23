@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import HydraIdle from '../assets/hydra/Hydra.svg';
 import HydraBlink from '../assets/hydra/Hydra_blink.svg';
 import Hat1 from '../assets/hydra/Hat1.svg';
@@ -33,8 +33,8 @@ export default function Hydra({
 
   const skins = userProfile?.skins?.equipped || [];
 
-  const bounce = useRef(new Animated.Value(0)).current;
-  const scale = useRef(new Animated.Value(1)).current;
+  const bounce = useMemo(() => new Animated.Value(0), []);
+  const scale = useMemo(() => new Animated.Value(1), []);
 
   const currentAnimRef = useRef<Animated.CompositeAnimation | null>(null);
 

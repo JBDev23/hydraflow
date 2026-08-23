@@ -1,7 +1,7 @@
 import { LinearGradient } from 'expo-linear-gradient';
 import { Animated, Dimensions, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { FontAwesome6 } from '@expo/vector-icons';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import CustomModal from './CustomModal';
 import Hat1 from '../assets/hydra/Hat1.svg';
 import Hat2 from '../assets/hydra/Hat2.svg';
@@ -56,7 +56,8 @@ export default function ShopItem({
   const drops = userProfile?.stats.dropsBalance ?? 0;
   const canAfford = drops >= data.price;
 
-  const [modalVisible, setModalVisible] = useState(false);
+  const [modalRequested, setModalRequested] = useState(false);
+  const modalVisible = modalRequested && isLoadingApi;
 
   const renderItem = (size = 82) => {
     const props = { width: size, height: size };
@@ -81,19 +82,13 @@ export default function ShopItem({
   const onAction = () => {
     if (owned) {
       handleEquip?.(data.item);
-      setModalVisible(false);
+      setModalRequested(false);
     } else if (canAfford) {
       handleBuyed?.(data.item);
     }
   };
 
-  useEffect(() => {
-    if (!isLoadingApi) {
-      setModalVisible(false);
-    }
-  }, [isLoadingApi]);
-
-  const pulseAnim = useRef(new Animated.Value(0.5)).current;
+  const pulseAnim = useMemo(() => new Animated.Value(0.5), []);
 
   useEffect(() => {
     if (isLoading) {
@@ -178,7 +173,7 @@ export default function ShopItem({
 
   return (
     <View style={styles.wrapper}>
-      <TouchableOpacity onPress={() => setModalVisible(true)}>
+      <TouchableOpacity onPress={() => setModalRequested(true)}>
         <LinearGradient style={[styles.archievement, { width, height }]} colors={CARD_COLORS}>
           <View style={[styles.archInt, { width: width - 8, height: height - 8 }]}>
             <View style={styles.iconWrapper}>{renderItem(width * 0.5)}</View>
@@ -214,7 +209,7 @@ export default function ShopItem({
 
       <CustomModal
         visible={modalVisible}
-        onClose={() => setModalVisible(false)}
+        onClose={() => setModalRequested(false)}
         borderColor={CARD_COLORS[0]}
       >
         {renderModalContent()}

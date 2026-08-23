@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef } from 'react';
+import { useEffect, useMemo } from 'react';
 import { View, StyleSheet, Animated, Dimensions, Easing } from 'react-native';
 import { useTheme } from '../context/ThemeContext';
 import type { Theme } from '../types';
@@ -16,7 +16,7 @@ export default function Footer({ wave1 = 0, wave2 = 0, wave3 = 0 }: FooterProps)
   const { theme } = useTheme();
   const styles = useMemo(() => createStyles(theme), [theme]);
 
-  const swayAnim = useRef(new Animated.Value(0)).current;
+  const swayAnim = useMemo(() => new Animated.Value(0), []);
 
   useEffect(() => {
     Animated.loop(

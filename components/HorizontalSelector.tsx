@@ -45,8 +45,8 @@ export default function HorizontalSelector({
     onValueChangeRef.current = onValueChange;
   }, [onValueChange]);
 
-  const moveX = useRef(new Animated.Value(0)).current;
-  const moveYCenter = useRef(new Animated.Value(0)).current;
+  const moveX = useMemo(() => new Animated.Value(0), []);
+  const moveYCenter = useMemo(() => new Animated.Value(0), []);
 
   const smoothUpdate = (targetValue: number) => {
     const startVal = valueRef.current;

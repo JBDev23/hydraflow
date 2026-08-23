@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useLayoutEffect, useMemo, useRef } from 'react';
 import { Animated, PanResponder, StyleSheet, Text, View } from 'react-native';
 import { useTheme } from '../context/ThemeContext';
 import type { Theme } from '../types';
@@ -21,21 +21,15 @@ export default function TimeWheel({
   const { theme } = useTheme();
   const styles = useMemo(() => createStyles(theme), [theme]);
 
-  const [displayValue, setDisplayValue] = useState(value);
-
-  const valueRef = useRef(displayValue);
+  const valueRef = useRef(value);
   const onValueChangeRef = useRef(onValueChange);
-  const animY = useRef(new Animated.Value(0)).current;
+  const animY = useMemo(() => new Animated.Value(0), []);
 
-  useEffect(() => {
-    setDisplayValue(value);
+  useLayoutEffect(() => {
+    valueRef.current = value;
   }, [value]);
 
-  useEffect(() => {
-    valueRef.current = displayValue;
-  }, [displayValue]);
-
-  useEffect(() => {
+  useLayoutEffect(() => {
     onValueChangeRef.current = onValueChange;
   }, [onValueChange]);
 
@@ -76,7 +70,7 @@ export default function TimeWheel({
         if (nextVal < min) nextVal = min;
       }
 
-      setDisplayValue(nextVal);
+      valueRef.current = nextVal;
       if (onValueChangeRef.current) {
         onValueChangeRef.current(nextVal);
       }
@@ -87,55 +81,64 @@ export default function TimeWheel({
     }, speed);
   };
 
-  const panResponder = useRef(
-    PanResponder.create({
-      onStartShouldSetPanResponder: () => true,
+  const smoothUpdateRef = useRef(smoothUpdate);
+  useLayoutEffect(() => {
+    smoothUpdateRef.current = smoothUpdate;
+  });
 
-      onMoveShouldSetPanResponder: (_evt, gestureState) => {
-        return (
-          Math.abs(gestureState.dy) > Math.abs(gestureState.dx) && Math.abs(gestureState.dy) > 5
-        );
-      },
-      onPanResponderGrant: () => {
-        animY.stopAnimation();
-        animY.setValue(0);
-      },
-      onPanResponderMove: (_evt, gestureState) => {
-        let movement = gestureState.dy / 1.5;
-        const MAX_LIMIT = 40;
-        if (movement > MAX_LIMIT) movement = MAX_LIMIT;
-        if (movement < -MAX_LIMIT) movement = -MAX_LIMIT;
-        animY.setValue(movement);
-      },
-      onPanResponderRelease: (_evt, gestureState) => {
-        const diff = gestureState.dy;
-        const PIXELS_PER_STEP = 40;
+  // PanResponder handlers run on touch events, not during render.
+  const panResponder = useMemo(
+    () =>
+      // eslint-disable-next-line react-hooks/refs -- handler bodies execute outside render
+      PanResponder.create({
+        onStartShouldSetPanResponder: () => true,
 
-        Animated.spring(animY, {
-          toValue: 0,
-          useNativeDriver: true,
-          bounciness: 8,
-          speed: 20,
-        }).start();
+        onMoveShouldSetPanResponder: (_evt, gestureState) => {
+          return (
+            Math.abs(gestureState.dy) > Math.abs(gestureState.dx) && Math.abs(gestureState.dy) > 5
+          );
+        },
+        onPanResponderGrant: () => {
+          animY.stopAnimation();
+          animY.setValue(0);
+        },
+        onPanResponderMove: (_evt, gestureState) => {
+          let movement = gestureState.dy / 1.5;
+          const MAX_LIMIT = 40;
+          if (movement > MAX_LIMIT) movement = MAX_LIMIT;
+          if (movement < -MAX_LIMIT) movement = -MAX_LIMIT;
+          animY.setValue(movement);
+        },
+        onPanResponderRelease: (_evt, gestureState) => {
+          const diff = gestureState.dy;
+          const PIXELS_PER_STEP = 40;
 
-        if (Math.abs(diff) < 10) return;
+          Animated.spring(animY, {
+            toValue: 0,
+            useNativeDriver: true,
+            bounciness: 8,
+            speed: 20,
+          }).start();
 
-        const steps = Math.round(-diff / PIXELS_PER_STEP);
+          if (Math.abs(diff) < 10) return;
 
-        let targetValue = valueRef.current + steps;
+          const steps = Math.round(-diff / PIXELS_PER_STEP);
 
-        if (!loop) {
-          if (targetValue > max) targetValue = max;
-          if (targetValue < min) targetValue = min;
-        }
+          let targetValue = valueRef.current + steps;
 
-        if (targetValue !== valueRef.current) {
-          smoothUpdate(targetValue);
-        }
-      },
-      onPanResponderTerminationRequest: () => false,
-    }),
-  ).current;
+          if (!loop) {
+            if (targetValue > max) targetValue = max;
+            if (targetValue < min) targetValue = min;
+          }
+
+          if (targetValue !== valueRef.current) {
+            smoothUpdateRef.current(targetValue);
+          }
+        },
+        onPanResponderTerminationRequest: () => false,
+      }),
+    [animY, loop, max, min],
+  );
 
   const prevValue = getSafeValue(value - 1);
   const nextValue = getSafeValue(value + 1);

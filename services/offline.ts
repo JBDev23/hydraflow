@@ -35,7 +35,7 @@ export const offlineManager = {
     try {
       const json = await AsyncStorage.getItem(QUEUE_KEY);
       return json ? (JSON.parse(json) as QueuedOfflineAction[]) : [];
-    } catch (error) {
+    } catch {
       return [];
     }
   },

@@ -46,10 +46,10 @@ export default function AuthLayout() {
 
   const lastIndex = useRef(0);
 
-  const fade = useRef(new Animated.Value(1)).current;
-  const wave1 = useRef(new Animated.Value(0)).current;
-  const wave2 = useRef(new Animated.Value(0)).current;
-  const wave3 = useRef(new Animated.Value(0)).current;
+  const fade = useMemo(() => new Animated.Value(1), []);
+  const wave1 = useMemo(() => new Animated.Value(0), []);
+  const wave2 = useMemo(() => new Animated.Value(0), []);
+  const wave3 = useMemo(() => new Animated.Value(0), []);
 
   const getScreenInfo = () => {
     if (pathname === '/' || pathname.endsWith('/(auth)')) return { title: 'index', step: 0 };

@@ -112,13 +112,19 @@ export default function WeekCalendar({
     onSelectedDayChange(date);
   };
 
-  const getTotals = async (start: Date, end: Date) => {
-    const newTotals = await api.getRangeMetrics(start, end);
-    setTotals(newTotals || {});
-  };
-
   useEffect(() => {
-    getTotals(weekDays[0], weekDays[6]);
+    let cancelled = false;
+
+    void (async () => {
+      const newTotals = await api.getRangeMetrics(weekDays[0], weekDays[6]);
+      if (!cancelled) {
+        setTotals(newTotals || {});
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+    };
   }, [weekDays]);
 
   const safeSelectedDay = useMemo(() => {

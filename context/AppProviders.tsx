@@ -1,4 +1,4 @@
-import React, { useRef, type ReactNode } from 'react';
+import React, { useRef, useLayoutEffect, type ReactNode } from 'react';
 import { AuthProvider } from './AuthContext';
 import { UserProvider } from './UserContext';
 import { HydrationProvider } from './HydrationContext';
@@ -16,10 +16,12 @@ export function AppProviders({ children }: { children: ReactNode }) {
   const hydrationApiRef = useRef<Partial<HydrationApi>>({});
   const onSyncSuccessRef = useRef<(() => Promise<void>) | null>(null);
 
-  onSyncSuccessRef.current = async () => {
-    await userApiRef.current?.refreshUser?.();
-    hydrationApiRef.current?.bumpHydrationEpoch?.();
-  };
+  useLayoutEffect(() => {
+    onSyncSuccessRef.current = async () => {
+      await userApiRef.current?.refreshUser?.();
+      hydrationApiRef.current?.bumpHydrationEpoch?.();
+    };
+  });
 
   return (
     <AuthProvider userApiRef={userApiRef} hydrationApiRef={hydrationApiRef}>

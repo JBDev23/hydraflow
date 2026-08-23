@@ -1,4 +1,4 @@
-import { useEffect, useRef, type ReactNode } from 'react';
+import { useEffect, useMemo, type ReactNode } from 'react';
 import { View, StyleSheet, Animated, Easing } from 'react-native';
 import Svg, { Circle, Defs, LinearGradient, Stop, RadialGradient } from 'react-native-svg';
 import { useTheme } from '../context/ThemeContext';
@@ -40,7 +40,7 @@ export default function Ring({
   const endX = 50 + 50 * Math.cos(angle);
   const endY = 50 + 50 * Math.sin(angle);
 
-  const animatedValue = useRef(new Animated.Value(0)).current;
+  const animatedValue = useMemo(() => new Animated.Value(0), []);
 
   useEffect(() => {
     Animated.timing(animatedValue, {

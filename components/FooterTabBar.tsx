@@ -1,7 +1,6 @@
 import { FontAwesome6 } from '@expo/vector-icons';
 import {
   useEffect,
-  useRef,
   useState,
   useImperativeHandle,
   useMemo,
@@ -75,8 +74,8 @@ const FooterTabBar = forwardRef(function FooterTabBar(
   const formatedDate = getFormattedDate(selectedDay);
 
   const [isChanging, setIsChanging] = useState(false);
-  const wave3 = useRef(new Animated.Value(0)).current;
-  const swayAnim = useRef(new Animated.Value(0)).current;
+  const wave3 = useMemo(() => new Animated.Value(0), []);
+  const swayAnim = useMemo(() => new Animated.Value(0), []);
 
   const activeIndex = state.index;
   const routes = state.routes;
@@ -236,7 +235,7 @@ const FooterTabBar = forwardRef(function FooterTabBar(
           ) : (
             <Text style={styles.title}>{options.title}</Text>
           )}
-          <Text style={styles.subTitle}>"{t('main.motivator')}"</Text>
+          <Text style={styles.subTitle}>{'\u201C'}{t('main.motivator')}{'\u201D'}</Text>
         </Animated.View>
       </Animated.View>
 

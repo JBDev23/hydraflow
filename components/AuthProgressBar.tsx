@@ -1,5 +1,5 @@
 import { FontAwesome6 } from '@expo/vector-icons';
-import { useEffect, useRef } from 'react';
+import { useEffect, useMemo } from 'react';
 import { Animated, Easing, StyleSheet, View } from 'react-native';
 
 type AnimatedDropletProps = {
@@ -8,7 +8,7 @@ type AnimatedDropletProps = {
 };
 
 function AnimatedDroplet({ isActive, color }: AnimatedDropletProps) {
-  const animY = useRef(new Animated.Value(0)).current;
+  const animY = useMemo(() => new Animated.Value(0), []);
 
   useEffect(() => {
     let loopAnimation: Animated.CompositeAnimation | undefined;

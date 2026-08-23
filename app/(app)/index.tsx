@@ -8,7 +8,7 @@ import {
   Animated,
   Easing,
 } from 'react-native';
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import WeekCalendar from '../../components/WeekCalendar';
 import Hydra, { type HydraAnim } from '../../components/Hydra';
 import Ring from '../../components/Ring';
@@ -114,9 +114,10 @@ export default function Home() {
 
   const isMounted = useRef(false);
 
-  const resetRotateAnim = useRef(new Animated.Value(0)).current;
+  const resetRotateAnim = useMemo(() => new Animated.Value(0), []);
   const isResettingRef = useRef(false);
   const isAnimatingRef = useRef(false);
+  const startRotationRef = useRef<() => void>(() => {});
 
   const startRotation = useCallback(() => {
     isAnimatingRef.current = true;
@@ -128,13 +129,17 @@ export default function Home() {
       useNativeDriver: true,
     }).start(() => {
       if (isResettingRef.current) {
-        startRotation();
+        startRotationRef.current();
       } else {
         isAnimatingRef.current = false;
         resetRotateAnim.setValue(0);
       }
     });
   }, [resetRotateAnim]);
+
+  useLayoutEffect(() => {
+    startRotationRef.current = startRotation;
+  }, [startRotation]);
 
   useEffect(() => {
     isResettingRef.current = isLoadingReset;

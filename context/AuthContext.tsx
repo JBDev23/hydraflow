@@ -4,6 +4,7 @@ import React, {
   useEffect,
   useContext,
   useRef,
+  useLayoutEffect,
   type MutableRefObject,
   type ReactNode,
 } from 'react';
@@ -41,7 +42,10 @@ export const AuthProvider = ({ children, userApiRef, hydrationApiRef }: AuthProv
   const [authToken, setAuthToken] = useState<string | null>(null);
   const logoutRef = useRef<(() => Promise<void>) | null>(null);
   const authTokenRef = useRef<string | null>(null);
-  authTokenRef.current = authToken;
+
+  useLayoutEffect(() => {
+    authTokenRef.current = authToken;
+  }, [authToken]);
 
   useEffect(() => {
     const bootstrap = async () => {
@@ -134,7 +138,9 @@ export const AuthProvider = ({ children, userApiRef, hydrationApiRef }: AuthProv
     setAuthToken(null);
   };
 
-  logoutRef.current = logout;
+  useLayoutEffect(() => {
+    logoutRef.current = logout;
+  });
 
   return (
     <AuthContext.Provider value={{ isLoading, authToken, login, logout, authTokenRef }}>

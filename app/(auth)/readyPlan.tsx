@@ -4,7 +4,7 @@ import Hydra from '../../components/Hydra';
 import ConfettiCannon from 'react-native-confetti-cannon';
 import { useUser } from '../../context/UserContext';
 import { useTheme } from '../../context/ThemeContext';
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { Theme } from '../../types';
 
@@ -13,16 +13,11 @@ export const screenWidth = Dimensions.get('window').width;
 export default function ReadyPlanScreen() {
   const { theme } = useTheme();
   const styles = useMemo(() => createStyles(theme), [theme]);
-  const { userProfile, updateUserProfile, calculateIdealGoal } = useUser();
+  const { updateUserProfile, calculateIdealGoal } = useUser();
   const { t } = useTranslation();
 
   const [isLoading, setIsLoading] = useState(false);
-  const [goal, setGoal] = useState(userProfile?.goal || 2000);
-
-  useEffect(() => {
-    const idealGoal = calculateIdealGoal();
-    setGoal(idealGoal);
-  }, [calculateIdealGoal]);
+  const goal = useMemo(() => calculateIdealGoal(), [calculateIdealGoal]);
 
   const handleFinish = () => {
     setIsLoading(true);

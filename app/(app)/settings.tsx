@@ -423,18 +423,21 @@ const AccountView = ({ styles, theme }: SettingsSubViewProps) => {
   const [deleteDisabled, setDeleteDisabled] = useState(true);
 
   useEffect(() => {
-    let timer: ReturnType<typeof setTimeout>;
-    if (deleteModalVisible) {
-      setDeleteDisabled(true);
-      timer = setTimeout(() => setDeleteDisabled(false), 3000);
-    }
+    if (!deleteModalVisible) return;
+
+    const timer = setTimeout(() => setDeleteDisabled(false), 3000);
     return () => clearTimeout(timer);
   }, [deleteModalVisible]);
+
+  const openDeleteModal = () => {
+    setDeleteDisabled(true);
+    setDeleteModalVisible(true);
+  };
 
   return (
     <View style={styles.subViewContainer}>
       <TouchableOpacity
-        onPress={() => setDeleteModalVisible(true)}
+        onPress={openDeleteModal}
         style={[styles.menuItem, styles.dangerItem]}
       >
         <Text style={[styles.menuText, { color: 'red' }]}>{t('settings.deleteAccount')}</Text>
@@ -483,13 +486,16 @@ const MainSettingsView = ({ setCurrentView, styles, theme }: SettingsSubViewProp
   const [deleteDisabled, setDeleteDisabled] = useState(true);
 
   useEffect(() => {
-    let timer: ReturnType<typeof setTimeout>;
-    if (deleteModalVisible) {
-      setDeleteDisabled(true);
-      timer = setTimeout(() => setDeleteDisabled(false), 3000);
-    }
+    if (!deleteModalVisible) return;
+
+    const timer = setTimeout(() => setDeleteDisabled(false), 3000);
     return () => clearTimeout(timer);
   }, [deleteModalVisible]);
+
+  const openLogoutModal = () => {
+    setDeleteDisabled(true);
+    setDeleteModalVisible(true);
+  };
 
   return (
     <View style={styles.subViewContainer}>
@@ -516,7 +522,7 @@ const MainSettingsView = ({ setCurrentView, styles, theme }: SettingsSubViewProp
       </TouchableOpacity>
 
       <TouchableOpacity
-        onPress={() => setDeleteModalVisible(true)}
+        onPress={openLogoutModal}
         style={[styles.menuItem, styles.dangerItem]}
       >
         <Text style={[styles.menuText, { color: 'red' }]}>{t('settings.logout')}</Text>

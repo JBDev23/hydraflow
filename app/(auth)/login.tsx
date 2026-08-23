@@ -23,7 +23,7 @@ import type { ComponentProps } from 'react';
 
 WebBrowser.maybeCompleteAuthSession();
 
-const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
+const { height: screenHeight } = Dimensions.get('window');
 
 const WEB_CLIENT_ID = process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID;
 

@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useMemo } from 'react';
 import { Animated, StyleSheet, View, Easing } from 'react-native';
 import { FontAwesome6 } from '@expo/vector-icons';
 import { useTheme } from '../context/ThemeContext';
@@ -9,7 +9,7 @@ type ScrollIndicatorProps = {
 
 export default function ScrollIndicator({ visible }: ScrollIndicatorProps) {
   const { theme } = useTheme();
-  const bounceAnim = useRef(new Animated.Value(0)).current;
+  const bounceAnim = useMemo(() => new Animated.Value(0), []);
 
   useEffect(() => {
     if (visible) {

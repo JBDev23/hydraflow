@@ -1,5 +1,5 @@
 import { LinearGradient } from 'expo-linear-gradient';
-import { useEffect, useRef, useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
 import { Pressable, StyleSheet, Animated, Easing, View } from 'react-native';
 import { useTheme } from '../context/ThemeContext';
 import type { Theme } from '../types';
@@ -27,7 +27,9 @@ export default function ToggleButton({
     [theme, optionWidth, fontSize, borderRadius],
   );
 
-  const animProgress = useRef(new Animated.Value(value)).current;
+  // Animated value is initialized once from the first `value` prop.
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- intentional one-time init
+  const animProgress = useMemo(() => new Animated.Value(value), []);
 
   useEffect(() => {
     Animated.timing(animProgress, {

@@ -17,7 +17,7 @@ import {
 import { useRouter } from 'expo-router';
 import Hydra from '../../components/Hydra';
 import { useTheme } from '../../context/ThemeContext';
-import { useMemo, useRef, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useUser } from '../../context/UserContext';
 import { useTranslation } from 'react-i18next';
 import ScrollIndicator from '../../components/ScrollIndicator';
@@ -61,7 +61,7 @@ export default function Onboarding() {
     router.push('/(auth)/login');
   };
 
-  const wrongAnim = useRef(new Animated.Value(0)).current;
+  const wrongAnim = useMemo(() => new Animated.Value(0), []);
 
   const wrong = () => {
     Animated.sequence([

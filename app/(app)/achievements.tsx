@@ -24,7 +24,7 @@ export default function Achievements() {
   const { t } = useTranslation();
 
   const [achievements, setAchievements] = useState<CatalogAchievement[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
   const stats = userProfile?.stats || { level: 1, progress: 0, achievementsCount: 0 };
   const userAchievements = userProfile?.achievements || [];
@@ -32,20 +32,27 @@ export default function Achievements() {
   const level = stats.level || 1;
   const progress = stats.progress || 0;
 
-  const loadCatalog = async () => {
-    setIsLoading(true);
-    try {
-      const catalogData = await api.getAchievements();
-      setAchievements(catalogData);
-    } catch (error) {
-      console.error('Error loading catalog:', error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
   useEffect(() => {
-    loadCatalog();
+    let cancelled = false;
+
+    void (async () => {
+      try {
+        const catalogData = await api.getAchievements();
+        if (!cancelled) {
+          setAchievements(catalogData);
+        }
+      } catch (error) {
+        console.error('Error loading catalog:', error);
+      } finally {
+        if (!cancelled) {
+          setIsLoading(false);
+        }
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   const getAchievementStatus = (achId: string) => {

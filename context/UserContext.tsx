@@ -3,6 +3,7 @@ import React, {
   useState,
   useContext,
   useRef,
+  useLayoutEffect,
   type MutableRefObject,
   type ReactNode,
 } from 'react';
@@ -58,7 +59,10 @@ export const UserProvider = ({ children, userApiRef, hydrationApiRef }: UserProv
   }));
 
   const userProfileRef = useRef(userProfile);
-  userProfileRef.current = userProfile;
+
+  useLayoutEffect(() => {
+    userProfileRef.current = userProfile;
+  }, [userProfile]);
 
   const bootstrapLocalProfile = async () => {
     const profile = await AsyncStorage.getItem(STORAGE_KEYS.USER_PROFILE);
@@ -135,15 +139,17 @@ export const UserProvider = ({ children, userApiRef, hydrationApiRef }: UserProv
     setUserProfile(createEmptyProfile());
   };
 
-  userApiRef.current = {
-    bootstrapLocalProfile,
-    applySessionProfile,
-    syncNotificationsForProfile,
-    refreshUser,
-    onLogout,
-    getManualName: () => userProfileRef.current?.name,
-    getProfile: () => userProfileRef.current,
-  };
+  useLayoutEffect(() => {
+    userApiRef.current = {
+      bootstrapLocalProfile,
+      applySessionProfile,
+      syncNotificationsForProfile,
+      refreshUser,
+      onLogout,
+      getManualName: () => userProfileRef.current?.name,
+      getProfile: () => userProfileRef.current,
+    };
+  });
 
   const updateUserProfile = async (newData: UserProfilePatch) => {
     const prev = userProfileRef.current;

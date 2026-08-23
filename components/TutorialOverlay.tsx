@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Modal, View, Text, StyleSheet, TouchableOpacity, Animated } from 'react-native';
 import { FontAwesome6 } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -26,45 +26,44 @@ export default function TutorialOverlay({
   const styles = useMemo(() => createStyles(theme), [theme]);
 
   const [currentStepIndex, setCurrentStepIndex] = useState(0);
-  const fadeAnim = useState(new Animated.Value(0))[0];
+  const fadeAnim = useMemo(() => new Animated.Value(0), []);
   const [backColor, setBackColor] = useState(theme.colors.semiTransparentMain);
 
-  useEffect(() => {
-    if (visible) {
-      setCurrentStepIndex(0);
-      fadeIn();
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [visible]);
-
-  useEffect(() => {
-    if (!steps || steps.length === 0) return;
-
-    const currentStep = steps[currentStepIndex];
-
-    if (!currentStep) return;
-
-    fadeAnim.setValue(0);
-    setBackColor('rgba(0,0,0,0)');
-    if (currentStep.tab != null) {
-      changeTab(currentStep.tab);
-      setTimeout(() => {
-        fadeIn();
-      }, 1000);
-    } else {
-      fadeIn();
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentStepIndex, steps]);
-
-  const fadeIn = () => {
+  const fadeIn = useCallback(() => {
     setBackColor(theme.colors.semiTransparentMain);
     Animated.timing(fadeAnim, {
       toValue: 1,
       duration: 300,
       useNativeDriver: true,
     }).start();
-  };
+  }, [fadeAnim, theme.colors.semiTransparentMain]);
+
+  useEffect(() => {
+    if (!visible) return;
+
+    queueMicrotask(() => setCurrentStepIndex(0));
+    queueMicrotask(() => fadeIn());
+  }, [visible, fadeIn]);
+
+  useEffect(() => {
+    if (!visible || !steps.length) return;
+
+    const currentStep = steps[currentStepIndex];
+    if (!currentStep) return;
+
+    fadeAnim.setValue(0);
+    queueMicrotask(() => setBackColor('rgba(0,0,0,0)'));
+
+    if (currentStep.tab != null) {
+      changeTab(currentStep.tab);
+      const timer = setTimeout(() => {
+        queueMicrotask(() => fadeIn());
+      }, 1000);
+      return () => clearTimeout(timer);
+    }
+
+    queueMicrotask(() => fadeIn());
+  }, [visible, currentStepIndex, steps, fadeAnim, fadeIn, changeTab]);
 
   const handleNext = () => {
     if (currentStepIndex < steps.length - 1) {

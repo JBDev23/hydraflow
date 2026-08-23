@@ -2,7 +2,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { Animated, Easing, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import GradientIcon from './GradientIcon';
 import { FontAwesome6 } from '@expo/vector-icons';
-import { useEffect, useMemo, useRef, useState, type ComponentProps } from 'react';
+import { useEffect, useMemo, useState, type ComponentProps } from 'react';
 import CustomModal from './CustomModal';
 import { useTheme } from '../context/ThemeContext';
 import type { AchievementDisplayData, Theme } from '../types';
@@ -35,7 +35,7 @@ export default function Achievement({
 
   const [modalVisible, setModalVisible] = useState(false);
 
-  const shakeAnim = useRef(new Animated.Value(0)).current;
+  const shakeAnim = useMemo(() => new Animated.Value(0), []);
 
   const triggerShake = () => {
     Animated.sequence([
@@ -60,7 +60,7 @@ export default function Achievement({
     ]).start();
   };
 
-  const pulseAnim = useRef(new Animated.Value(0.5)).current;
+  const pulseAnim = useMemo(() => new Animated.Value(0.5), []);
 
   useEffect(() => {
     if (isLoading) {
