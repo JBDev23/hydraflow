@@ -5,9 +5,9 @@
     "version": "1.1.0",
     "scheme": "hydraflow",
     "orientation": "portrait",
-    "icon": "./assets/splash.png",
+    "icon": "./assets/icon.png",
     "userInterfaceStyle": "automatic",
-    "backgroundColor": "#6989E2",
+    "backgroundColor": "#FFFFFF",
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.jbdev23.hydraflow"
@@ -15,7 +15,7 @@
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#ffffff"
+        "backgroundColor": "#6989E2"
       },
       "package": "com.jbdev23.hydraflow",
       "softwareKeyboardLayoutMode": "resize",
@@ -39,9 +39,13 @@
       [
         "expo-splash-screen",
         {
-          "image": "./assets/splash.png",
-          "backgroundColor": "#6989E2",
-          "resizeMode": "contain"
+          "image": "./assets/icon.png",
+          "backgroundColor": "#FFFFFF",
+          "resizeMode": "contain",
+          "dark": {
+            "image": "./assets/splash-dark.png",
+            "backgroundColor": "#120E1E"
+          }
         }
       ],
       [
@@ -49,7 +53,7 @@
         {
           "style": "light",
           "hidden": false,
-          "enforceContrast": true
+          "enforceContrast": false
         }
       ],
       "@react-native-google-signin/google-signin",

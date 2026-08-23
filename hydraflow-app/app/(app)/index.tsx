@@ -3,10 +3,11 @@ import {
   Text,
   StyleSheet,
   TouchableOpacity,
-  Dimensions,
+  useWindowDimensions,
   Vibration,
   Animated,
   Easing,
+  InteractionManager,
 } from 'react-native';
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import WeekCalendar from '../../components/WeekCalendar';
@@ -21,6 +22,7 @@ import { useUser } from '../../context/UserContext';
 import { useHydration } from '../../context/HydrationContext';
 import { useAuth } from '../../context/AuthContext';
 import { useAppShell } from '../../context/AppShellContext';
+import { useAppBootstrap } from '../../context/AppBootstrapContext';
 import { api } from '../../services/api';
 import { useFocusEffect } from 'expo-router';
 import { getTranslatedLongMonthsArray } from '../../utils/i18nHelpers';
@@ -30,8 +32,63 @@ import { showToast } from '../../utils/toast';
 import type { CatalogAchievement, GamificationResult, Theme } from '../../types';
 import type { ComponentProps } from 'react';
 
-const screenWidth = Dimensions.get('window').width;
-const screenHeight = Dimensions.get('window').height;
+type LayoutSize = {
+  width: number;
+  height: number;
+};
+
+type HomeMetrics = {
+  ringRadius: number;
+  hydraHeight: number;
+  buttonSize: number;
+  iconSize: number;
+  resetPadding: number;
+  goalTitleSize: number;
+  goalSubTitleSize: number;
+  restTextSize: number;
+  monthFontSize: number;
+  monthMarginTop: number;
+  calendarScale: number;
+};
+
+function getHomeMetrics(
+  mainLayout: LayoutSize,
+  contentLayout: LayoutSize,
+  windowHeight: number,
+): HomeMetrics {
+  const contentHeight = Math.max(contentLayout.height, 1);
+  const mainHeight = Math.max(mainLayout.height, 1);
+
+  const buttonSize = windowHeight * 0.06;
+  const iconSize = windowHeight * 0.04;
+  const restTextSize = windowHeight * 0.017;
+  const goalTitleSize = Math.min(windowHeight * 0.08, contentHeight * 0.12);
+  const goalSubTitleSize = windowHeight * 0.05;
+
+  const reservedHeight =
+    goalTitleSize * 1.2 + restTextSize * 3 + buttonSize * 2.2 + contentHeight * 0.03;
+
+  const ringAvailableHeight = Math.max(contentHeight - reservedHeight, contentHeight * 0.32);
+  const ringRadius = Math.min(
+    contentLayout.width * 0.36,
+    ringAvailableHeight * 0.48,
+    windowHeight * 0.15,
+  );
+
+  return {
+    ringRadius,
+    hydraHeight: ringRadius * 1.45,
+    buttonSize,
+    iconSize,
+    resetPadding: windowHeight * 0.01,
+    goalTitleSize,
+    goalSubTitleSize,
+    restTextSize,
+    monthFontSize: mainHeight * 0.032,
+    monthMarginTop: mainHeight * 0.006,
+    calendarScale: Math.min(1, mainHeight / 720),
+  };
+}
 
 const DRINK_TYPES = { GLASS: 'glass', CUSTOM: 'custom', BOTTLE: 'bottle' } as const;
 
@@ -49,52 +106,89 @@ type DrinkButtonProps = {
   onLongPress?: () => void;
   isDisabled: boolean;
   theme: Theme;
+  buttonSize: number;
+  iconSize: number;
 };
 
-const DrinkButton = ({ icon, onPress, onLongPress, isDisabled, theme }: DrinkButtonProps) => {
-  const styles = useMemo(() => createStyles(theme), [theme]);
-
-  return (
-    <TouchableOpacity
-      disabled={isDisabled}
-      onPress={() => {
-        Vibration.vibrate(10);
-        onPress();
+const DrinkButton = ({
+  icon,
+  onPress,
+  onLongPress,
+  isDisabled,
+  theme,
+  buttonSize,
+  iconSize,
+}: DrinkButtonProps) => (
+  <TouchableOpacity
+    disabled={isDisabled}
+    onPress={() => {
+      Vibration.vibrate(10);
+      onPress();
+    }}
+    onLongPress={onLongPress}
+    style={{ width: buttonSize, height: buttonSize, opacity: isDisabled ? 0.5 : 1 }}
+  >
+    <LinearGradient
+      colors={[theme.colors.primary, theme.colors.primaryDark]}
+      style={{
+        flex: 1,
+        borderRadius: 15,
+        justifyContent: 'center',
+        alignItems: 'center',
       }}
-      onLongPress={onLongPress}
-      style={[styles.button, { opacity: isDisabled ? 0.5 : 1 }]}
     >
-      <LinearGradient
-        colors={[theme.colors.primary, theme.colors.primaryDark]}
-        style={styles.gradientButton}
-      >
-        <FontAwesome6
-          style={{ padding: screenHeight * 0.009 }}
-          color={theme.colors.contrast}
-          name={icon}
-          size={screenHeight * 0.04}
-        />
-      </LinearGradient>
-    </TouchableOpacity>
-  );
-};
+      <FontAwesome6
+        style={{ padding: iconSize * 0.225 }}
+        color={theme.colors.contrast}
+        name={icon}
+        size={iconSize}
+      />
+    </LinearGradient>
+  </TouchableOpacity>
+);
 
 export default function Home() {
+  const { width: windowWidth, height: windowHeight } = useWindowDimensions();
   const MONTHS = getTranslatedLongMonthsArray();
   const { theme } = useTheme();
-  const styles = useMemo(() => createStyles(theme), [theme]);
+  const styles = useMemo(() => createStyles(theme, windowWidth), [theme, windowWidth]);
   const { userProfile, updateUserProfile } = useUser();
-  const { updateDailyWater, selectedDay, setSelectedDay, hydrationEpoch } = useHydration();
+  const { dailyWater, updateDailyWater, selectedDay, setSelectedDay, hydrationEpoch } =
+    useHydration();
   const { authToken } = useAuth();
   const { levelUp, newAch } = useAppShell();
+  const { setHomeLayoutReady } = useAppBootstrap();
   const { t } = useTranslation();
+
+  const [mainLayout, setMainLayout] = useState<LayoutSize | null>(null);
+  const [contentLayout, setContentLayout] = useState<LayoutSize | null>(null);
+
+  const effectiveMainLayout = useMemo(
+    () => (mainLayout ? { ...mainLayout, width: windowWidth } : null),
+    [mainLayout, windowWidth],
+  );
+  const effectiveContentLayout = useMemo(
+    () => (contentLayout ? { ...contentLayout, width: windowWidth } : null),
+    [contentLayout, windowWidth],
+  );
+
+  const metrics = useMemo(() => {
+    if (!effectiveMainLayout || !effectiveContentLayout) {
+      return getHomeMetrics(
+        { width: windowWidth, height: windowHeight * 0.72 },
+        { width: windowWidth, height: windowHeight * 0.52 },
+        windowHeight,
+      );
+    }
+    return getHomeMetrics(effectiveMainLayout, effectiveContentLayout, windowHeight);
+  }, [effectiveMainLayout, effectiveContentLayout, windowHeight, windowWidth]);
 
   const todayStr = new Date().toDateString();
   const selectedStr = new Date(selectedDay).toDateString();
   const isToday = todayStr === selectedStr;
 
   const [month, setMonth] = useState(new Date().getMonth());
-  const [drinked, setDrinked] = useState(0);
+  const [drinked, setDrinked] = useState(() => dailyWater);
   const [anim, setAnim] = useState<HydraAnim>('default');
 
   const [lastDrankAmount, setLastDrankAmount] = useState<number | null>(null);
@@ -306,14 +400,25 @@ export default function Home() {
   };
 
   const refreshDrinked = async () => {
-    if (!authToken) return;
-    setIsLoadingApi(true);
+    if (!authToken) {
+      return;
+    }
+
     const date = selectedDay || new Date();
+    const viewingToday = date.toDateString() === new Date().toDateString();
+
+    if (viewingToday && dailyWater > 0) {
+      setDrinked(dailyWater);
+    }
+
+    setIsLoadingApi(true);
     try {
       const total = await api.getDailyMetrics(date);
       if (total === null) return;
       setDrinked(total);
-      updateDailyWater(total);
+      if (viewingToday) {
+        updateDailyWater(total);
+      }
     } catch (e) {
       console.error('Error cargando métricas:', e);
     } finally {
@@ -322,9 +427,35 @@ export default function Home() {
   };
 
   useEffect(() => {
+    const task = InteractionManager.runAfterInteractions(() => {
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          setHomeLayoutReady(true);
+        });
+      });
+    });
+
+    return () => {
+      task.cancel();
+    };
+  }, [setHomeLayoutReady]);
+
+  useEffect(() => {
+    return () => {
+      setHomeLayoutReady(false);
+    };
+  }, [setHomeLayoutReady]);
+
+  useEffect(() => {
     refreshDrinked();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedDay, hydrationEpoch, authToken]);
+
+  useEffect(() => {
+    if (isToday && !isProcessing.current) {
+      setDrinked(dailyWater);
+    }
+  }, [dailyWater, isToday]);
 
   const openModal = (type: DrinkType) => {
     let config: ModalConfig = { min: 0, max: 250, svg: 'glass' };
@@ -359,26 +490,57 @@ export default function Home() {
   const areButtonsDisabled = !isToday || isLoadingReset || isLoadingApi;
 
   return (
-    <View style={styles.mainContainer}>
-      <Text style={styles.month}>{MONTHS[month].toUpperCase()}</Text>
-      <WeekCalendar
-        onSelectedDayChange={setSelectedDay}
-        onMonthChange={(newMonth) => setMonth(newMonth)}
-        selectedDay={selectedDay}
-      />
-      <View style={styles.container}>
+    <View
+      style={styles.mainContainer}
+      onLayout={(event) => {
+        const { width, height } = event.nativeEvent.layout;
+        setMainLayout({ width, height });
+      }}
+    >
+      <View style={styles.topSection}>
+        <Text
+          style={[
+            styles.month,
+            { fontSize: metrics.monthFontSize, marginTop: metrics.monthMarginTop },
+          ]}
+        >
+          {MONTHS[month].toUpperCase()}
+        </Text>
+        <WeekCalendar
+          onSelectedDayChange={setSelectedDay}
+          onMonthChange={(newMonth) => setMonth(newMonth)}
+          selectedDay={selectedDay}
+          scale={metrics.calendarScale}
+        />
+      </View>
+
+      <View
+        style={styles.contentSection}
+        onLayout={(event) => {
+          const { width, height } = event.nativeEvent.layout;
+          setContentLayout({ width, height });
+        }}
+      >
         <Ring
           colors={[theme.colors.primary, theme.colors.primaryDark]}
           percentage={percentage}
-          radius={screenHeight * 0.15}
+          radius={metrics.ringRadius}
         >
-          <Hydra height={screenHeight * 0.225} anim={anim} showSkins={true} />
+          <Hydra height={metrics.hydraHeight} anim={anim} showSkins={true} />
         </Ring>
+
         <View style={styles.drinkedContainer}>
           <TouchableOpacity
             disabled={areButtonsDisabled || drinked === 0}
             onPress={handleReset}
-            style={[styles.button, { opacity: isToday && drinked !== 0 ? 1 : 0.5 }]}
+            style={[
+              styles.button,
+              {
+                width: metrics.buttonSize,
+                height: metrics.buttonSize,
+                opacity: isToday && drinked !== 0 ? 1 : 0.5,
+              },
+            ]}
           >
             <LinearGradient
               colors={[theme.colors.primary, theme.colors.primaryDark]}
@@ -387,52 +549,107 @@ export default function Home() {
               <Animated.View style={{ transform: [{ rotate: resetSpin }] }}>
                 <FontAwesome6
                   color={theme.colors.contrast}
-                  style={{ padding: screenHeight * 0.01 }}
+                  style={{ padding: metrics.resetPadding }}
                   name="arrow-rotate-left"
-                  size={screenHeight * 0.04}
+                  size={metrics.iconSize}
                 />
               </Animated.View>
             </LinearGradient>
           </TouchableOpacity>
 
           <View style={styles.goalContainer}>
-            <Text style={styles.goalTitle}>{drinked}</Text>
-            <Text style={styles.goalSubTitle}>ml</Text>
+            <Text
+              style={[
+                styles.goalTitle,
+                {
+                  fontSize: metrics.goalTitleSize,
+                  lineHeight: metrics.goalTitleSize,
+                  paddingTop: metrics.goalTitleSize * 0.12,
+                },
+              ]}
+              numberOfLines={1}
+              adjustsFontSizeToFit
+              minimumFontScale={0.5}
+            >
+              {drinked}
+            </Text>
+            <Text
+              style={[styles.goalSubTitle, { fontSize: metrics.goalSubTitleSize }]}
+              numberOfLines={1}
+            >
+              ml
+            </Text>
           </View>
         </View>
-        <View style={{ marginTop: -screenHeight * 0.005 }}>
-          <Text style={styles.restText}>
-            {remaining > 0
-              ? `${remaining} ml ${t('indexApp.remaining')}`
-              : t('indexApp.goalCompleted')}
-          </Text>
-        </View>
+
+        <Text
+          style={[styles.restText, { fontSize: metrics.restTextSize }]}
+          numberOfLines={1}
+          adjustsFontSizeToFit
+          minimumFontScale={0.7}
+        >
+          {remaining > 0
+            ? `${remaining} ml ${t('indexApp.remaining')}`
+            : t('indexApp.goalCompleted')}
+        </Text>
+
         <View style={styles.buttonsContainer}>
-          <DrinkButton
-            icon="glass-water"
-            isDisabled={!isToday || isLoadingReset}
-            onPress={() => handleDrink(250)}
-            onLongPress={() => openModal(DRINK_TYPES.GLASS)}
-            theme={theme}
-          />
-          <DrinkButton
-            icon="droplet"
-            isDisabled={!isToday || isLoadingReset}
-            onPress={() => openModal(DRINK_TYPES.CUSTOM)}
-            theme={theme}
-          />
-          <DrinkButton
-            icon="bottle-water"
-            isDisabled={!isToday || isLoadingReset}
-            onPress={() => handleDrink(1000)}
-            onLongPress={() => openModal(DRINK_TYPES.BOTTLE)}
-            theme={theme}
-          />
-        </View>
-        <View style={styles.buttonsContainer}>
-          <Text style={styles.restText}>250ml</Text>
-          <Text style={styles.restText}>{t('indexApp.custom')}</Text>
-          <Text style={styles.restText}>1000ml</Text>
+          <View style={styles.buttonColumn}>
+            <DrinkButton
+              icon="glass-water"
+              isDisabled={!isToday || isLoadingReset}
+              onPress={() => handleDrink(250)}
+              onLongPress={() => openModal(DRINK_TYPES.GLASS)}
+              theme={theme}
+              buttonSize={metrics.buttonSize}
+              iconSize={metrics.iconSize}
+            />
+            <Text
+              style={[styles.restText, styles.buttonLabel, { fontSize: metrics.restTextSize }]}
+              numberOfLines={1}
+              adjustsFontSizeToFit
+              minimumFontScale={0.65}
+            >
+              250ml
+            </Text>
+          </View>
+          <View style={styles.buttonColumn}>
+            <DrinkButton
+              icon="droplet"
+              isDisabled={!isToday || isLoadingReset}
+              onPress={() => openModal(DRINK_TYPES.CUSTOM)}
+              theme={theme}
+              buttonSize={metrics.buttonSize}
+              iconSize={metrics.iconSize}
+            />
+            <Text
+              style={[styles.restText, styles.buttonLabel, { fontSize: metrics.restTextSize }]}
+              numberOfLines={1}
+              adjustsFontSizeToFit
+              minimumFontScale={0.65}
+            >
+              {t('indexApp.custom')}
+            </Text>
+          </View>
+          <View style={styles.buttonColumn}>
+            <DrinkButton
+              icon="bottle-water"
+              isDisabled={!isToday || isLoadingReset}
+              onPress={() => handleDrink(1000)}
+              onLongPress={() => openModal(DRINK_TYPES.BOTTLE)}
+              theme={theme}
+              buttonSize={metrics.buttonSize}
+              iconSize={metrics.iconSize}
+            />
+            <Text
+              style={[styles.restText, styles.buttonLabel, { fontSize: metrics.restTextSize }]}
+              numberOfLines={1}
+              adjustsFontSizeToFit
+              minimumFontScale={0.65}
+            >
+              1000ml
+            </Text>
+          </View>
         </View>
       </View>
 
@@ -450,22 +667,26 @@ export default function Home() {
   );
 }
 
-const createStyles = (theme: Theme) =>
+const createStyles = (theme: Theme, screenWidth: number) =>
   StyleSheet.create({
     mainContainer: {
       backgroundColor: theme.colors.background,
       flex: 1,
+      overflow: 'hidden',
     },
-    container: {
-      flexGrow: 1,
+    topSection: {
+      flexShrink: 0,
+    },
+    contentSection: {
+      flex: 1,
+      minHeight: 0,
       backgroundColor: theme.colors.background,
       alignItems: 'center',
       justifyContent: 'space-evenly',
+      paddingBottom: 4,
     },
     month: {
       fontFamily: theme.regular,
-      fontSize: screenHeight * 0.025,
-      marginTop: '2%',
       alignSelf: 'center',
       color: theme.colors.text,
     },
@@ -477,22 +698,21 @@ const createStyles = (theme: Theme) =>
       position: 'relative',
     },
     goalTitle: {
-      fontSize: screenHeight * 0.08,
       fontFamily: theme.regular,
       textShadowColor: 'rgba(0, 0, 0, 0.25)',
       textShadowOffset: { width: 0, height: 4 },
       textShadowRadius: 5,
       color: theme.colors.primaryDark,
-      lineHeight: screenHeight * 0.08,
-      paddingTop: 10,
+      flexShrink: 1,
     },
     goalSubTitle: {
-      fontSize: screenHeight * 0.05,
       fontFamily: theme.regular,
       textShadowColor: 'rgba(0, 0, 0, 0.25)',
       textShadowOffset: { width: 0, height: 4 },
       textShadowRadius: 5,
       color: theme.colors.primaryDark,
+      flexShrink: 0,
+      marginLeft: 4,
     },
     goalContainer: {
       flex: 1,
@@ -501,27 +721,25 @@ const createStyles = (theme: Theme) =>
       justifyContent: 'center',
       marginLeft: 10,
       paddingRight: 20,
+      minWidth: 0,
     },
     restText: {
-      fontSize: screenHeight * 0.017,
       fontFamily: theme.regular,
       color: theme.colors.textSecondary,
+      textAlign: 'center',
+    },
+    buttonColumn: {
+      alignItems: 'center',
+      gap: 4,
+    },
+    buttonLabel: {
       textAlign: 'center',
     },
     buttonsContainer: {
       flexDirection: 'row',
       justifyContent: 'space-between',
       width: screenWidth * 0.8,
-      marginTop: 5,
+      alignItems: 'flex-start',
     },
-    button: {
-      width: screenHeight * 0.06,
-      height: screenHeight * 0.06,
-    },
-    gradientButton: {
-      flex: 1,
-      borderRadius: 15,
-      justifyContent: 'center',
-      alignItems: 'center',
-    },
+    button: {},
   });

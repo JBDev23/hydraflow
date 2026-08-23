@@ -64,15 +64,17 @@ type WeekCalendarProps = {
   onMonthChange: (month: number) => void;
   selectedDay: Date;
   onSelectedDayChange: (date: Date) => void;
+  scale?: number;
 };
 
 export default function WeekCalendar({
   onMonthChange,
   selectedDay,
   onSelectedDayChange,
+  scale = 1,
 }: WeekCalendarProps) {
   const { theme } = useTheme();
-  const styles = useMemo(() => createStyles(theme), [theme]);
+  const styles = useMemo(() => createStyles(theme, scale), [theme, scale]);
   const { userProfile } = useUser();
 
   const [currentMonday, setCurrentMonday] = useState(() => {
@@ -142,7 +144,11 @@ export default function WeekCalendar({
         onPress={() => changeWeek(-1)}
         style={styles.icon}
       >
-        <FontAwesome6 name="angle-left" size={screenHeight * 0.02} color={theme.colors.text} />
+        <FontAwesome6
+          name="angle-left"
+          size={screenHeight * 0.02 * scale}
+          color={theme.colors.text}
+        />
       </TouchableOpacity>
 
       <View style={styles.daysContainer}>
@@ -172,13 +178,17 @@ export default function WeekCalendar({
         onPress={() => changeWeek(1)}
         style={styles.icon}
       >
-        <FontAwesome6 name="angle-right" size={screenHeight * 0.02} color={theme.colors.text} />
+        <FontAwesome6
+          name="angle-right"
+          size={screenHeight * 0.02 * scale}
+          color={theme.colors.text}
+        />
       </TouchableOpacity>
     </View>
   );
 }
 
-const createStyles = (theme: Theme) =>
+const createStyles = (theme: Theme, scale = 1) =>
   StyleSheet.create({
     container: {
       width: screenWidth * 0.9,
@@ -189,7 +199,7 @@ const createStyles = (theme: Theme) =>
       justifyContent: 'center',
       alignSelf: 'center',
       position: 'relative',
-      padding: 10,
+      padding: 10 * scale,
       elevation: 5,
     },
     daysContainer: {
@@ -204,25 +214,25 @@ const createStyles = (theme: Theme) =>
     text: {
       fontFamily: theme.regular,
       color: theme.colors.text,
-      fontSize: screenHeight * 0.025,
+      fontSize: screenHeight * 0.025 * scale,
     },
     numberContainer: {
       borderRadius: 10,
-      width: screenHeight * 0.04,
-      height: screenHeight * 0.04,
+      width: screenHeight * 0.04 * scale,
+      height: screenHeight * 0.04 * scale,
       justifyContent: 'center',
       alignItems: 'center',
       marginTop: 2,
     },
     icon: {
-      marginBottom: '2.5%',
+      marginBottom: `${2.5 * scale}%`,
     },
     actualDot: {
-      height: 6,
-      width: 6,
-      borderRadius: 3,
+      height: 6 * scale,
+      width: 6 * scale,
+      borderRadius: 3 * scale,
       backgroundColor: theme.colors.contrast,
       position: 'absolute',
-      bottom: -8,
+      bottom: -8 * scale,
     },
   });

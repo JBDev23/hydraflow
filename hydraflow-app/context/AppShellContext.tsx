@@ -36,11 +36,13 @@ import type {
 } from '../types';
 
 const screenHeight = Dimensions.get('window').height;
+const FOOTER_HEIGHT_RATIO = 0.2;
+const SWIPE_THRESHOLD = 50;
 
 const AppShellContext = createContext<AppShellContextValue | null>(null);
 
 const SCREENS_CONFIG = [
-  { name: 'index', path: '/', title: 'Home', icon: 'house' },
+  { name: 'index', path: '/', title: 'screen.home', icon: 'house' },
   { name: 'stats', path: 'stats', title: 'screen.stats', icon: 'chart-simple' },
   { name: 'achievements', path: 'achievements', title: 'screen.achievements', icon: 'trophy' },
   { name: 'shop', path: 'shop', title: 'screen.shop', icon: 'basket-shopping' },
@@ -54,6 +56,7 @@ export function AppShellProvider() {
   const insets = useSafeAreaInsets();
   const pathname = usePathname();
   const footerRef = useRef<FooterTabBarHandle | null>(null);
+  const touchStartRef = useRef({ x: 0, y: 0 });
   const { theme } = useTheme();
   const styles = useMemo(() => createStyles(theme), [theme]);
   const { t } = useTranslation();
@@ -72,7 +75,6 @@ export function AppShellProvider() {
   }, [t]);
 
   const [headerHeight, setHeaderHeight] = useState(0);
-  const [inicioX, setInicioX] = useState(0);
   const [isKeyboardVisible, setKeyboardVisible] = useState(false);
   const [showTutorial, setShowTutorial] = useState(false);
 
@@ -106,14 +108,25 @@ export function AppShellProvider() {
     footerRef.current?.onPress(index);
   }, []);
 
-  const onTouchStart = (e: { nativeEvent: { pageX: number } }) => {
-    setInicioX(e.nativeEvent.pageX);
+  const isTabNavigating = useCallback(() => footerRef.current?.isNavigating() ?? false, []);
+
+  const onTouchStart = (e: { nativeEvent: { pageX: number; pageY: number } }) => {
+    touchStartRef.current = {
+      x: e.nativeEvent.pageX,
+      y: e.nativeEvent.pageY,
+    };
   };
 
-  const onTouchEnd = (e: { nativeEvent: { pageX: number } }) => {
-    const finX = e.nativeEvent.pageX;
+  const onTouchEnd = (e: { nativeEvent: { pageX: number; pageY: number } }) => {
+    if (footerRef.current?.isNavigating()) return;
+
+    const { pageX: finX, pageY: finY } = e.nativeEvent;
+    const { x: inicioX, y: inicioY } = touchStartRef.current;
+    const footerTop = screenHeight * (1 - FOOTER_HEIGHT_RATIO);
+
+    if (inicioY >= footerTop || finY >= footerTop) return;
+
     const diferencia = inicioX - finX;
-    const SWIPE_THRESHOLD = 50;
     const maxIndex = SCREENS_CONFIG.length - 1;
 
     if (diferencia > SWIPE_THRESHOLD) {
@@ -204,7 +217,7 @@ export function AppShellProvider() {
   return (
     <AppShellContext.Provider value={shellValue}>
       <View
-        style={{ flex: 1, backgroundColor: 'white' }}
+        style={{ flex: 1, backgroundColor: theme.colors.background }}
         onTouchStart={onTouchStart}
         onTouchEnd={onTouchEnd}
       >
@@ -216,9 +229,9 @@ export function AppShellProvider() {
             setHeaderHeight(height);
           }}
         >
-          {currentScreenInfo.step !== 0 && currentScreenInfo.step !== 5 && (
+          {currentScreenInfo.step !== 0 && (
             <TouchableOpacity
-              onPress={() => footerRef.current?.onPress(0)}
+              onPress={() => changeTab(0)}
               style={{
                 position: 'absolute',
                 zIndex: 5,
@@ -238,7 +251,7 @@ export function AppShellProvider() {
           )}
           <Text style={styles.headerText}>HydraFlow</Text>
           <TouchableOpacity
-            onPress={() => footerRef.current?.onPress(currentScreenInfo.step === 4 ? 5 : 4)}
+            onPress={() => changeTab(currentScreenInfo.step === 4 ? 5 : 4)}
             style={{
               position: 'absolute',
               zIndex: 5,
@@ -276,7 +289,10 @@ export function AppShellProvider() {
             <Tabs.Screen
               key={screen.name}
               name={screen.name}
-              options={{ title: t(screen.title) }}
+              options={{
+                title: t(screen.title),
+                lazy: screen.name === 'settings' ? false : undefined,
+              }}
             />
           ))}
         </Tabs>
@@ -295,6 +311,7 @@ export function AppShellProvider() {
         onFinish={closeTutorial}
         onSkip={closeTutorial}
         changeTab={changeTab}
+        isNavigating={isTabNavigating}
       />
       <CustomModal
         visible={showLevelUpModal}

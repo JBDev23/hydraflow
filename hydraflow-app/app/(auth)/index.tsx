@@ -113,12 +113,15 @@ export default function Onboarding() {
         <View style={styles.form}>
           <View style={styles.formElem}>
             <Text style={styles.label}>{t('ask.name')}</Text>
-            <Animated.View style={{ transform: [{ translateX: wrongAnim }] }}>
+            <Animated.View
+              style={[styles.inputWrapper, { transform: [{ translateX: wrongAnim }] }]}
+            >
               <TextInput
                 defaultValue=""
                 style={styles.input}
                 onChangeText={setName}
-                placeholder="ex: Hydra"
+                placeholder={t('indexAuth.namePlaceholder')}
+                placeholderTextColor={theme.colors.textSecondary}
               />
             </Animated.View>
           </View>
@@ -163,26 +166,29 @@ const createStyles = (theme: Theme) =>
       width: screenWidth * 0.85,
     },
     formElem: {
-      width: screenWidth * 0.75,
+      width: '100%',
     },
     label: {
-      marginLeft: 5,
       fontSize: 25,
       fontFamily: theme.regular,
       color: theme.colors.text,
     },
+    inputWrapper: {
+      width: '100%',
+      marginTop: 5,
+    },
     input: {
       fontSize: 25,
+      lineHeight: 25,
       fontFamily: theme.regular,
       borderColor: theme.colors.textTertiary,
       color: theme.colors.text,
       borderWidth: 1,
       borderRadius: 10,
       height: 60,
-      paddingLeft: 10,
-      paddingVertical: 0,
+      paddingHorizontal: 10,
+      textAlignVertical: 'center',
       includeFontPadding: false,
-      marginTop: 5,
       backgroundColor: theme.colors.background,
       shadowColor: '#000',
       shadowOffset: { width: 0, height: 2 },

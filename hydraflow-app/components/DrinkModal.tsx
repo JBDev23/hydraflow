@@ -35,8 +35,17 @@ export default function DrinkModal({
   return (
     <View style={styles.container}>
       <View style={styles.goalContainer}>
-        <Text style={styles.goalTitle}>{value}</Text>
-        <Text style={styles.goalSubTitle}>ml</Text>
+        <Text
+          style={styles.goalTitle}
+          numberOfLines={1}
+          adjustsFontSizeToFit
+          minimumFontScale={0.5}
+        >
+          {value}
+        </Text>
+        <Text style={styles.goalSubTitle} numberOfLines={1}>
+          ml
+        </Text>
       </View>
       {svg === 'glass' && (
         <GradientIcon
@@ -103,6 +112,7 @@ const createStyles = (theme: Theme) =>
       color: theme.colors.primaryDark,
       lineHeight: 69,
       paddingTop: 10,
+      flexShrink: 1,
     },
     goalSubTitle: {
       fontSize: 40,
@@ -111,6 +121,8 @@ const createStyles = (theme: Theme) =>
       textShadowOffset: { width: 0, height: 4 },
       textShadowRadius: 5,
       color: theme.colors.primaryDark,
+      flexShrink: 0,
+      marginLeft: 4,
     },
     goalContainer: {
       flex: 1,
@@ -120,6 +132,8 @@ const createStyles = (theme: Theme) =>
       marginLeft: 10,
       paddingRight: 20,
       marginTop: -20,
+      minWidth: 0,
+      width: '100%',
     },
     slider: {
       width: '50%',

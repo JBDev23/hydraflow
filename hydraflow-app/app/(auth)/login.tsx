@@ -77,10 +77,10 @@ export default function Login() {
     const message = t('alerts.googleAlert');
     if (__DEV__ && detail) {
       console.error('Google login error:', detail);
-      Alert.alert('Error', `${message}\n\n${detail}`);
+      Alert.alert(t('alerts.errorTitle'), `${message}\n\n${detail}`);
       return;
     }
-    Alert.alert('Error', message);
+    Alert.alert(t('alerts.errorTitle'), message);
   };
 
   const handleBackendHandshake = async (googleToken: string, lang: string) => {

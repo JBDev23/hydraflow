@@ -1,5 +1,6 @@
 import * as Notifications from 'expo-notifications';
 import { Platform } from 'react-native';
+import i18n from '../app/i18n';
 import type { Notifications as NotificationSettings, TimeOfDay } from '../types';
 
 Notifications.setNotificationHandler({
@@ -57,7 +58,7 @@ const setupAndroidChannel = async (): Promise<void> => {
 
   try {
     await Notifications.setNotificationChannelAsync(ANDROID_CHANNEL_ID, {
-      name: 'Recordatorios de Hidratación',
+      name: i18n.t('pushNotifications.channelName'),
       importance: Notifications.AndroidImportance.HIGH,
       vibrationPattern: [0, 250, 250, 250],
       lightColor: '#79D8FE',
@@ -134,8 +135,8 @@ const scheduleNotificationAtTime = async (
   try {
     const notificationId = await Notifications.scheduleNotificationAsync({
       content: {
-        title: '¡Hora de hidratarse! 💧',
-        body: 'Tu cuerpo necesita agua para alcanzar la meta de hoy.',
+        title: i18n.t('pushNotifications.title'),
+        body: i18n.t('pushNotifications.body'),
         sound: true,
         vibrate: [0, 250, 250, 250],
         data: { type: 'hydration-reminder' },
@@ -191,11 +192,11 @@ export const notificationService = {
     try {
       if (!settings?.notifications?.enabled) {
         await notificationService.cancelAll();
-        return { success: true, scheduled: 0, message: 'Notificaciones desactivadas' };
+        return { success: true, scheduled: 0, message: i18n.t('pushNotifications.disabled') };
       }
 
       const hasPermission = await notificationService.requestPermissions();
-      if (!hasPermission) throw new Error('Permisos no otorgados');
+      if (!hasPermission) throw new Error(i18n.t('pushNotifications.permissionsDenied'));
 
       await Notifications.getAllScheduledNotificationsAsync();
       await notificationService.cancelAll();
@@ -209,7 +210,7 @@ export const notificationService = {
       const wakeMinutes = wakeTime.hour * 60 + wakeTime.minute;
       const sleepMinutes = sleepTime.hour * 60 + sleepTime.minute;
       if (wakeMinutes >= sleepMinutes) {
-        throw new Error('Hora de despertar debe ser anterior a dormir');
+        throw new Error(i18n.t('pushNotifications.wakeBeforeSleep'));
       }
 
       let scheduleTimes: HourMinute[] = [];
@@ -225,7 +226,11 @@ export const notificationService = {
       }
 
       if (scheduleTimes.length === 0) {
-        return { success: true, scheduled: 0, message: 'No hay recordatorios necesarios para hoy' };
+        return {
+          success: true,
+          scheduled: 0,
+          message: i18n.t('pushNotifications.noRemindersToday'),
+        };
       }
 
       const results = await Promise.all(
@@ -241,7 +246,9 @@ export const notificationService = {
       return {
         success: true,
         scheduled: scheduledCount,
-        message: `${scheduledCount} recordatorios programados (${isSmartMode ? 'Hoy' : 'Diarios'})`,
+        message: isSmartMode
+          ? i18n.t('pushNotifications.scheduledSmart', { count: scheduledCount })
+          : i18n.t('pushNotifications.scheduledDaily', { count: scheduledCount }),
       };
     } catch (error) {
       console.error('❌ Error en scheduleReminders:', error);

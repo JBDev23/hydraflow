@@ -1,7 +1,7 @@
 import { LinearGradient } from 'expo-linear-gradient';
 import { Animated, Dimensions, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { FontAwesome6 } from '@expo/vector-icons';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import CustomModal from './CustomModal';
 import Hat1 from '../assets/hydra/Hat1.svg';
 import Hat2 from '../assets/hydra/Hat2.svg';
@@ -57,7 +57,15 @@ export default function ShopItem({
   const canAfford = drops >= data.price;
 
   const [modalRequested, setModalRequested] = useState(false);
-  const modalVisible = modalRequested && isLoadingApi;
+  const wasLoadingApi = useRef(false);
+  const modalVisible = modalRequested;
+
+  useEffect(() => {
+    if (wasLoadingApi.current && !isLoadingApi) {
+      setModalRequested(false);
+    }
+    wasLoadingApi.current = isLoadingApi;
+  }, [isLoadingApi]);
 
   const renderItem = (size = 82) => {
     const props = { width: size, height: size };
@@ -155,8 +163,8 @@ export default function ShopItem({
 
       <TouchableOpacity
         onPress={onAction}
-        disabled={!owned && !canAfford && isLoadingApi}
-        style={[styles.mButton, !owned && !canAfford && isLoadingApi && { opacity: 0.5 }]}
+        disabled={(!owned && !canAfford) || isLoadingApi}
+        style={[styles.mButton, ((!owned && !canAfford) || isLoadingApi) && { opacity: 0.5 }]}
       >
         <LinearGradient colors={[theme.colors.primary, theme.colors.primaryDark]}>
           {isLoadingApi ? (

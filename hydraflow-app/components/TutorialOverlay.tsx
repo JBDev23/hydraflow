@@ -12,6 +12,7 @@ type TutorialOverlayProps = {
   onFinish: () => void;
   onSkip: () => void;
   changeTab: (index: number) => void;
+  isNavigating?: () => boolean;
 };
 
 export default function TutorialOverlay({
@@ -20,6 +21,7 @@ export default function TutorialOverlay({
   onFinish,
   onSkip,
   changeTab,
+  isNavigating,
 }: TutorialOverlayProps) {
   const { theme } = useTheme();
   const { t } = useTranslation();
@@ -56,14 +58,27 @@ export default function TutorialOverlay({
 
     if (currentStep.tab != null) {
       changeTab(currentStep.tab);
-      const timer = setTimeout(() => {
-        queueMicrotask(() => fadeIn());
+
+      let pollTimer: ReturnType<typeof setTimeout> | null = null;
+      const revealTimer = setTimeout(() => {
+        const revealWhenIdle = () => {
+          if (isNavigating?.()) {
+            pollTimer = setTimeout(revealWhenIdle, 100);
+            return;
+          }
+          fadeIn();
+        };
+        revealWhenIdle();
       }, 1000);
-      return () => clearTimeout(timer);
+
+      return () => {
+        clearTimeout(revealTimer);
+        if (pollTimer) clearTimeout(pollTimer);
+      };
     }
 
     queueMicrotask(() => fadeIn());
-  }, [visible, currentStepIndex, steps, fadeAnim, fadeIn, changeTab]);
+  }, [visible, currentStepIndex, steps, fadeAnim, fadeIn, changeTab, isNavigating]);
 
   const handleNext = () => {
     if (currentStepIndex < steps.length - 1) {

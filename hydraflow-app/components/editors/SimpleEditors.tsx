@@ -1,6 +1,7 @@
 import { useMemo } from 'react';
 import { View, Text, TextInput, StyleSheet, Dimensions } from 'react-native';
 import Slider from '@react-native-community/slider';
+import { useTranslation } from 'react-i18next';
 import HorizontalSelector from '../HorizontalSelector';
 import { useTheme } from '../../context/ThemeContext';
 import type { Theme } from '../../types';
@@ -30,13 +31,14 @@ type WeightEditorProps = {
 
 export const NameEditor = ({ value, onChange }: NameEditorProps) => {
   const { theme } = useTheme();
+  const { t } = useTranslation();
   const styles = useMemo(() => createStyles(theme), [theme]);
   return (
     <View style={styles.formElem}>
       <TextInput
         style={styles.input}
         onChangeText={onChange}
-        placeholder="Ej: Hydra"
+        placeholder={t('namePlaceholder')}
         value={value}
         placeholderTextColor={theme.colors.textSecondary}
       />

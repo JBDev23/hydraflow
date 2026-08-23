@@ -6,7 +6,8 @@
   "indexAuth": {
     "title": "Bienvenido",
     "subTitle1": "Yo soy",
-    "subTitle2": "tu asistente de hidratación"
+    "subTitle2": "tu asistente de hidratación",
+    "namePlaceholder": "ej: Hydra"
   },
   "activity": {
     "sedentary": "Sedentario",
@@ -87,7 +88,10 @@
     "logoutQuestion": "¿Cerrar sesión?",
     "logoutWarning": "Esta acción cerrará tu cuenta, tendrás que volver a iniciar sesión para continuar con tu progreso",
     "logoutButton": "CERRAR SESIÓN",
-    "settings": "Configuración"
+    "settings": "Configuración",
+    "appVersion": "HydraFlow v{{version}}",
+    "feedbackSubject": "Feedback HydraFlow",
+    "feedbackBody": "Hola equipo de HydraFlow,\n\n[Escribe aquí tu sugerencia, idea o error encontrado]\n\n\n---\nDetalles técnicos:\nPlataforma: {{platform}}\nVersión: {{version}}"
   },
   "loginAuth": {
     "googleButton": "Continuar con Google",
@@ -144,11 +148,24 @@
   },
 
   "alerts": {
+    "errorTitle": "Error",
     "googleAlert": "No se pudo iniciar sesión con Google."
   },
 
   "loading": "Cargando...",
   "greeting": "Hola",
+  "namePlaceholder": "Ej: Hydra",
+  "pushNotifications": {
+    "channelName": "Recordatorios de Hidratación",
+    "title": "¡Hora de hidratarse! 💧",
+    "body": "Tu cuerpo necesita agua para alcanzar la meta de hoy.",
+    "disabled": "Notificaciones desactivadas",
+    "permissionsDenied": "Permisos no otorgados",
+    "wakeBeforeSleep": "Hora de despertar debe ser anterior a dormir",
+    "noRemindersToday": "No hay recordatorios necesarios para hoy",
+    "scheduledSmart": "{{count}} recordatorios programados (Hoy)",
+    "scheduledDaily": "{{count}} recordatorios programados (Diarios)"
+  },
 
   "buttons": {
     "start": "EMPEZAR",
@@ -163,10 +180,11 @@
   },
 
   "screen": {
+    "home": "Inicio",
     "stats": "Estadísticas",
     "achievements": "Logros",
     "shop": "Tienda",
-    "profile": "Perfi",
+    "profile": "Perfil",
     "settings": "Ajustes"
   },
 

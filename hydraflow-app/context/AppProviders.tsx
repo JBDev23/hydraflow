@@ -4,6 +4,7 @@ import { UserProvider } from './UserContext';
 import { HydrationProvider } from './HydrationContext';
 import { OfflineProvider } from './OfflineContext';
 import { ThemeProvider } from './ThemeContext';
+import { AppBootstrapProvider } from './AppBootstrapContext';
 import type { UserApi } from './userApi';
 import type { HydrationApi } from './hydrationApi';
 
@@ -28,7 +29,9 @@ export function AppProviders({ children }: { children: ReactNode }) {
       <UserProvider userApiRef={userApiRef} hydrationApiRef={hydrationApiRef}>
         <HydrationProvider hydrationApiRef={hydrationApiRef}>
           <OfflineProvider onSyncSuccessRef={onSyncSuccessRef}>
-            <ThemeProvider>{children}</ThemeProvider>
+            <ThemeProvider>
+              <AppBootstrapProvider>{children}</AppBootstrapProvider>
+            </ThemeProvider>
           </OfflineProvider>
         </HydrationProvider>
       </UserProvider>

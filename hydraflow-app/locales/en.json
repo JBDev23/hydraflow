@@ -6,7 +6,8 @@
   "indexAuth": {
     "title": "Welcome",
     "subTitle1": "I am",
-    "subTitle2": "your hydration assistant"
+    "subTitle2": "your hydration assistant",
+    "namePlaceholder": "e.g. Hydra"
   },
   "activity": {
     "sedentary": "Sedentary",
@@ -87,7 +88,10 @@
     "logoutQuestion": "Log out?",
     "logoutWarning": "This action will close your session. You will need to log in again to continue your progress.",
     "logoutButton": "LOG OUT",
-    "settings": "Settings"
+    "settings": "Settings",
+    "appVersion": "HydraFlow v{{version}}",
+    "feedbackSubject": "HydraFlow Feedback",
+    "feedbackBody": "Hello HydraFlow team,\n\n[Write your suggestion, idea or bug report here]\n\n\n---\nTechnical details:\nPlatform: {{platform}}\nVersion: {{version}}"
   },
   "loginAuth": {
     "googleButton": "Continue with Google",
@@ -141,10 +145,23 @@
     "highActive": "Very Active"
   },
   "alerts": {
+    "errorTitle": "Error",
     "googleAlert": "Failed to sign in with Google."
   },
   "loading": "Loading...",
   "greeting": "Hello",
+  "namePlaceholder": "E.g. Hydra",
+  "pushNotifications": {
+    "channelName": "Hydration Reminders",
+    "title": "Time to hydrate! 💧",
+    "body": "Your body needs water to reach today's goal.",
+    "disabled": "Notifications disabled",
+    "permissionsDenied": "Permissions not granted",
+    "wakeBeforeSleep": "Wake time must be before bedtime",
+    "noRemindersToday": "No reminders needed for today",
+    "scheduledSmart": "{{count}} reminders scheduled (Today)",
+    "scheduledDaily": "{{count}} reminders scheduled (Daily)"
+  },
   "buttons": {
     "start": "START",
     "startDrink": "START DRINKING",
@@ -157,6 +174,7 @@
     "otherGender": "Other / Prefer not to say"
   },
   "screen": {
+    "home": "Home",
     "stats": "Statistics",
     "achievements": "Achievements",
     "shop": "Shop",

@@ -1,10 +1,10 @@
 import { View, Text, StyleSheet, Dimensions, type StyleProp, type ViewStyle } from 'react-native';
-import Footer from './Footer';
 import { LinearGradient } from 'expo-linear-gradient';
-import HydraS from '../assets/hydra/Hydra.svg';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useTranslation } from 'react-i18next';
 import { useTheme } from '../context/ThemeContext';
 import { useMemo } from 'react';
+import Hydra from './Hydra';
 import type { Theme } from '../types';
 
 const screenWidth = Dimensions.get('window').width;
@@ -12,12 +12,18 @@ const screenHeight = Dimensions.get('window').height;
 
 type CustomSplashScreenProps = {
   progress: number;
+  isWaiting?: boolean;
   style?: StyleProp<ViewStyle>;
 };
 
-export default function CustomSplashScreen({ progress }: CustomSplashScreenProps) {
+export default function CustomSplashScreen({
+  progress,
+  isWaiting = false,
+}: CustomSplashScreenProps) {
   const { theme } = useTheme();
+  const { t } = useTranslation();
   const styles = useMemo(() => createStyles(theme), [theme]);
+  const showWaitingHint = isWaiting && progress >= 90;
 
   return (
     <SafeAreaView style={styles.container}>
@@ -30,17 +36,17 @@ export default function CustomSplashScreen({ progress }: CustomSplashScreenProps
             end={{ x: 1, y: 0 }}
           />
         </View>
+        {showWaitingHint && <Text style={styles.waitingText}>{t('loading')}</Text>}
       </View>
       <View style={styles.centerSection}>
         <View style={styles.logoContainer}>
-          <HydraS width={screenWidth * 0.8} height={screenWidth * 0.8} />
+          <Hydra height={screenWidth * 0.8} />
         </View>
         <View style={styles.textContainer}>
           <Text style={styles.title}>HydraFlow</Text>
-          <Text style={styles.subtitle}>Hidratación inteligente</Text>
+          <Text style={styles.subtitle}>{t('main.slogan')}</Text>
         </View>
       </View>
-      <Footer />
     </SafeAreaView>
   );
 }
@@ -65,10 +71,16 @@ const createStyles = (theme: Theme) =>
       width: screenWidth,
       alignItems: 'center',
       marginTop: screenHeight * 0.025,
+      gap: 8,
     },
     progressFill: {
       height: '100%',
       borderTopRightRadius: 20,
+    },
+    waitingText: {
+      fontSize: 14,
+      fontFamily: theme.regular,
+      color: theme.colors.textSecondary,
     },
     centerSection: {
       flex: 1,
@@ -87,7 +99,7 @@ const createStyles = (theme: Theme) =>
       justifyContent: 'center',
     },
     title: {
-      fontSize: 45,
+      fontSize: 42,
       fontFamily: theme.regular,
       color: theme.colors.text,
       textAlign: 'center',
@@ -99,12 +111,13 @@ const createStyles = (theme: Theme) =>
       paddingHorizontal: 5,
     },
     subtitle: {
-      fontSize: 25,
+      fontSize: 18,
       color: theme.colors.textSecondary,
       fontFamily: theme.regular,
       textAlign: 'center',
       width: '100%',
       includeFontPadding: false,
       paddingHorizontal: 5,
+      marginTop: 5,
     },
   });

@@ -1,4 +1,4 @@
-import { useEffect, useMemo, type ReactNode } from 'react';
+import { useEffect, useMemo, useRef, type ReactNode } from 'react';
 import { View, StyleSheet, Animated, Easing } from 'react-native';
 import Svg, { Circle, Defs, LinearGradient, Stop, RadialGradient } from 'react-native-svg';
 import { useTheme } from '../context/ThemeContext';
@@ -41,8 +41,15 @@ export default function Ring({
   const endY = 50 + 50 * Math.sin(angle);
 
   const animatedValue = useMemo(() => new Animated.Value(0), []);
+  const hasAnimatedOnce = useRef(false);
 
   useEffect(() => {
+    if (!hasAnimatedOnce.current) {
+      hasAnimatedOnce.current = true;
+      animatedValue.setValue(clampedPercentage);
+      return;
+    }
+
     Animated.timing(animatedValue, {
       toValue: clampedPercentage,
       duration: 1000,

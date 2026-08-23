@@ -49,10 +49,10 @@ export const AuthProvider = ({ children, userApiRef, hydrationApiRef }: AuthProv
 
   useEffect(() => {
     const bootstrap = async () => {
-      try {
-        const token = await AsyncStorage.getItem(STORAGE_KEYS.AUTH_TOKEN);
-        await userApiRef.current?.bootstrapLocalProfile?.();
+      let token: string | null = null;
 
+      try {
+        token = await AsyncStorage.getItem(STORAGE_KEYS.AUTH_TOKEN);
         if (token) {
           setAuthToken(token);
         }
@@ -60,6 +60,12 @@ export const AuthProvider = ({ children, userApiRef, hydrationApiRef }: AuthProv
         console.error('Error carga local:', e);
       } finally {
         setIsLoading(false);
+      }
+
+      try {
+        await userApiRef.current?.bootstrapLocalProfile?.();
+      } catch (e) {
+        console.error('Error perfil local:', e);
       }
     };
 

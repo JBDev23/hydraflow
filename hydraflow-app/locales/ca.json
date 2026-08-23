@@ -6,7 +6,8 @@
   "indexAuth": {
     "title": "Benvingut",
     "subTitle1": "Soc",
-    "subTitle2": "el teu assistent d'hidratació"
+    "subTitle2": "el teu assistent d'hidratació",
+    "namePlaceholder": "p. ex. Hydra"
   },
   "activity": {
     "sedentary": "Sedentari",
@@ -87,7 +88,10 @@
     "logoutQuestion": "Tancar sessió?",
     "logoutWarning": "Aquesta acció tancarà la teva sessió. Hauràs de tornar a iniciar sessió per continuar amb el teu progrés.",
     "logoutButton": "TANCAR SESSIÓ",
-    "settings": "Configuració"
+    "settings": "Configuració",
+    "appVersion": "HydraFlow v{{version}}",
+    "feedbackSubject": "Feedback HydraFlow",
+    "feedbackBody": "Hola equip de HydraFlow,\n\n[Escriu aquí la teva suggerència, idea o error trobat]\n\n\n---\nDetalls tècnics:\nPlataforma: {{platform}}\nVersió: {{version}}"
   },
   "loginAuth": {
     "googleButton": "Continuar amb Google",
@@ -141,10 +145,23 @@
     "highActive": "Molt actiu"
   },
   "alerts": {
+    "errorTitle": "Error",
     "googleAlert": "No s'ha pogut iniciar sessió amb Google."
   },
   "loading": "Carregant...",
   "greeting": "Hola",
+  "namePlaceholder": "p. ex. Hydra",
+  "pushNotifications": {
+    "channelName": "Recordatoris d'Hidratació",
+    "title": "Hora d'hidratar-se! 💧",
+    "body": "El teu cos necessita aigua per assolir la meta d'avui.",
+    "disabled": "Notificacions desactivades",
+    "permissionsDenied": "Permisos no concedits",
+    "wakeBeforeSleep": "L'hora de despertar ha de ser anterior a dormir",
+    "noRemindersToday": "No calen recordatoris per avui",
+    "scheduledSmart": "{{count}} recordatoris programats (Avui)",
+    "scheduledDaily": "{{count}} recordatoris programats (Diaris)"
+  },
   "buttons": {
     "start": "COMENÇAR",
     "startDrink": "COMENÇA A BEURE",
@@ -157,6 +174,7 @@
     "otherGender": "Altre / Prefereixo no dir-ho"
   },
   "screen": {
+    "home": "Inici",
     "stats": "Estadístiques",
     "achievements": "Triomfs",
     "shop": "Botiga",

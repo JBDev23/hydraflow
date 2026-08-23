@@ -11,7 +11,7 @@ type MultipleToggleProps = {
   value: number;
   onValueChange: (index: number) => void;
   width: number;
-  options?: string[];
+  options: string[];
 };
 
 type MenuPosition = { x: number; y: number; width: number; height: number };
@@ -20,7 +20,7 @@ export default function MultipleToggle({
   value,
   onValueChange,
   width,
-  options = ['Inteligente', '30 min', '1 hora', '2 horas'],
+  options,
 }: MultipleToggleProps) {
   const [visible, setVisible] = useState(false);
   const { theme } = useTheme();

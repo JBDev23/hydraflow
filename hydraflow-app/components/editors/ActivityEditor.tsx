@@ -2,6 +2,7 @@ import { useMemo, type ComponentProps } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Dimensions } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { FontAwesome6 } from '@expo/vector-icons';
+import { useTranslation } from 'react-i18next';
 import { useTheme } from '../../context/ThemeContext';
 import type { ActivityLevel, Theme } from '../../types';
 
@@ -9,15 +10,15 @@ const { width: screenWidth } = Dimensions.get('window');
 
 type ActivityOption = {
   id: ActivityLevel;
-  label: string;
+  labelKey: string;
   icon: ComponentProps<typeof FontAwesome6>['name'];
 };
 
 const OPTIONS: ActivityOption[] = [
-  { id: 'sedentary', label: 'Sedentario', icon: 'bed' },
-  { id: 'moderate', label: 'Moderado (1-2 días)', icon: 'person-walking' },
-  { id: 'active', label: 'Activo (3-4 días)', icon: 'person-running' },
-  { id: 'highActive', label: 'Muy Activo (5+ días)', icon: 'trophy' },
+  { id: 'sedentary', labelKey: 'activity.sedentary', icon: 'bed' },
+  { id: 'moderate', labelKey: 'activity.moderate', icon: 'person-walking' },
+  { id: 'active', labelKey: 'activity.active', icon: 'person-running' },
+  { id: 'highActive', labelKey: 'activity.highActive', icon: 'trophy' },
 ];
 
 type ActivityEditorProps = {
@@ -27,6 +28,7 @@ type ActivityEditorProps = {
 
 export default function ActivityEditor({ value, onChange }: ActivityEditorProps) {
   const { theme } = useTheme();
+  const { t } = useTranslation();
   const styles = useMemo(() => createStyles(theme), [theme]);
 
   return (
@@ -56,7 +58,7 @@ export default function ActivityEditor({ value, onChange }: ActivityEditorProps)
                   { color: isActive ? theme.colors.contrast : theme.colors.text },
                 ]}
               >
-                {opt.label}
+                {t(opt.labelKey)}
               </Text>
               <View style={styles.iconWrapper}>
                 <FontAwesome6

@@ -26,6 +26,7 @@ import { getLocaleTag } from '../../utils/i18nHelpers';
 import * as FileSystem from 'expo-file-system';
 import { File } from 'expo-file-system';
 import * as Sharing from 'expo-sharing';
+import { APP_VERSION } from '../../constants/app';
 import type {
   SettingsViewId,
   Theme,
@@ -75,7 +76,14 @@ const ToggleOption = <T extends string | boolean>({
   return (
     <View style={styles.settingItem}>
       <View style={[styles.menuItemLabel, { width: screenWidth * 0.9 * 0.6 }]}>
-        <Text style={styles.itemTitle}>{title}</Text>
+        <Text
+          style={styles.itemTitle}
+          numberOfLines={1}
+          adjustsFontSizeToFit
+          minimumFontScale={0.7}
+        >
+          {title}
+        </Text>
       </View>
 
       {isBinary ? (
@@ -377,8 +385,8 @@ const SupportView = ({ styles, theme }: SettingsSubViewProps) => {
 
   const handleFeedback = () => {
     const email = 'jordibarrachinam@gmail.com';
-    const subject = 'Feedback HydraFlow';
-    const body = `Hola equipo de HydraFlow,\n\n[Escribe aquí tu sugerencia, idea o error encontrado]\n\n\n---\nDetalles técnicos:\nPlataforma: ${Platform.OS}\nVersión: 1.0.0`;
+    const subject = t('settings.feedbackSubject');
+    const body = t('settings.feedbackBody', { platform: Platform.OS, version: APP_VERSION });
 
     const mailtoUrl = `mailto:${email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
 
@@ -636,12 +644,26 @@ export default function Settings() {
             <FontAwesome6 name="angle-left" size={28} color={theme.colors.text} />
           </TouchableOpacity>
         )}
-        <Text style={styles.headerTitle}>{viewConfig.title}</Text>
+        <Text
+          style={styles.headerTitle}
+          numberOfLines={1}
+          adjustsFontSizeToFit
+          minimumFontScale={0.7}
+        >
+          {viewConfig.title}
+        </Text>
       </View>
 
       {renderContent()}
 
-      <Text style={styles.versionText}>HydraFlow v1.0.0</Text>
+      <Text
+        style={styles.versionText}
+        numberOfLines={1}
+        adjustsFontSizeToFit
+        minimumFontScale={0.8}
+      >
+        {t('settings.appVersion', { version: APP_VERSION })}
+      </Text>
     </ScrollView>
   );
 }
@@ -675,6 +697,7 @@ const createStyles = (theme: Theme) =>
       fontSize: 25,
       color: theme.colors.text,
       textAlign: 'center',
+      width: '70%',
     },
     subViewContainer: {
       width: screenWidth * 0.9,
@@ -768,6 +791,8 @@ const createStyles = (theme: Theme) =>
       fontSize: 16,
       color: theme.colors.textSecondary,
       opacity: 0.6,
+      width: '90%',
+      textAlign: 'center',
     },
     deleteModalContent: {
       flex: 1,

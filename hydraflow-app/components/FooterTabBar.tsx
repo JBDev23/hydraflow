@@ -1,5 +1,13 @@
 import { FontAwesome6 } from '@expo/vector-icons';
-import { useEffect, useState, useImperativeHandle, useMemo, forwardRef, type Ref } from 'react';
+import {
+  useEffect,
+  useState,
+  useImperativeHandle,
+  useMemo,
+  useRef,
+  forwardRef,
+  type Ref,
+} from 'react';
 import {
   TouchableOpacity,
   Text,
@@ -19,6 +27,13 @@ const screenWidth = Dimensions.get('window').width;
 const screenHeight = Dimensions.get('window').height;
 
 const ICONS = ['house', 'chart-simple', 'trophy', 'basket-shopping', 'user', 'gear'] as const;
+
+const WAVE_UP_DURATION = 350;
+const WAVE_DOWN_DURATION = 350;
+const WAVE_LIFT = -92;
+const TEXT_FADE_DELAY = 60;
+const TEXT_FADE_DURATION = 290;
+const NAVIGATION_FALLBACK_TIMEOUT = WAVE_UP_DURATION + WAVE_DOWN_DURATION + 800;
 
 type TabRoute = {
   key: string;
@@ -45,6 +60,7 @@ type TabNavigation = {
 
 export type FooterTabBarHandle = {
   onPress: (index: number) => void;
+  isNavigating: () => boolean;
 };
 
 export type FooterTabBarProps = {
@@ -67,11 +83,125 @@ const FooterTabBar = forwardRef(function FooterTabBar(
   const formatedDate = getFormattedDate(selectedDay);
 
   const [isChanging, setIsChanging] = useState(false);
+  const isChangingRef = useRef(false);
+  const unlockTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const wave3 = useMemo(() => new Animated.Value(0), []);
+  const textOpacity = useMemo(() => new Animated.Value(1), []);
+  const overlayOpacity = useMemo(() => new Animated.Value(0), []);
   const swayAnim = useMemo(() => new Animated.Value(0), []);
+  const waveAnimationRef = useRef<Animated.CompositeAnimation | null>(null);
+  const interactionHandleRef = useRef<{ cancel: () => void } | null>(null);
+  const pendingIndexRef = useRef<number | null>(null);
+  const routesRef = useRef<TabRoute[]>([]);
+  const activeIndexRef = useRef(0);
+  const handlePressRef = useRef<(route: TabRoute) => void>(() => {});
+
+  const clearNavigationTimers = () => {
+    if (unlockTimeoutRef.current) {
+      clearTimeout(unlockTimeoutRef.current);
+      unlockTimeoutRef.current = null;
+    }
+    interactionHandleRef.current?.cancel();
+    interactionHandleRef.current = null;
+  };
+
+  const startNavigationLock = () => {
+    isChangingRef.current = true;
+    setIsChanging(true);
+  };
+
+  const flushPendingNavigation = () => {
+    const pending = pendingIndexRef.current;
+    if (pending == null) return;
+
+    pendingIndexRef.current = null;
+    const route = routesRef.current[pending];
+    if (!route || activeIndexRef.current === pending) return;
+
+    queueMicrotask(() => handlePressRef.current(route));
+  };
+
+  const endNavigationLock = () => {
+    isChangingRef.current = false;
+    setIsChanging(false);
+    textOpacity.setValue(1);
+    overlayOpacity.setValue(0);
+    flushPendingNavigation();
+  };
+
+  const runWaveDownAnimation = () => {
+    waveAnimationRef.current = Animated.parallel([
+      Animated.timing(wave3, {
+        toValue: 0,
+        easing: Easing.inOut(Easing.exp),
+        duration: WAVE_DOWN_DURATION,
+        useNativeDriver: true,
+      }),
+      Animated.timing(textOpacity, {
+        toValue: 1,
+        delay: TEXT_FADE_DELAY,
+        duration: TEXT_FADE_DURATION,
+        easing: Easing.out(Easing.cubic),
+        useNativeDriver: true,
+      }),
+      Animated.timing(overlayOpacity, {
+        toValue: 0,
+        delay: TEXT_FADE_DELAY,
+        duration: TEXT_FADE_DURATION,
+        easing: Easing.out(Easing.cubic),
+        useNativeDriver: true,
+      }),
+    ]);
+
+    waveAnimationRef.current.start(({ finished }) => {
+      waveAnimationRef.current = null;
+      if (finished) {
+        endNavigationLock();
+      }
+    });
+  };
+
+  const runWaveAnimation = (onNavigate: () => void) => {
+    waveAnimationRef.current?.stop();
+    clearNavigationTimers();
+
+    textOpacity.setValue(0);
+    overlayOpacity.setValue(1);
+
+    waveAnimationRef.current = Animated.timing(wave3, {
+      toValue: WAVE_LIFT,
+      easing: Easing.inOut(Easing.exp),
+      duration: WAVE_UP_DURATION,
+      useNativeDriver: true,
+    });
+
+    waveAnimationRef.current.start(({ finished }) => {
+      waveAnimationRef.current = null;
+      if (!finished) return;
+
+      onNavigate();
+
+      const idleId = requestIdleCallback(() => {
+        interactionHandleRef.current = null;
+        runWaveDownAnimation();
+      });
+      interactionHandleRef.current = {
+        cancel: () => cancelIdleCallback(idleId),
+      };
+    });
+
+    unlockTimeoutRef.current = setTimeout(() => {
+      unlockTimeoutRef.current = null;
+      if (isChangingRef.current) {
+        endNavigationLock();
+      }
+    }, NAVIGATION_FALLBACK_TIMEOUT);
+  };
 
   const activeIndex = state.index;
   const routes = state.routes;
+  routesRef.current = routes;
+  activeIndexRef.current = activeIndex;
   const currentRoute = routes[activeIndex];
 
   const { options } = descriptors[currentRoute.key];
@@ -87,26 +217,19 @@ const FooterTabBar = forwardRef(function FooterTabBar(
   const nextIcon = ICONS[nextIndex % ICONS.length];
 
   const handlePress = (route: TabRoute) => {
-    if (isChanging) return;
+    const routeIndex = routes.findIndex((r) => r.key === route.key);
+    if (routeIndex === -1) return;
 
-    setIsChanging(true);
+    if (isChangingRef.current) {
+      pendingIndexRef.current = routeIndex;
+      return;
+    }
+
+    const isFocused = state.index === routeIndex;
+    if (isFocused) return;
+
+    startNavigationLock();
     audioService.playSound('swipe');
-    const isFocused = state.index === routes.indexOf(route);
-
-    Animated.sequence([
-      Animated.timing(wave3, {
-        toValue: -92,
-        easing: Easing.inOut(Easing.exp),
-        duration: 350,
-        useNativeDriver: true,
-      }),
-      Animated.timing(wave3, {
-        toValue: 0,
-        easing: Easing.inOut(Easing.exp),
-        duration: 350,
-        useNativeDriver: true,
-      }),
-    ]).start();
 
     const event = navigation.emit({
       type: 'tabPress',
@@ -114,18 +237,14 @@ const FooterTabBar = forwardRef(function FooterTabBar(
       canPreventDefault: true,
     });
 
-    setTimeout(() => {
-      if (!isFocused && !event.defaultPrevented) {
+    runWaveAnimation(() => {
+      if (!event.defaultPrevented) {
         navigation.navigate(route.name);
-      } else {
-        navigation.navigate(route.name, { merge: true });
       }
-    }, 200);
-
-    setTimeout(() => {
-      setIsChanging(false);
-    }, 700);
+    });
   };
+
+  handlePressRef.current = handlePress;
 
   useImperativeHandle(ref, () => ({
     onPress: (index: number) => {
@@ -133,7 +252,16 @@ const FooterTabBar = forwardRef(function FooterTabBar(
         handlePress(routes[index]);
       }
     },
+    isNavigating: () => isChangingRef.current,
   }));
+
+  useEffect(
+    () => () => {
+      waveAnimationRef.current?.stop();
+      clearNavigationTimers();
+    },
+    [],
+  );
 
   useEffect(() => {
     const loop = Animated.loop(
@@ -221,22 +349,38 @@ const FooterTabBar = forwardRef(function FooterTabBar(
 
       <Animated.View
         style={[styles.wave, styles.wave3, { transform: [{ translateY: wave3 || 0 }] }]}
+      />
+
+      <Animated.View
+        pointerEvents="none"
+        style={[
+          styles.footerTextContainer,
+          { transform: [{ translateY: wave3 || 0 }], opacity: textOpacity },
+        ]}
       >
-        <Animated.View style={{ opacity: isChanging ? 0 : 1 }}>
-          {options.title === 'Home' ? (
-            <Text style={styles.title}>{formatedDate}</Text>
-          ) : (
-            <Text style={styles.title}>{options.title}</Text>
-          )}
-          <Text style={styles.subTitle}>
-            {'\u201C'}
-            {t('main.motivator')}
-            {'\u201D'}
+        {currentRoute.name === 'index' ? (
+          <Text style={styles.title} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.7}>
+            {formatedDate}
           </Text>
-        </Animated.View>
+        ) : (
+          <Text style={styles.title} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.7}>
+            {options.title}
+          </Text>
+        )}
+        <Text
+          style={styles.subTitle}
+          numberOfLines={1}
+          adjustsFontSizeToFit
+          minimumFontScale={0.7}
+          ellipsizeMode="tail"
+        >
+          {'\u201C'}
+          {t('main.motivator')}
+          {'\u201D'}
+        </Text>
       </Animated.View>
 
-      <Animated.View style={[styles.overlayBar, { opacity: isChanging ? 1 : 0 }]} />
+      <Animated.View style={[styles.overlayBar, { opacity: overlayOpacity }]} />
       <Animated.View style={styles.bottomBar} />
     </View>
   );
@@ -275,6 +419,14 @@ const createStyles = (theme: Theme) =>
       bottom: '-50%',
       zIndex: 4,
     },
+    footerTextContainer: {
+      position: 'absolute',
+      bottom: screenHeight * 0.02,
+      left: screenWidth * 0.1,
+      right: screenWidth * 0.1,
+      alignItems: 'center',
+      zIndex: 6,
+    },
     icon: {
       zIndex: 3,
       position: 'absolute',
@@ -283,16 +435,18 @@ const createStyles = (theme: Theme) =>
     title: {
       fontFamily: theme.regular,
       fontSize: screenHeight * 0.025,
-      alignSelf: 'center',
       color: theme.colors.contrast,
-      top: '10%',
-      marginBottom: screenHeight * 0.02,
+      textAlign: 'center',
+      width: '100%',
+      marginBottom: screenHeight * 0.004,
     },
     subTitle: {
       fontFamily: theme.regular,
-      fontSize: screenHeight * 0.02,
-      alignSelf: 'center',
+      fontSize: screenHeight * 0.018,
+      lineHeight: screenHeight * 0.022,
       color: theme.colors.contrast,
+      textAlign: 'center',
+      width: '100%',
     },
     overlayBar: {
       position: 'absolute',
