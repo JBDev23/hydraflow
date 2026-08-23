@@ -28,11 +28,11 @@ _Te agradecemos que indiques en el asunto **"Solicitud Beta Hydraflow App"** par
 
 ## 📱 Vistazo a la App
 
-| Pantalla Principal | Estadísticas | Logros |
-| :--: | :--: | :--: |
+|                                                                Pantalla Principal                                                                |                                                                Estadísticas                                                                |                                                                Logros                                                                |
+| :----------------------------------------------------------------------------------------------------------------------------------------------: | :----------------------------------------------------------------------------------------------------------------------------------------: | :----------------------------------------------------------------------------------------------------------------------------------: |
 | <img width="921" height="2048" alt="Pantalla principal" src="https://github.com/user-attachments/assets/803612be-31c8-49ca-8e39-ac2cbb68ee59" /> | <img width="921" height="2048" alt="Estadísticas" src="https://github.com/user-attachments/assets/e3f8eda3-0586-4380-97f9-a087e9fab2c5" /> | <img width="921" height="2048" alt="Logros" src="https://github.com/user-attachments/assets/ac31cb94-d1cd-4583-a987-840fdfe3a124" /> |
-| Tienda | Onboarding | Perfil |
-| <img width="921" height="2048" alt="Tienda" src="https://github.com/user-attachments/assets/1868b123-64da-42a5-bfe8-84c58d7a9871" /> | <img width="921" height="2048" alt="Onboarding" src="https://github.com/user-attachments/assets/2fc1629e-0ee5-4600-a9fc-c18ca71e82ea" /> | <img width="921" height="2048" alt="Perfil" src="https://github.com/user-attachments/assets/2224c348-8275-4783-886e-82aceb832880" /> |
+|                                                                      Tienda                                                                      |                                                                 Onboarding                                                                 |                                                                Perfil                                                                |
+|       <img width="921" height="2048" alt="Tienda" src="https://github.com/user-attachments/assets/1868b123-64da-42a5-bfe8-84c58d7a9871" />       |  <img width="921" height="2048" alt="Onboarding" src="https://github.com/user-attachments/assets/2fc1629e-0ee5-4600-a9fc-c18ca71e82ea" />  | <img width="921" height="2048" alt="Perfil" src="https://github.com/user-attachments/assets/2224c348-8275-4783-886e-82aceb832880" /> |
 
 ---
 
@@ -50,15 +50,15 @@ _Te agradecemos que indiques en el asunto **"Solicitud Beta Hydraflow App"** par
 
 ## 💻 Tecnologías
 
-| Área | Stack |
-|------|-------|
-| Framework | React Native 0.86, Expo SDK 57 (dev client + EAS) |
-| Enrutamiento | Expo Router (file-based) |
-| Estado global | React Context (`Auth`, `User`, `Hydration`, `Offline`, `Theme`, `AppShell`) |
-| Animaciones | Reanimated 4, gesture-handler |
-| Gráficos / UI | react-native-svg, componentes personalizados |
-| Tests | Jest + jest-expo |
-| Gestor de paquetes | pnpm (workspace `hydroflow`) |
+| Área               | Stack                                                                       |
+| ------------------ | --------------------------------------------------------------------------- |
+| Framework          | React Native 0.86, Expo SDK 57 (dev client + EAS)                           |
+| Enrutamiento       | Expo Router (file-based)                                                    |
+| Estado global      | React Context (`Auth`, `User`, `Hydration`, `Offline`, `Theme`, `AppShell`) |
+| Animaciones        | Reanimated 4, gesture-handler                                               |
+| Gráficos / UI      | react-native-svg, componentes personalizados                                |
+| Tests              | Jest + jest-expo                                                            |
+| Gestor de paquetes | pnpm (workspace `hydroflow`)                                                |
 
 ---
 
@@ -94,11 +94,11 @@ pnpm app:start
 
 Scripts útiles (raíz o con `--filter hydroflow`):
 
-| Script | Descripción |
-|--------|-------------|
-| `pnpm app:start` | Expo dev server |
-| `pnpm app:test` | Jest |
-| `pnpm app:lint` | ESLint (expo lint) |
+| Script               | Descripción           |
+| -------------------- | --------------------- |
+| `pnpm app:start`     | Expo dev server       |
+| `pnpm app:test`      | Jest                  |
+| `pnpm app:lint`      | ESLint (expo lint)    |
 | `pnpm app:typecheck` | TypeScript `--noEmit` |
 
 Dentro de `hydraflow-app/` también puedes usar `pnpm start`, `pnpm android`, `pnpm ios`, `pnpm prebuild:android`, etc.

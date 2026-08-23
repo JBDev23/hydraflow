@@ -39,14 +39,14 @@ _Te agradecemos que indiques en el asunto **"Solicitud Beta Hydraflow"** para qu
 
 ## 💻 Tecnologías
 
-| Área | Stack |
-|------|-------|
-| Runtime | Node.js >= 22.13, TypeScript, Express 4 |
-| Base de datos | PostgreSQL 15, Prisma 7 (`@prisma/adapter-pg`) |
-| Auth | `google-auth-library`, JWT |
-| Infra local | Docker Compose |
-| Tests | Jest, Supertest |
-| Gestor de paquetes | pnpm (workspace `hydraflow-backend`) |
+| Área               | Stack                                          |
+| ------------------ | ---------------------------------------------- |
+| Runtime            | Node.js >= 22.13, TypeScript, Express 4        |
+| Base de datos      | PostgreSQL 15, Prisma 7 (`@prisma/adapter-pg`) |
+| Auth               | `google-auth-library`, JWT                     |
+| Infra local        | Docker Compose                                 |
+| Tests              | Jest, Supertest                                |
+| Gestor de paquetes | pnpm (workspace `hydraflow-backend`)           |
 
 La estructura de `modules/` está preparada para una migración futura a Nest (ver [`NEST_MIGRATION.md`](NEST_MIGRATION.md)).
 
@@ -78,23 +78,23 @@ hydraflow-backend/
 
 Prefijo base: `/` en el puerto configurado (`PORT`, por defecto `3000`).
 
-| Método | Ruta | Auth | Descripción |
-|--------|------|------|-------------|
-| GET | `/` | No | Health check |
-| POST | `/auth/login` | No | Login Google / test |
-| GET | `/user/profile` | Sí | Obtener perfil |
-| PUT | `/user/profile` | Sí | Actualizar perfil |
-| DELETE | `/user/account` | Sí | Eliminar cuenta |
-| POST | `/water/log` | Sí | Registrar consumo |
-| DELETE | `/water/log` | Sí | Revertir último registro |
-| GET | `/water/metrics` | Sí | Métricas diarias |
-| GET | `/water/range` | Sí | Métricas por rango de fechas |
-| GET | `/water/stats` | Sí | Datos para gráficos |
-| GET | `/water/export` | Sí | Exportar datos del usuario |
-| GET | `/achievements/catalog` | Sí | Catálogo de logros |
-| GET | `/items/catalog` | Sí | Catálogo de ítems |
-| POST | `/items/buy` | Sí | Comprar ítem |
-| POST | `/items/equip` | Sí | Equipar ítem |
+| Método | Ruta                    | Auth | Descripción                  |
+| ------ | ----------------------- | ---- | ---------------------------- |
+| GET    | `/`                     | No   | Health check                 |
+| POST   | `/auth/login`           | No   | Login Google / test          |
+| GET    | `/user/profile`         | Sí   | Obtener perfil               |
+| PUT    | `/user/profile`         | Sí   | Actualizar perfil            |
+| DELETE | `/user/account`         | Sí   | Eliminar cuenta              |
+| POST   | `/water/log`            | Sí   | Registrar consumo            |
+| DELETE | `/water/log`            | Sí   | Revertir último registro     |
+| GET    | `/water/metrics`        | Sí   | Métricas diarias             |
+| GET    | `/water/range`          | Sí   | Métricas por rango de fechas |
+| GET    | `/water/stats`          | Sí   | Datos para gráficos          |
+| GET    | `/water/export`         | Sí   | Exportar datos del usuario   |
+| GET    | `/achievements/catalog` | Sí   | Catálogo de logros           |
+| GET    | `/items/catalog`        | Sí   | Catálogo de ítems            |
+| POST   | `/items/buy`            | Sí   | Comprar ítem                 |
+| POST   | `/items/equip`          | Sí   | Equipar ítem                 |
 
 ---
 
@@ -123,13 +123,13 @@ cp .env.example .env
 
 Variables principales (`.env.example`):
 
-| Variable | Descripción |
-|----------|-------------|
-| `DATABASE_URL` | Conexión PostgreSQL (pooler en prod) |
-| `DIRECT_URL` | Conexión directa (migraciones Prisma) |
-| `PORT` | Puerto HTTP (default `3000`) |
-| `JWT_SECRET` | Secreto para firmar tokens |
-| `GOOGLE_CLIENT_ID` | Client ID OAuth de Google |
+| Variable           | Descripción                           |
+| ------------------ | ------------------------------------- |
+| `DATABASE_URL`     | Conexión PostgreSQL (pooler en prod)  |
+| `DIRECT_URL`       | Conexión directa (migraciones Prisma) |
+| `PORT`             | Puerto HTTP (default `3000`)          |
+| `JWT_SECRET`       | Secreto para firmar tokens            |
+| `GOOGLE_CLIENT_ID` | Client ID OAuth de Google             |
 | `ALLOW_TEST_LOGIN` | `true` en dev/CI para login de prueba |
 
 Para producción (Neon, Railway…) usa `.env.production` — **nunca** commitees secretos reales.
@@ -159,23 +159,23 @@ O dentro de `hydraflow-backend/`: `pnpm dev` (nodemon + ts-node).
 
 Desde la raíz del monorepo:
 
-| Script | Descripción |
-|--------|-------------|
-| `pnpm backend:dev` | API en modo desarrollo |
-| `pnpm backend:test` | Jest |
+| Script               | Descripción               |
+| -------------------- | ------------------------- |
+| `pnpm backend:dev`   | API en modo desarrollo    |
+| `pnpm backend:test`  | Jest                      |
 | `pnpm backend:build` | `prisma generate` + `tsc` |
 
 Scripts del paquete (`pnpm --filter hydraflow-backend <script>`):
 
-| Script | Descripción |
-|--------|-------------|
-| `dev` | Servidor con recarga en caliente |
-| `build` / `start` | Compilar y ejecutar producción |
-| `prisma:migrate` | Migración interactiva en dev |
-| `prisma:migrate:deploy` | Aplicar migraciones (CI/prod) |
-| `prisma:seed` | Poblar BD de desarrollo |
-| `test` | Suite de tests |
-| `lint` / `format:check` | Calidad de código |
+| Script                  | Descripción                      |
+| ----------------------- | -------------------------------- |
+| `dev`                   | Servidor con recarga en caliente |
+| `build` / `start`       | Compilar y ejecutar producción   |
+| `prisma:migrate`        | Migración interactiva en dev     |
+| `prisma:migrate:deploy` | Aplicar migraciones (CI/prod)    |
+| `prisma:seed`           | Poblar BD de desarrollo          |
+| `test`                  | Suite de tests                   |
+| `lint` / `format:check` | Calidad de código                |
 
 ---
 
