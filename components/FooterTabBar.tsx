@@ -1,12 +1,5 @@
 import { FontAwesome6 } from '@expo/vector-icons';
-import {
-  useEffect,
-  useState,
-  useImperativeHandle,
-  useMemo,
-  forwardRef,
-  type Ref,
-} from 'react';
+import { useEffect, useState, useImperativeHandle, useMemo, forwardRef, type Ref } from 'react';
 import {
   TouchableOpacity,
   Text,
@@ -235,7 +228,11 @@ const FooterTabBar = forwardRef(function FooterTabBar(
           ) : (
             <Text style={styles.title}>{options.title}</Text>
           )}
-          <Text style={styles.subTitle}>{'\u201C'}{t('main.motivator')}{'\u201D'}</Text>
+          <Text style={styles.subTitle}>
+            {'\u201C'}
+            {t('main.motivator')}
+            {'\u201D'}
+          </Text>
         </Animated.View>
       </Animated.View>
 

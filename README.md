@@ -89,3 +89,15 @@ Las carpetas nativas `/android` e `/ios` se generan con `pnpm prebuild:android` 
 ## 📄 Licencia
 
 Este proyecto es de Código Abierto. Consulta el archivo `LICENSE` (si aplica) para más detalles.
+
+---
+
+## Checks de CI (local)
+
+GitHub Actions ejecuta en cada push/PR a `main`/`master` los mismos checks que puedes correr localmente desde esta carpeta:
+
+```bash
+cd hydraflow-app
+pnpm install
+pnpm format:check && pnpm lint && pnpm typecheck && pnpm test
+```

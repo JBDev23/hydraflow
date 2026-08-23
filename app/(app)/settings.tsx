@@ -436,10 +436,7 @@ const AccountView = ({ styles, theme }: SettingsSubViewProps) => {
 
   return (
     <View style={styles.subViewContainer}>
-      <TouchableOpacity
-        onPress={openDeleteModal}
-        style={[styles.menuItem, styles.dangerItem]}
-      >
+      <TouchableOpacity onPress={openDeleteModal} style={[styles.menuItem, styles.dangerItem]}>
         <Text style={[styles.menuText, { color: 'red' }]}>{t('settings.deleteAccount')}</Text>
       </TouchableOpacity>
 
@@ -521,10 +518,7 @@ const MainSettingsView = ({ setCurrentView, styles, theme }: SettingsSubViewProp
         <Text style={styles.menuText}>{t('settings.account')}</Text>
       </TouchableOpacity>
 
-      <TouchableOpacity
-        onPress={openLogoutModal}
-        style={[styles.menuItem, styles.dangerItem]}
-      >
+      <TouchableOpacity onPress={openLogoutModal} style={[styles.menuItem, styles.dangerItem]}>
         <Text style={[styles.menuText, { color: 'red' }]}>{t('settings.logout')}</Text>
       </TouchableOpacity>
 
