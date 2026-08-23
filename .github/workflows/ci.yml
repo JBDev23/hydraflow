@@ -91,6 +91,7 @@ jobs:
 
       - run: pnpm install --frozen-lockfile
       - run: pnpm --filter hydraflow-backend prisma:migrate:deploy
+      - run: pnpm --filter hydraflow-backend prisma:seed
       - run: pnpm --filter hydraflow-backend format:check
       - run: pnpm --filter hydraflow-backend lint
       - run: pnpm --filter hydraflow-backend build

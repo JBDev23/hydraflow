@@ -1,6 +1,5 @@
+import type { PrismaService } from '../src/prisma/prisma.service';
 import { getSeedClient } from './seed-client';
-
-const prisma = getSeedClient();
 
 const SKIN_LIST = [
   {
@@ -62,7 +61,7 @@ const ACHIEVEMENTS = [
   },
 ];
 
-async function seedCatalogItems() {
+export async function seedCatalogItems(prisma: PrismaService) {
   console.log(`Sembrando el Catálogo...`);
   for (const skin of SKIN_LIST) {
     await prisma.catalogItem.upsert({
@@ -80,7 +79,7 @@ async function seedCatalogItems() {
   }
 }
 
-async function seedAchievements() {
+export async function seedAchievements(prisma: PrismaService) {
   console.log(`Sembrando Logros...`);
   for (const ach of ACHIEVEMENTS) {
     await prisma.catalogAchievement.upsert({
@@ -103,18 +102,24 @@ async function seedAchievements() {
   }
 }
 
-async function main() {
-  await seedCatalogItems();
-  await seedAchievements();
+export async function seedDatabase(prisma: PrismaService) {
+  await seedCatalogItems(prisma);
+  await seedAchievements(prisma);
   console.log(`Base de datos sembrada correctamente.`);
 }
 
+async function main() {
+  const prisma = getSeedClient();
+  await seedDatabase(prisma);
+  return prisma;
+}
+
 main()
-  .then(async () => {
+  .then(async (prisma) => {
     await prisma.disconnect();
   })
   .catch(async (e) => {
     console.error(e);
-    await prisma.disconnect();
+    await getSeedClient().disconnect();
     process.exit(1);
   });

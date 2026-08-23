@@ -1,5 +1,6 @@
 import '../load-env';
 import request from 'supertest';
+import { seedDatabase } from '../../prisma/seed';
 import { app } from '../index';
 import { prisma } from '../prisma/prisma';
 
@@ -17,8 +18,9 @@ describe('🚀 API Integration Tests (End-to-End)', () => {
     providerId: 'jest_123',
   };
 
-  // Evita estado residual (upsert reutiliza el email si un run anterior no limpió)
+  // Catalog rows must exist before auth creates default user_items (sunGlasses FK).
   beforeAll(async () => {
+    await seedDatabase(prisma);
     await prisma.user.deleteMany({
       where: { email: testUser.email },
     });
