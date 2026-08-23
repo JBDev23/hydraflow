@@ -94,12 +94,12 @@
     "terms": "En continuar, acceptes els nostres Termes i Política de privadesa.",
     "serverConnect": "Connectant amb el servidor..."
   },
-  "indexApp":{
+  "indexApp": {
     "remaining": "restants",
     "goalCompleted": "Meta assolida!",
     "custom": "Personalitzat"
   },
-  "statsApp":{
+  "statsApp": {
     "average": "MITJANA",
     "total": "TOTAL",
     "streak": "Ratxa",
@@ -133,7 +133,7 @@
   },
   "profile": {
     "male": "Home",
-    "female": "Dona", 
+    "female": "Dona",
     "other": "Altre",
     "sedentary": "Sedentari",
     "moderate": "Moderat",

@@ -19,10 +19,7 @@
       },
       "package": "com.jbdev23.hydraflow",
       "softwareKeyboardLayoutMode": "resize",
-      "permissions": [
-        "RECEIVE_BOOT_COMPLETED",
-        "SCHEDULE_EXACT_ALARM"
-      ]
+      "permissions": ["RECEIVE_BOOT_COMPLETED", "SCHEDULE_EXACT_ALARM"]
     },
     "web": {
       "favicon": "./assets/favicon.png"

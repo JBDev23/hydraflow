@@ -94,12 +94,12 @@
     "terms": "By continuing, you agree to our Terms and Privacy Policy.",
     "serverConnect": "Connecting to the server..."
   },
-  "indexApp":{
+  "indexApp": {
     "remaining": "remaining",
     "goalCompleted": "Goal achieved!",
     "custom": "Custom"
   },
-  "statsApp":{
+  "statsApp": {
     "average": "AVERAGE",
     "total": "TOTAL",
     "streak": "Streak",
@@ -133,7 +133,7 @@
   },
   "profile": {
     "male": "Male",
-    "female": "Female", 
+    "female": "Female",
     "other": "Other",
     "sedentary": "Sedentary",
     "moderate": "Moderate",

@@ -4,10 +4,7 @@ import type { UserProfile } from '../types';
 export type UserApi = {
   bootstrapLocalProfile: () => Promise<void>;
   applySessionProfile: (mappedProfile: UserProfile) => Promise<void>;
-  syncNotificationsForProfile: (
-    profile: UserProfile,
-    currentWater: number,
-  ) => Promise<void>;
+  syncNotificationsForProfile: (profile: UserProfile, currentWater: number) => Promise<void>;
   refreshUser: () => Promise<void>;
   onLogout: () => Promise<void>;
   getManualName: () => string | undefined;

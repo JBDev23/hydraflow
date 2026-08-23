@@ -42,7 +42,12 @@ export default function VolumeSlider({ volume, setVolume }: VolumeSliderProps) {
   };
 
   return (
-    <View style={styles.container} onTouchStart={onTouchStart} onTouchEnd={onTouchEnd} onTouchMove={onTouchMove}>
+    <View
+      style={styles.container}
+      onTouchStart={onTouchStart}
+      onTouchEnd={onTouchEnd}
+      onTouchMove={onTouchMove}
+    >
       <Text style={styles.text}>Volumen</Text>
 
       <View style={{ flexDirection: 'row', width: '100%', justifyContent: 'space-between' }}>

@@ -15,7 +15,13 @@ type EditorLayoutProps = {
   children: ReactNode;
 };
 
-export default function EditorLayout({ hydraHeight, title, subtitle, onSave, children }: EditorLayoutProps) {
+export default function EditorLayout({
+  hydraHeight,
+  title,
+  subtitle,
+  onSave,
+  children,
+}: EditorLayoutProps) {
   const { theme } = useTheme();
   const styles = useMemo(() => createStyles(theme), [theme]);
 
@@ -27,7 +33,9 @@ export default function EditorLayout({ hydraHeight, title, subtitle, onSave, chi
 
       {(title || subtitle) && (
         <View style={styles.textContainer}>
-          {title && <Text style={[styles.title, title.length > 17 && { fontSize: 28 }]}>{title}</Text>}
+          {title && (
+            <Text style={[styles.title, title.length > 17 && { fontSize: 28 }]}>{title}</Text>
+          )}
           {subtitle && <Text style={styles.subtitle}>{subtitle}</Text>}
         </View>
       )}
@@ -35,7 +43,10 @@ export default function EditorLayout({ hydraHeight, title, subtitle, onSave, chi
       <View style={styles.content}>{children}</View>
 
       <TouchableOpacity onPress={onSave} style={styles.button}>
-        <LinearGradient colors={[theme.colors.primary, theme.colors.primaryDark]} style={styles.gradientButton}>
+        <LinearGradient
+          colors={[theme.colors.primary, theme.colors.primaryDark]}
+          style={styles.gradientButton}
+        >
           <Text style={styles.buttonText}>CAMBIAR</Text>
         </LinearGradient>
       </TouchableOpacity>

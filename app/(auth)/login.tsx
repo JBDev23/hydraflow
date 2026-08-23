@@ -1,5 +1,14 @@
 import { useEffect, useMemo, useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Dimensions, ActivityIndicator, Alert, ScrollView } from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  Dimensions,
+  ActivityIndicator,
+  Alert,
+  ScrollView,
+} from 'react-native';
 import { FontAwesome6 } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import Hydra from '../../components/Hydra';
@@ -135,7 +144,10 @@ export default function Login() {
   };
 
   return (
-    <ScrollView style={{ flex: 1 }} contentContainerStyle={[styles.container, { backgroundColor: theme.colors.background }]}>
+    <ScrollView
+      style={{ flex: 1 }}
+      contentContainerStyle={[styles.container, { backgroundColor: theme.colors.background }]}
+    >
       <View style={styles.header}>
         <Hydra />
         <Text style={[styles.title, { color: theme.colors.text }]}>HydraFlow</Text>
@@ -146,7 +158,9 @@ export default function Login() {
         {isLoading || isSigningIn ? (
           <View style={styles.loadingContainer}>
             <ActivityIndicator size="large" color={theme.colors.primary} />
-            <Text style={{ marginTop: 10, color: theme.colors.textSecondary }}>{t('loginAuth.serverConnect')}</Text>
+            <Text style={{ marginTop: 10, color: theme.colors.textSecondary }}>
+              {t('loginAuth.serverConnect')}
+            </Text>
           </View>
         ) : (
           <SocialButton

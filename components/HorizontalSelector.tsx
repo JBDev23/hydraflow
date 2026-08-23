@@ -150,7 +150,12 @@ export default function HorizontalSelector({
       onTouchEnd={stopBubble}
     >
       <Animated.View style={[styles.layer]}>
-        <Animated.View style={[styles.textWrapper, { transform: [{ translateX: moveX }, { translateY: moveX }] }]}>
+        <Animated.View
+          style={[
+            styles.textWrapper,
+            { transform: [{ translateX: moveX }, { translateY: moveX }] },
+          ]}
+        >
           <Text style={styles.firstLayerText}>{value - 2 >= min ? value - 2 : ''}</Text>
         </Animated.View>
         <Animated.View
@@ -165,7 +170,12 @@ export default function HorizontalSelector({
         </Animated.View>
       </Animated.View>
       <View style={[styles.layer, styles.secondLayer, { width: width2 }]}>
-        <Animated.View style={[styles.textWrapper, { transform: [{ translateX: moveX }, { translateY: moveX }] }]}>
+        <Animated.View
+          style={[
+            styles.textWrapper,
+            { transform: [{ translateX: moveX }, { translateY: moveX }] },
+          ]}
+        >
           <Text style={styles.secondLayerText}>{value - 1 >= min ? value - 1 : ''}</Text>
         </Animated.View>
 
@@ -180,7 +190,10 @@ export default function HorizontalSelector({
       </View>
       <Animated.View style={[styles.layer, styles.thirdLayer]}>
         <Animated.View
-          style={[styles.textWrapperCenter, { transform: [{ translateX: moveX }, { translateY: moveYCenter }] }]}
+          style={[
+            styles.textWrapperCenter,
+            { transform: [{ translateX: moveX }, { translateY: moveYCenter }] },
+          ]}
         >
           <Text style={styles.thirdLayerText}>{value}</Text>
         </Animated.View>

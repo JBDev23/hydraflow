@@ -16,9 +16,7 @@ export type OfflineUpdateUserAction = {
 };
 
 export type OfflineActionInput =
-  | OfflineLogWaterAction
-  | OfflineRevertLogAction
-  | OfflineUpdateUserAction;
+  OfflineLogWaterAction | OfflineRevertLogAction | OfflineUpdateUserAction;
 
 export type QueuedOfflineAction = OfflineActionInput & {
   id: string;

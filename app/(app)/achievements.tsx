@@ -58,7 +58,11 @@ export default function Achievements() {
   };
 
   return (
-    <ScrollView style={{ flex: 1 }} contentContainerStyle={styles.container} showsVerticalScrollIndicator={false}>
+    <ScrollView
+      style={{ flex: 1 }}
+      contentContainerStyle={styles.container}
+      showsVerticalScrollIndicator={false}
+    >
       <View style={styles.upperContainer}>
         <View style={{ width: '42%' }}>
           <Hydra height={screenWidth * 0.4} showSkins />

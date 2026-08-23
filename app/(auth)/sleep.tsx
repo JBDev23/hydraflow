@@ -31,8 +31,12 @@ export default function SleepScreen() {
   const { updateUserProfile, userProfile } = useUser();
   const { t } = useTranslation();
 
-  const [wakeTime, setWakeTime] = useState<TimeOfDay>(userProfile?.wakeTime || { hours: 9, minutes: 0 });
-  const [sleepTime, setSleepTime] = useState<TimeOfDay>(userProfile?.sleepTime || { hours: 23, minutes: 30 });
+  const [wakeTime, setWakeTime] = useState<TimeOfDay>(
+    userProfile?.wakeTime || { hours: 9, minutes: 0 },
+  );
+  const [sleepTime, setSleepTime] = useState<TimeOfDay>(
+    userProfile?.sleepTime || { hours: 23, minutes: 30 },
+  );
   const [scrollViewHeight, setScrollViewHeight] = useState(0);
   const [contentHeight, setContentHeight] = useState(0);
   const [isScrolledToBottom, setIsScrolledToBottom] = useState(false);
@@ -44,7 +48,8 @@ export default function SleepScreen() {
     const { layoutMeasurement, contentOffset, contentSize } = event.nativeEvent;
     const paddingToBottom = 40;
 
-    const isBottom = layoutMeasurement.height + contentOffset.y >= contentSize.height - paddingToBottom;
+    const isBottom =
+      layoutMeasurement.height + contentOffset.y >= contentSize.height - paddingToBottom;
     setIsScrolledToBottom(isBottom);
   };
 

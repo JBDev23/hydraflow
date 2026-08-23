@@ -64,7 +64,10 @@ const DrinkButton = ({ icon, onPress, onLongPress, isDisabled, theme }: DrinkBut
       onLongPress={onLongPress}
       style={[styles.button, { opacity: isDisabled ? 0.5 : 1 }]}
     >
-      <LinearGradient colors={[theme.colors.primary, theme.colors.primaryDark]} style={styles.gradientButton}>
+      <LinearGradient
+        colors={[theme.colors.primary, theme.colors.primaryDark]}
+        style={styles.gradientButton}
+      >
         <FontAwesome6
           style={{ padding: screenHeight * 0.009 }}
           color={theme.colors.contrast}
@@ -207,9 +210,11 @@ export default function Home() {
             progress: gamification.progress ?? userProfile.stats.progress,
             dropsBalance: gamification.dropsBalance ?? userProfile.stats.dropsBalance,
             currentStreak: gamification.currentStreak ?? userProfile.stats.currentStreak,
-            totalGoalsReached: gamification.totalGoalsReached ?? userProfile.stats.totalGoalsReached,
+            totalGoalsReached:
+              gamification.totalGoalsReached ?? userProfile.stats.totalGoalsReached,
             totalVolume: gamification.totalVolume ?? userProfile.stats.totalVolume,
-            achievementsCount: gamification.achievementsCount ?? userProfile.stats.achievementsCount,
+            achievementsCount:
+              gamification.achievementsCount ?? userProfile.stats.achievementsCount,
           },
           achievements: updatedAchievements,
         });
@@ -221,7 +226,10 @@ export default function Home() {
 
         if (gamification.leveledUp) {
           audioService.playSound('levelUp');
-          await levelUp(gamification.newLevel ?? userProfile.stats.level, gamification.dropsEarned ?? 0);
+          await levelUp(
+            gamification.newLevel ?? userProfile.stats.level,
+            gamification.dropsEarned ?? 0,
+          );
         }
 
         if (gamification.isGoalReached) {
@@ -354,7 +362,11 @@ export default function Home() {
         selectedDay={selectedDay}
       />
       <View style={styles.container}>
-        <Ring colors={[theme.colors.primary, theme.colors.primaryDark]} percentage={percentage} radius={screenHeight * 0.15}>
+        <Ring
+          colors={[theme.colors.primary, theme.colors.primaryDark]}
+          percentage={percentage}
+          radius={screenHeight * 0.15}
+        >
           <Hydra height={screenHeight * 0.225} anim={anim} showSkins={true} />
         </Ring>
         <View style={styles.drinkedContainer}>
@@ -363,7 +375,10 @@ export default function Home() {
             onPress={handleReset}
             style={[styles.button, { opacity: isToday && drinked !== 0 ? 1 : 0.5 }]}
           >
-            <LinearGradient colors={[theme.colors.primary, theme.colors.primaryDark]} style={{ borderRadius: 10 }}>
+            <LinearGradient
+              colors={[theme.colors.primary, theme.colors.primaryDark]}
+              style={{ borderRadius: 10 }}
+            >
               <Animated.View style={{ transform: [{ rotate: resetSpin }] }}>
                 <FontAwesome6
                   color={theme.colors.contrast}
@@ -382,7 +397,9 @@ export default function Home() {
         </View>
         <View style={{ marginTop: -screenHeight * 0.005 }}>
           <Text style={styles.restText}>
-            {remaining > 0 ? `${remaining} ml ${t('indexApp.remaining')}` : t('indexApp.goalCompleted')}
+            {remaining > 0
+              ? `${remaining} ml ${t('indexApp.remaining')}`
+              : t('indexApp.goalCompleted')}
           </Text>
         </View>
         <View style={styles.buttonsContainer}>

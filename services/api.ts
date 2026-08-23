@@ -25,8 +25,7 @@ import type {
 } from '../types';
 
 const API_URL =
-  process.env.EXPO_PUBLIC_API_URL ||
-  'https://hydraflow-backend-production.up.railway.app';
+  process.env.EXPO_PUBLIC_API_URL || 'https://hydraflow-backend-production.up.railway.app';
 
 type SessionExpiredCallback = () => void;
 
@@ -54,11 +53,7 @@ const getHeaders = async (): Promise<ApiHeaders> => {
 const isSessionExpiredError = (error: unknown): boolean =>
   error instanceof Error && error.message === 'Sesión expirada';
 
-const rawFetch = async <T>(
-  endpoint: string,
-  method: string,
-  body?: unknown,
-): Promise<T> => {
+const rawFetch = async <T>(endpoint: string, method: string, body?: unknown): Promise<T> => {
   const headers = await getHeaders();
   const options: RequestInit = {
     method,
@@ -449,10 +444,7 @@ export const api = {
             console.log('Sincronización detenida: Sesión expirada.');
             break;
           }
-          console.error(
-            `Error sincronizando acción ${action.type} (Se mantendrá en cola):`,
-            error,
-          );
+          console.error(`Error sincronizando acción ${action.type} (Se mantendrá en cola):`, error);
         }
       }
 

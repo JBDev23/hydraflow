@@ -109,11 +109,21 @@ export default function ShopItem({
   if (isLoading) {
     return (
       <Animated.View style={{ opacity: pulseAnim }}>
-        <View style={[styles.skeleton, { width, height, backgroundColor: theme.colors.border, borderRadius: 20 }]}>
+        <View
+          style={[
+            styles.skeleton,
+            { width, height, backgroundColor: theme.colors.border, borderRadius: 20 },
+          ]}
+        >
           <View
             style={[
               styles.archInt,
-              { width: width - 8, height: height - 8, backgroundColor: theme.colors.background, opacity: 0.5 },
+              {
+                width: width - 8,
+                height: height - 8,
+                backgroundColor: theme.colors.background,
+                opacity: 0.5,
+              },
             ]}
           />
         </View>
@@ -135,7 +145,12 @@ export default function ShopItem({
         <>
           <Text style={[styles.title, { fontSize: 40, lineHeight: 40 }]}>{data.name}</Text>
           <View style={styles.priceContainer}>
-            <Text style={[styles.title, { fontSize: 40, lineHeight: 40, color: canAfford ? '#32C843' : '#FF4B4B' }]}>
+            <Text
+              style={[
+                styles.title,
+                { fontSize: 40, lineHeight: 40, color: canAfford ? '#32C843' : '#FF4B4B' },
+              ]}
+            >
               {data.price}
             </Text>
             <Drop />
@@ -176,7 +191,12 @@ export default function ShopItem({
               <Text style={styles.itemDate}>{date}</Text>
             ) : (
               <View style={styles.priceContainer}>
-                <Text style={[styles.title, { color: canAfford ? '#32C843' : '#FF4B4B', marginRight: 5 }]}>
+                <Text
+                  style={[
+                    styles.title,
+                    { color: canAfford ? '#32C843' : '#FF4B4B', marginRight: 5 },
+                  ]}
+                >
                   {data.price}
                 </Text>
                 <Drop />
@@ -192,7 +212,11 @@ export default function ShopItem({
         </View>
       )}
 
-      <CustomModal visible={modalVisible} onClose={() => setModalVisible(false)} borderColor={CARD_COLORS[0]}>
+      <CustomModal
+        visible={modalVisible}
+        onClose={() => setModalVisible(false)}
+        borderColor={CARD_COLORS[0]}
+      >
         {renderModalContent()}
       </CustomModal>
     </View>

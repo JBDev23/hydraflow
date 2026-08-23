@@ -103,27 +103,24 @@ export const mapBackendToFrontend = (backendUser: BackendUser): UserProfile => {
 
   const hasBiometrics = Boolean(
     backendUser.profile?.weight &&
-      backendUser.profile.weight > 0 &&
-      backendUser.profile?.height &&
-      backendUser.profile.height > 0 &&
-      backendUser.profile?.age &&
-      backendUser.profile.age > 0 &&
-      backendUser.profile?.gender &&
-      backendUser.profile?.activityLevel &&
-      backendUser.settings?.wakeTime &&
-      backendUser.settings?.sleepTime &&
-      backendUser.profile?.dailyGoal &&
-      backendUser.profile.dailyGoal > 0,
+    backendUser.profile.weight > 0 &&
+    backendUser.profile?.height &&
+    backendUser.profile.height > 0 &&
+    backendUser.profile?.age &&
+    backendUser.profile.age > 0 &&
+    backendUser.profile?.gender &&
+    backendUser.profile?.activityLevel &&
+    backendUser.settings?.wakeTime &&
+    backendUser.settings?.sleepTime &&
+    backendUser.profile?.dailyGoal &&
+    backendUser.profile.dailyGoal > 0,
   );
 
   const rawPrefs = (backendUser.settings?.preferences || {}) as Record<string, unknown>;
   const preferences = {
     ...INITIAL_USER_PROFILE.preferences,
     ...rawPrefs,
-    soundEffects:
-      rawPrefs.soundEffects !== undefined
-        ? Boolean(rawPrefs.soundEffects)
-        : true,
+    soundEffects: rawPrefs.soundEffects !== undefined ? Boolean(rawPrefs.soundEffects) : true,
   } as UserProfile['preferences'];
 
   return {
@@ -161,10 +158,7 @@ export const createEmptyProfile = (): UserProfile => ({
   sleepTime: { ...INITIAL_USER_PROFILE.sleepTime },
 });
 
-export const mergeProfilePatch = (
-  prev: UserProfile,
-  newData: UserProfilePatch,
-): UserProfile => {
+export const mergeProfilePatch = (prev: UserProfile, newData: UserProfilePatch): UserProfile => {
   let updatedProfile: UserProfile = { ...prev, ...newData } as UserProfile;
 
   if (newData.stats) {

@@ -10,7 +10,13 @@ import { useTheme } from '../../context/ThemeContext';
 import { useUser } from '../../context/UserContext';
 import { useFocusEffect } from 'expo-router';
 import { useTranslation } from 'react-i18next';
-import type { ProfileFieldDef, ProfileFieldKey, ProfileFieldValue, Theme, UserProfile } from '../../types';
+import type {
+  ProfileFieldDef,
+  ProfileFieldKey,
+  ProfileFieldValue,
+  Theme,
+  UserProfile,
+} from '../../types';
 
 const screenWidth = Dimensions.get('window').width;
 const screenHeight = Dimensions.get('window').height;
@@ -126,7 +132,13 @@ export default function Profile() {
           size={25}
           theme={theme}
         />
-        <StatBadge value={formatNum(stats.skinsCount)} iconName="shirt" colors={['#FF01AA', '#A099FF']} size={22} theme={theme} />
+        <StatBadge
+          value={formatNum(stats.skinsCount)}
+          iconName="shirt"
+          colors={['#FF01AA', '#A099FF']}
+          size={22}
+          theme={theme}
+        />
         <StatBadge value={formatNum(stats.dropsBalance)} CustomIcon={Drop} theme={theme} />
         <StatBadge
           value={formatNum(stats.totalGoalsReached)}
@@ -143,9 +155,18 @@ export default function Profile() {
           theme={theme}
         />
       </View>
-      <ScrollView style={{ flex: 1 }} contentContainerStyle={styles.scrollContainer} showsVerticalScrollIndicator={false}>
+      <ScrollView
+        style={{ flex: 1 }}
+        contentContainerStyle={styles.scrollContainer}
+        showsVerticalScrollIndicator={false}
+      >
         {PROFILE_FIELDS.map((field) => (
-          <ProfileItem key={field.key} field={field} value={getFieldValue(field.key)} changeUser={changeUser} />
+          <ProfileItem
+            key={field.key}
+            field={field}
+            value={getFieldValue(field.key)}
+            changeUser={changeUser}
+          />
         ))}
       </ScrollView>
     </View>

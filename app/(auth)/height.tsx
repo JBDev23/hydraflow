@@ -48,7 +48,8 @@ export default function HeightScreen() {
     const { layoutMeasurement, contentOffset, contentSize } = event.nativeEvent;
     const paddingToBottom = 40;
 
-    const isBottom = layoutMeasurement.height + contentOffset.y >= contentSize.height - paddingToBottom;
+    const isBottom =
+      layoutMeasurement.height + contentOffset.y >= contentSize.height - paddingToBottom;
     setIsScrolledToBottom(isBottom);
   };
 
@@ -103,9 +104,16 @@ export default function HeightScreen() {
 
       ticks.push(
         <View key={i} style={[styles.tickContainer, { transform: [{ translateY }] }]}>
-          {isMajor && <Text style={styles.tickText}>{measureUnit === 1 ? formatHeight(i) : i}</Text>}
+          {isMajor && (
+            <Text style={styles.tickText}>{measureUnit === 1 ? formatHeight(i) : i}</Text>
+          )}
 
-          <View style={[styles.tickLine, isMajor ? styles.tickMajor : isMedium ? styles.tickMedium : styles.tickMinor]} />
+          <View
+            style={[
+              styles.tickLine,
+              isMajor ? styles.tickMajor : isMedium ? styles.tickMedium : styles.tickMinor,
+            ]}
+          />
         </View>,
       );
     }

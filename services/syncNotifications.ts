@@ -3,10 +3,7 @@ import type { UserProfile } from '../types';
 
 let notificationSyncInProgress = false;
 
-export async function syncNotifications(
-  profile: UserProfile,
-  currentWater = 0,
-): Promise<void> {
+export async function syncNotifications(profile: UserProfile, currentWater = 0): Promise<void> {
   if (notificationSyncInProgress) {
     return;
   }

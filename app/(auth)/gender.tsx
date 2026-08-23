@@ -40,7 +40,8 @@ export default function GenderScreen() {
     const { layoutMeasurement, contentOffset, contentSize } = event.nativeEvent;
     const paddingToBottom = 40;
 
-    const isBottom = layoutMeasurement.height + contentOffset.y >= contentSize.height - paddingToBottom;
+    const isBottom =
+      layoutMeasurement.height + contentOffset.y >= contentSize.height - paddingToBottom;
     setIsScrolledToBottom(isBottom);
   };
 
@@ -85,14 +86,20 @@ export default function GenderScreen() {
           <Text style={styles.title}>{t('ask.gender')}</Text>
         </View>
         <View style={styles.buttonsContainer}>
-          <TouchableOpacity onPress={() => setGender('male')} style={[styles.genderbutton, getBorderStyle('male')]}>
+          <TouchableOpacity
+            onPress={() => setGender('male')}
+            style={[styles.genderbutton, getBorderStyle('male')]}
+          >
             <FontAwesome6
               size={80}
               color={gender === 'male' ? theme.colors.primaryDark : theme.colors.textSecondary}
               name="mars"
             />
           </TouchableOpacity>
-          <TouchableOpacity onPress={() => setGender('female')} style={[styles.genderbutton, getBorderStyle('female')]}>
+          <TouchableOpacity
+            onPress={() => setGender('female')}
+            style={[styles.genderbutton, getBorderStyle('female')]}
+          >
             <FontAwesome6
               size={80}
               color={gender === 'female' ? theme.colors.primaryDark : theme.colors.textSecondary}
@@ -100,7 +107,10 @@ export default function GenderScreen() {
             />
           </TouchableOpacity>
         </View>
-        <TouchableOpacity onPress={() => setGender('other')} style={[styles.otherbutton, getBorderStyle('other')]}>
+        <TouchableOpacity
+          onPress={() => setGender('other')}
+          style={[styles.otherbutton, getBorderStyle('other')]}
+        >
           <Text style={styles.othertext}>{t('buttons.otherGender')}</Text>
         </TouchableOpacity>
         <TouchableOpacity onPress={handleNext} style={styles.button}>

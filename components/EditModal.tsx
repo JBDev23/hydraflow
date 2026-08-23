@@ -38,9 +38,7 @@ export default function EditModal({ item = 'name', value, handleChange }: EditMo
         return {
           height: screenHeight * 0.25,
           title: t('ask.name'),
-          component: (
-            <NameEditor value={tempVal as string} onChange={(v) => setTempVal(v)} />
-          ),
+          component: <NameEditor value={tempVal as string} onChange={(v) => setTempVal(v)} />,
         };
       case 'age':
         return {
@@ -92,17 +90,13 @@ export default function EditModal({ item = 'name', value, handleChange }: EditMo
         return {
           height: screenHeight * 0.15,
           title: t('ask.gender'),
-          component: (
-            <GenderEditor value={tempVal as string} onChange={(v) => setTempVal(v)} />
-          ),
+          component: <GenderEditor value={tempVal as string} onChange={(v) => setTempVal(v)} />,
         };
       case 'activity':
         return {
           height: screenHeight * 0.15,
           title: t('ask.activity'),
-          component: (
-            <ActivityEditor value={tempVal as string} onChange={(v) => setTempVal(v)} />
-          ),
+          component: <ActivityEditor value={tempVal as string} onChange={(v) => setTempVal(v)} />,
         };
       case 'wakeTime':
         return {

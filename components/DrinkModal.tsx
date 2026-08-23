@@ -39,17 +39,26 @@ export default function DrinkModal({
         <Text style={styles.goalSubTitle}>ml</Text>
       </View>
       {svg === 'glass' && (
-        <GradientIcon size={screenHeight * 0.275} colors={[theme.colors.primary, theme.colors.primaryDark]}>
+        <GradientIcon
+          size={screenHeight * 0.275}
+          colors={[theme.colors.primary, theme.colors.primaryDark]}
+        >
           <FontAwesome6 name="glass-water" size={screenHeight * 0.25} solid />
         </GradientIcon>
       )}
       {svg === 'drop' && (
-        <GradientIcon size={screenHeight * 0.275} colors={[theme.colors.primary, theme.colors.primaryDark]}>
+        <GradientIcon
+          size={screenHeight * 0.275}
+          colors={[theme.colors.primary, theme.colors.primaryDark]}
+        >
           <FontAwesome6 name="droplet" size={screenHeight * 0.25} solid />
         </GradientIcon>
       )}
       {svg === 'bottle' && (
-        <GradientIcon size={screenHeight * 0.275} colors={[theme.colors.primary, theme.colors.primaryDark]}>
+        <GradientIcon
+          size={screenHeight * 0.275}
+          colors={[theme.colors.primary, theme.colors.primaryDark]}
+        >
           <FontAwesome6 name="bottle-water" size={screenHeight * 0.25} solid />
         </GradientIcon>
       )}

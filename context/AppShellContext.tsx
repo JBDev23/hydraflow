@@ -15,7 +15,10 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { StatusBar } from 'expo-status-bar';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useTranslation } from 'react-i18next';
-import FooterTabBar, { type FooterTabBarHandle, type FooterTabBarProps } from '../components/FooterTabBar';
+import FooterTabBar, {
+  type FooterTabBarHandle,
+  type FooterTabBarProps,
+} from '../components/FooterTabBar';
 import TutorialOverlay from '../components/TutorialOverlay';
 import CustomModal from '../components/CustomModal';
 import LevelUpModal from '../components/LevelUpModal';
@@ -74,7 +77,10 @@ export function AppShellProvider() {
   const [showTutorial, setShowTutorial] = useState(false);
 
   const [showLevelUpModal, setShowLevelUpModal] = useState(false);
-  const [levelUpModalConfig, setLevelUpModalConfig] = useState<LevelUpModalConfig>({ level: 1, drops: 0 });
+  const [levelUpModalConfig, setLevelUpModalConfig] = useState<LevelUpModalConfig>({
+    level: 1,
+    drops: 0,
+  });
 
   const [achievementQueue, setAchievementQueue] = useState<CatalogAchievement[]>([]);
   const [currentAchievement, setCurrentAchievement] = useState<CatalogAchievement | null>(null);
@@ -195,7 +201,11 @@ export function AppShellProvider() {
 
   return (
     <AppShellContext.Provider value={shellValue}>
-      <View style={{ flex: 1, backgroundColor: 'white' }} onTouchStart={onTouchStart} onTouchEnd={onTouchEnd}>
+      <View
+        style={{ flex: 1, backgroundColor: 'white' }}
+        onTouchStart={onTouchStart}
+        onTouchEnd={onTouchEnd}
+      >
         <StatusBar style={theme.mode === 'light' ? 'dark' : 'light'} />
         <View
           style={[styles.header, { paddingTop: insets.top }]}
@@ -216,7 +226,12 @@ export function AppShellProvider() {
                 paddingHorizontal: 20,
               }}
             >
-              <FontAwesome6 name="house" color={theme.colors.text} solid size={screenHeight * 0.025} />
+              <FontAwesome6
+                name="house"
+                color={theme.colors.text}
+                solid
+                size={screenHeight * 0.025}
+              />
             </TouchableOpacity>
           )}
           <Text style={styles.headerText}>HydraFlow</Text>
@@ -256,7 +271,11 @@ export function AppShellProvider() {
           screenOptions={{ headerShown: false }}
         >
           {SCREENS_CONFIG.map((screen) => (
-            <Tabs.Screen key={screen.name} name={screen.name} options={{ title: t(screen.title) }} />
+            <Tabs.Screen
+              key={screen.name}
+              name={screen.name}
+              options={{ title: t(screen.title) }}
+            />
           ))}
         </Tabs>
         {!isKeyboardVisible && (
@@ -275,17 +294,32 @@ export function AppShellProvider() {
         onSkip={closeTutorial}
         changeTab={changeTab}
       />
-      <CustomModal visible={showLevelUpModal} onClose={() => setShowLevelUpModal(false)} borderColor={'#FFD700'}>
+      <CustomModal
+        visible={showLevelUpModal}
+        onClose={() => setShowLevelUpModal(false)}
+        borderColor={'#FFD700'}
+      >
         <LevelUpModal modalConfig={levelUpModalConfig} />
       </CustomModal>
-      <CustomModal visible={showAchModal} onClose={() => setShowAchModal(false)} borderColor={'#FFD700'}>
+      <CustomModal
+        visible={showAchModal}
+        onClose={() => setShowAchModal(false)}
+        borderColor={'#FFD700'}
+      >
         {currentAchievement && (
           <View style={{ alignItems: 'center', justifyContent: 'space-around', flex: 1 }}>
             <GradientIcon size={205} colors={GOLD_COLORS}>
               <FontAwesome6 size={200} name={currentAchievement.icon} />
             </GradientIcon>
 
-            <Text style={{ fontFamily: theme.regular, color: theme.colors.text, fontSize: 50, marginTop: 5 }}>
+            <Text
+              style={{
+                fontFamily: theme.regular,
+                color: theme.colors.text,
+                fontSize: 50,
+                marginTop: 5,
+              }}
+            >
               {getLocalizedText(currentAchievement.name)}
             </Text>
 

@@ -45,7 +45,8 @@ export default function Onboarding() {
     const { layoutMeasurement, contentOffset, contentSize } = event.nativeEvent;
     const paddingToBottom = 40;
 
-    const isBottom = layoutMeasurement.height + contentOffset.y >= contentSize.height - paddingToBottom;
+    const isBottom =
+      layoutMeasurement.height + contentOffset.y >= contentSize.height - paddingToBottom;
     setIsScrolledToBottom(isBottom);
   };
 
@@ -86,7 +87,10 @@ export default function Onboarding() {
   };
 
   return (
-    <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={{ flex: 1 }}>
+    <KeyboardAvoidingView
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      style={{ flex: 1 }}
+    >
       <ScrollView
         style={{ flex: 1, backgroundColor: theme.colors.background }}
         contentContainerStyle={styles.container}
@@ -102,14 +106,20 @@ export default function Onboarding() {
           <Text style={styles.title}>{t('indexAuth.title')}</Text>
           <Text style={styles.subtitle}>
             {t('indexAuth.subTitle1')}{' '}
-            <Text style={{ color: theme.colors.primaryDark }}>Hydra</Text>, {t('indexAuth.subTitle2')}
+            <Text style={{ color: theme.colors.primaryDark }}>Hydra</Text>,{' '}
+            {t('indexAuth.subTitle2')}
           </Text>
         </View>
         <View style={styles.form}>
           <View style={styles.formElem}>
             <Text style={styles.label}>{t('ask.name')}</Text>
             <Animated.View style={{ transform: [{ translateX: wrongAnim }] }}>
-              <TextInput defaultValue="" style={styles.input} onChangeText={setName} placeholder="ex: Hydra" />
+              <TextInput
+                defaultValue=""
+                style={styles.input}
+                onChangeText={setName}
+                placeholder="ex: Hydra"
+              />
             </Animated.View>
           </View>
         </View>

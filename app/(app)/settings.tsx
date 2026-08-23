@@ -109,7 +109,13 @@ type SettingsSubViewProps = {
   updateSettings: (newSettings: Pick<UserProfilePatch, 'notifications' | 'preferences'>) => void;
 };
 
-const NotificationsView = ({ setCurrentView, styles, theme, userSettings, updateSettings }: SettingsSubViewProps) => {
+const NotificationsView = ({
+  setCurrentView,
+  styles,
+  theme,
+  userSettings,
+  updateSettings,
+}: SettingsSubViewProps) => {
   const { t } = useTranslation();
 
   const REMINDER_OPTS: ToggleOptionItem<boolean>[] = [
@@ -148,9 +154,30 @@ const NotificationsView = ({ setCurrentView, styles, theme, userSettings, update
 
   return (
     <View style={styles.subViewContainer}>
-      <ToggleOption styles={styles} theme={theme} value={reminders} onValueChange={setReminders} options={REMINDER_OPTS} title={t('settings.reminders')} />
-      <ToggleOption styles={styles} theme={theme} value={frequency} onValueChange={setFrequency} options={FREQUENCY_OPTS} title={t('settings.frequency')} />
-      <ToggleOption styles={styles} theme={theme} value={sound} onValueChange={setSound} options={SOUND_OPTS} title={t('settings.sound')} />
+      <ToggleOption
+        styles={styles}
+        theme={theme}
+        value={reminders}
+        onValueChange={setReminders}
+        options={REMINDER_OPTS}
+        title={t('settings.reminders')}
+      />
+      <ToggleOption
+        styles={styles}
+        theme={theme}
+        value={frequency}
+        onValueChange={setFrequency}
+        options={FREQUENCY_OPTS}
+        title={t('settings.frequency')}
+      />
+      <ToggleOption
+        styles={styles}
+        theme={theme}
+        value={sound}
+        onValueChange={setSound}
+        options={SOUND_OPTS}
+        title={t('settings.sound')}
+      />
 
       <View style={{ flex: 1 }} />
 
@@ -161,7 +188,13 @@ const NotificationsView = ({ setCurrentView, styles, theme, userSettings, update
   );
 };
 
-const PreferencesView = ({ setCurrentView, styles, theme, userSettings, updateSettings }: SettingsSubViewProps) => {
+const PreferencesView = ({
+  setCurrentView,
+  styles,
+  theme,
+  userSettings,
+  updateSettings,
+}: SettingsSubViewProps) => {
   const { t } = useTranslation();
 
   const UNIT_OPTS: ToggleOptionItem<string>[] = [
@@ -192,7 +225,9 @@ const PreferencesView = ({ setCurrentView, styles, theme, userSettings, updateSe
   const [soundEffects, setSoundEffects] = useState(userSettings?.preferences?.soundEffects ?? true);
   const [volume, setVolume] = useState(userSettings?.preferences?.volume || 50);
   const [vibration, setVibration] = useState(userSettings?.preferences?.vibration ?? true);
-  const [appTheme, setAppTheme] = useState<ThemeModePreference>(userSettings?.preferences?.theme ?? 'light');
+  const [appTheme, setAppTheme] = useState<ThemeModePreference>(
+    userSettings?.preferences?.theme ?? 'light',
+  );
   const [language, setLanguage] = useState(userSettings?.preferences?.language || 'es');
 
   const handleSave = () => {
@@ -212,17 +247,59 @@ const PreferencesView = ({ setCurrentView, styles, theme, userSettings, updateSe
 
   return (
     <View style={styles.subViewContainer}>
-      <ToggleOption styles={styles} theme={theme} value={unitDist} onValueChange={setUnitDist} options={UNIT_OPTS} title={t('settings.unitMeasure')} />
-      <ToggleOption styles={styles} theme={theme} value={unitWeight} onValueChange={setUnitWeight} options={WEIGHT_OPTS} title={t('settings.unitWeight')} />
-      <ToggleOption styles={styles} theme={theme} value={soundEffects} onValueChange={setSoundEffects} options={BOOL_OPTS} title={t('settings.soundEffects')} />
+      <ToggleOption
+        styles={styles}
+        theme={theme}
+        value={unitDist}
+        onValueChange={setUnitDist}
+        options={UNIT_OPTS}
+        title={t('settings.unitMeasure')}
+      />
+      <ToggleOption
+        styles={styles}
+        theme={theme}
+        value={unitWeight}
+        onValueChange={setUnitWeight}
+        options={WEIGHT_OPTS}
+        title={t('settings.unitWeight')}
+      />
+      <ToggleOption
+        styles={styles}
+        theme={theme}
+        value={soundEffects}
+        onValueChange={setSoundEffects}
+        options={BOOL_OPTS}
+        title={t('settings.soundEffects')}
+      />
 
       <View style={styles.sliderContainer}>
         <VolumeSlider volume={volume} setVolume={setVolume} />
       </View>
 
-      <ToggleOption styles={styles} theme={theme} value={vibration} onValueChange={setVibration} options={BOOL_OPTS} title={t('settings.vibration')} />
-      <ToggleOption styles={styles} theme={theme} value={appTheme} onValueChange={setAppTheme} options={THEME_OPTS} title={t('settings.theme')} />
-      <ToggleOption styles={styles} theme={theme} value={language} onValueChange={setLanguage} options={LANG_OPTS} title={t('settings.language')} />
+      <ToggleOption
+        styles={styles}
+        theme={theme}
+        value={vibration}
+        onValueChange={setVibration}
+        options={BOOL_OPTS}
+        title={t('settings.vibration')}
+      />
+      <ToggleOption
+        styles={styles}
+        theme={theme}
+        value={appTheme}
+        onValueChange={setAppTheme}
+        options={THEME_OPTS}
+        title={t('settings.theme')}
+      />
+      <ToggleOption
+        styles={styles}
+        theme={theme}
+        value={language}
+        onValueChange={setLanguage}
+        options={LANG_OPTS}
+        title={t('settings.language')}
+      />
 
       <View style={{ flex: 1 }} />
       <TouchableOpacity onPress={handleSave} style={styles.menuItem}>
@@ -264,7 +341,10 @@ const SupportView = ({ styles, theme }: SettingsSubViewProps) => {
         .map((log) => {
           const dateObj = new Date(log.timestamp);
           const dateStr = dateObj.toLocaleDateString(localeTag);
-          const timeStr = dateObj.toLocaleTimeString(localeTag, { hour: '2-digit', minute: '2-digit' });
+          const timeStr = dateObj.toLocaleTimeString(localeTag, {
+            hour: '2-digit',
+            minute: '2-digit',
+          });
           return `${dateStr},${timeStr},${log.amount}`;
         })
         .join('\n');
@@ -324,7 +404,11 @@ const SupportView = ({ styles, theme }: SettingsSubViewProps) => {
       {renderMenuItem(t('settings.legalNotice'), () => openModal(2))}
       {renderMenuItem(t('settings.aboutUs'), () => openModal(3))}
 
-      <CustomModal visible={modalVisible} onClose={() => setModalVisible(false)} borderColor={theme.colors.primary}>
+      <CustomModal
+        visible={modalVisible}
+        onClose={() => setModalVisible(false)}
+        borderColor={theme.colors.primary}
+      >
         <ScrollView showsVerticalScrollIndicator={false}>
           <Text style={styles.legalText}>{INFO_PAGES[pageIndex].content}</Text>
         </ScrollView>
@@ -349,17 +433,29 @@ const AccountView = ({ styles, theme }: SettingsSubViewProps) => {
 
   return (
     <View style={styles.subViewContainer}>
-      <TouchableOpacity onPress={() => setDeleteModalVisible(true)} style={[styles.menuItem, styles.dangerItem]}>
+      <TouchableOpacity
+        onPress={() => setDeleteModalVisible(true)}
+        style={[styles.menuItem, styles.dangerItem]}
+      >
         <Text style={[styles.menuText, { color: 'red' }]}>{t('settings.deleteAccount')}</Text>
       </TouchableOpacity>
 
-      <CustomModal visible={deleteModalVisible} onClose={() => setDeleteModalVisible(false)} borderColor="red">
+      <CustomModal
+        visible={deleteModalVisible}
+        onClose={() => setDeleteModalVisible(false)}
+        borderColor="red"
+      >
         <View style={styles.deleteModalContent}>
-          <Text style={[styles.title, { color: 'red', fontSize: 25 }]}>{t('settings.deleteAllData')}</Text>
+          <Text style={[styles.title, { color: 'red', fontSize: 25 }]}>
+            {t('settings.deleteAllData')}
+          </Text>
           <Text style={styles.subtitle}>{t('settings.deleteWarning')}</Text>
 
           <View style={styles.modalButtons}>
-            <TouchableOpacity onPress={() => setDeleteModalVisible(false)} style={styles.modalButton}>
+            <TouchableOpacity
+              onPress={() => setDeleteModalVisible(false)}
+              style={styles.modalButton}
+            >
               <Text style={styles.menuText}>{t('settings.cancel')}</Text>
             </TouchableOpacity>
 
@@ -419,17 +515,29 @@ const MainSettingsView = ({ setCurrentView, styles, theme }: SettingsSubViewProp
         <Text style={styles.menuText}>{t('settings.account')}</Text>
       </TouchableOpacity>
 
-      <TouchableOpacity onPress={() => setDeleteModalVisible(true)} style={[styles.menuItem, styles.dangerItem]}>
+      <TouchableOpacity
+        onPress={() => setDeleteModalVisible(true)}
+        style={[styles.menuItem, styles.dangerItem]}
+      >
         <Text style={[styles.menuText, { color: 'red' }]}>{t('settings.logout')}</Text>
       </TouchableOpacity>
 
-      <CustomModal visible={deleteModalVisible} onClose={() => setDeleteModalVisible(false)} borderColor="red">
+      <CustomModal
+        visible={deleteModalVisible}
+        onClose={() => setDeleteModalVisible(false)}
+        borderColor="red"
+      >
         <View style={styles.deleteModalContent}>
-          <Text style={[styles.title, { color: 'red', fontSize: 25 }]}>{t('settings.logoutQuestion')}</Text>
+          <Text style={[styles.title, { color: 'red', fontSize: 25 }]}>
+            {t('settings.logoutQuestion')}
+          </Text>
           <Text style={styles.subtitle}>{t('settings.logoutWarning')}</Text>
 
           <View style={styles.modalButtons}>
-            <TouchableOpacity onPress={() => setDeleteModalVisible(false)} style={styles.modalButton}>
+            <TouchableOpacity
+              onPress={() => setDeleteModalVisible(false)}
+              style={styles.modalButton}
+            >
               <Text style={styles.menuText}>{t('settings.cancel')}</Text>
             </TouchableOpacity>
 
@@ -513,10 +621,18 @@ export default function Settings() {
   };
 
   return (
-    <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer} showsVerticalScrollIndicator={false}>
+    <ScrollView
+      style={styles.container}
+      contentContainerStyle={styles.contentContainer}
+      showsVerticalScrollIndicator={false}
+    >
       <View style={styles.header}>
         {currentView !== 'home' && (
-          <TouchableOpacity hitSlop={20} onPress={() => setCurrentView('home')} style={styles.backButton}>
+          <TouchableOpacity
+            hitSlop={20}
+            onPress={() => setCurrentView('home')}
+            style={styles.backButton}
+          >
             <FontAwesome6 name="angle-left" size={28} color={theme.colors.text} />
           </TouchableOpacity>
         )}

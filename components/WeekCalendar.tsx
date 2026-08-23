@@ -46,7 +46,12 @@ const Day = React.memo(function Day({
         onPress={changeDay}
         style={[styles.numberContainer, { backgroundColor: backcolor }]}
       >
-        <Text style={[styles.text, { color: isGoalReached ? theme.colors.contrast : theme.colors.text }]}>
+        <Text
+          style={[
+            styles.text,
+            { color: isGoalReached ? theme.colors.contrast : theme.colors.text },
+          ]}
+        >
           {dayNumber}
         </Text>
       </TouchableOpacity>
@@ -61,7 +66,11 @@ type WeekCalendarProps = {
   onSelectedDayChange: (date: Date) => void;
 };
 
-export default function WeekCalendar({ onMonthChange, selectedDay, onSelectedDayChange }: WeekCalendarProps) {
+export default function WeekCalendar({
+  onMonthChange,
+  selectedDay,
+  onSelectedDayChange,
+}: WeekCalendarProps) {
   const { theme } = useTheme();
   const styles = useMemo(() => createStyles(theme), [theme]);
   const { userProfile } = useUser();

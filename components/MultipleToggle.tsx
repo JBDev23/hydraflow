@@ -34,10 +34,12 @@ export default function MultipleToggle({
   const buttonRef = useRef<ElementRef<typeof TouchableOpacity>>(null);
 
   const openMenu = () => {
-    buttonRef.current?.measure((_fx: number, _fy: number, w: number, h: number, px: number, py: number) => {
-      setPosition({ x: px, y: py, width: w, height: h });
-      setVisible(true);
-    });
+    buttonRef.current?.measure(
+      (_fx: number, _fy: number, w: number, h: number, px: number, py: number) => {
+        setPosition({ x: px, y: py, width: w, height: h });
+        setVisible(true);
+      },
+    );
   };
 
   const selectedLabel = options[value] || options[0] || '';
@@ -64,7 +66,11 @@ export default function MultipleToggle({
         </LinearGradient>
       </TouchableOpacity>
       <Modal animationType="fade" transparent visible={visible} onRequestClose={onClose}>
-        <View style={styles.overlay} onTouchStart={(e) => e.stopPropagation()} onTouchEnd={(e) => e.stopPropagation()}>
+        <View
+          style={styles.overlay}
+          onTouchStart={(e) => e.stopPropagation()}
+          onTouchEnd={(e) => e.stopPropagation()}
+        >
           <TouchableOpacity style={styles.overlayTouchable} onPress={onClose} activeOpacity={1} />
           <View
             style={[
@@ -85,7 +91,9 @@ export default function MultipleToggle({
                   onClose();
                 }}
               >
-                <Text style={[styles.itemText, index === value && styles.itemTextSelected]}>{option}</Text>
+                <Text style={[styles.itemText, index === value && styles.itemTextSelected]}>
+                  {option}
+                </Text>
               </TouchableOpacity>
             ))}
           </View>

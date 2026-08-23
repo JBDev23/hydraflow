@@ -30,10 +30,7 @@ type HydrationProviderProps = {
   hydrationApiRef: MutableRefObject<Partial<HydrationApi>>;
 };
 
-export const HydrationProvider = ({
-  children,
-  hydrationApiRef,
-}: HydrationProviderProps) => {
+export const HydrationProvider = ({ children, hydrationApiRef }: HydrationProviderProps) => {
   const { userProfile } = useUser();
   const [dailyWater, setDailyWater] = useState(0);
   const [hydrationEpoch, setHydrationEpoch] = useState(0);

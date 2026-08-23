@@ -78,11 +78,21 @@ export default function Achievement({
   if (isLoading) {
     return (
       <Animated.View style={{ opacity: pulseAnim }}>
-        <View style={[styles.skeleton, { width, height, backgroundColor: theme.colors.border, borderRadius: 20 }]}>
+        <View
+          style={[
+            styles.skeleton,
+            { width, height, backgroundColor: theme.colors.border, borderRadius: 20 },
+          ]}
+        >
           <View
             style={[
               styles.archInt,
-              { width: width - 8, height: height - 8, backgroundColor: theme.colors.background, opacity: 0.5 },
+              {
+                width: width - 8,
+                height: height - 8,
+                backgroundColor: theme.colors.background,
+                opacity: 0.5,
+              },
             ]}
           />
         </View>
@@ -104,13 +114,19 @@ export default function Achievement({
             </View>
           </LinearGradient>
         </TouchableOpacity>
-        <CustomModal visible={modalVisible} onClose={() => setModalVisible(false)} borderColor="#FFD700">
+        <CustomModal
+          visible={modalVisible}
+          onClose={() => setModalVisible(false)}
+          borderColor="#FFD700"
+        >
           <View style={{ alignItems: 'center', justifyContent: 'space-around', flex: 1 }}>
             <GradientIcon size={205} colors={GOLD_COLORS}>
               <FontAwesome6 size={200} name={iconName} />
             </GradientIcon>
             <Text style={[styles.title, { fontSize: 50 }]}>{data.name}</Text>
-            <Text style={[styles.date, { fontSize: 22, textAlign: 'center' }]}>{data.description}</Text>
+            <Text style={[styles.date, { fontSize: 22, textAlign: 'center' }]}>
+              {data.description}
+            </Text>
             <Text style={styles.date}>{date}</Text>
           </View>
         </CustomModal>
@@ -125,7 +141,12 @@ export default function Achievement({
           style={[styles.archievement, { width, height }]}
           colors={[theme.colors.border, theme.colors.border]}
         >
-          <View style={[styles.archInt, { width: width - 8, height: height - 8, backgroundColor: theme.colors.textTertiary }]}>
+          <View
+            style={[
+              styles.archInt,
+              { width: width - 8, height: height - 8, backgroundColor: theme.colors.textTertiary },
+            ]}
+          >
             <FontAwesome6 size={72} name="trophy" color={theme.colors.contrast} />
             <Text style={styles.title}>????</Text>
             <Text style={styles.date}>xx/xx/xx</Text>

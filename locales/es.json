@@ -94,12 +94,12 @@
     "terms": "Al continuar, aceptas nuestros Términos y Política de Privacidad.",
     "serverConnect": "Conectando con el servidor..."
   },
-  "indexApp":{
+  "indexApp": {
     "remaining": "restantes",
     "goalCompleted": "¡Meta alcanzada!",
     "custom": "Personalizado"
   },
-  "statsApp":{
+  "statsApp": {
     "average": "PROMEDIO",
     "total": "TOTAL",
     "streak": "Racha",
@@ -135,7 +135,7 @@
 
   "profile": {
     "male": "Hombre",
-    "female": "Mujer", 
+    "female": "Mujer",
     "other": "Otro",
     "sedentary": "Sedentario",
     "moderate": "Moderado",
@@ -149,7 +149,6 @@
 
   "loading": "Cargando...",
   "greeting": "Hola",
-  
 
   "buttons": {
     "start": "EMPEZAR",
@@ -213,23 +212,23 @@
     }
   },
   "toast": {
-    "experience" : "experiencia",
-    "goalCompleted" : "!!Meta conseguida!!",
-    "newStreak" : "!!Estás en racha!!",
-    "unavailableExport" : "Aún no tienes registros de agua para exportar.",
-    "unavailableShare" : "La función de compartir no está disponible en este dispositivo.",
-    "generateError" : "Ocurrió un problema al generar el archivo.",
-    "unavailableEmail" : "No se pudo abrir la aplicación de correo automáticamente. Puedes escribirnos a: ",
-    "offlineSave" : "Guardado offline. Se sincronizará al conectar.",
-    "offlineMode" : "Modo offline",
-    "conecctionError" : "Error de conexión. Esta acción requiere internet.",
-    "syncData" : "datos sincronizados",
-    "loadStatsError" : "No se pudieron cargar las estadísticas.",
-    "loadAchievementsError" : "No se pudieron cargar los logros.",
-    "loadShopError" : "No se pudo cargar la tienda.",
-    "purchaseError" : "Error en la compra. Revisa tu conexión o saldo.",
-    "equipError" : "No se pudo equipar. Requiere conexión.",
-    "deleteAccountError" : "No se pudo eliminar la cuenta. Revisa tu conexión."
+    "experience": "experiencia",
+    "goalCompleted": "!!Meta conseguida!!",
+    "newStreak": "!!Estás en racha!!",
+    "unavailableExport": "Aún no tienes registros de agua para exportar.",
+    "unavailableShare": "La función de compartir no está disponible en este dispositivo.",
+    "generateError": "Ocurrió un problema al generar el archivo.",
+    "unavailableEmail": "No se pudo abrir la aplicación de correo automáticamente. Puedes escribirnos a: ",
+    "offlineSave": "Guardado offline. Se sincronizará al conectar.",
+    "offlineMode": "Modo offline",
+    "conecctionError": "Error de conexión. Esta acción requiere internet.",
+    "syncData": "datos sincronizados",
+    "loadStatsError": "No se pudieron cargar las estadísticas.",
+    "loadAchievementsError": "No se pudieron cargar los logros.",
+    "loadShopError": "No se pudo cargar la tienda.",
+    "purchaseError": "Error en la compra. Revisa tu conexión o saldo.",
+    "equipError": "No se pudo equipar. Requiere conexión.",
+    "deleteAccountError": "No se pudo eliminar la cuenta. Revisa tu conexión."
   },
   "tutorial": {
     "steps": [

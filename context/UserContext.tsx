@@ -43,11 +43,7 @@ type UserProviderProps = {
   hydrationApiRef: MutableRefObject<Partial<HydrationApi>>;
 };
 
-export const UserProvider = ({
-  children,
-  userApiRef,
-  hydrationApiRef,
-}: UserProviderProps) => {
+export const UserProvider = ({ children, userApiRef, hydrationApiRef }: UserProviderProps) => {
   const { authToken, authTokenRef } = useAuth();
   const [userProfile, setUserProfile] = useState<UserProfile>(() => ({
     ...INITIAL_USER_PROFILE,
@@ -101,10 +97,7 @@ export const UserProvider = ({
     await AsyncStorage.setItem(STORAGE_KEYS.USER_PROFILE, JSON.stringify(mappedProfile));
   };
 
-  const syncNotificationsForProfile = async (
-    profile: UserProfile,
-    currentWater: number,
-  ) => {
+  const syncNotificationsForProfile = async (profile: UserProfile, currentWater: number) => {
     await syncNotifications(profile, currentWater);
   };
 

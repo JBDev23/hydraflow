@@ -24,10 +24,7 @@ type OfflineProviderProps = {
   onSyncSuccessRef: MutableRefObject<(() => Promise<void>) | null>;
 };
 
-export const OfflineProvider = ({
-  children,
-  onSyncSuccessRef,
-}: OfflineProviderProps) => {
+export const OfflineProvider = ({ children, onSyncSuccessRef }: OfflineProviderProps) => {
   const { authTokenRef } = useAuth();
   const [isOffline, setIsOffline] = useState(false);
 
@@ -48,8 +45,7 @@ export const OfflineProvider = ({
 
   useEffect(() => {
     const unsubscribe = NetInfo.addEventListener((state) => {
-      const offline =
-        state.isConnected === false || state.isInternetReachable === false;
+      const offline = state.isConnected === false || state.isInternetReachable === false;
       setIsOffline(offline);
 
       const token = authTokenRef?.current;
@@ -67,11 +63,7 @@ export const OfflineProvider = ({
     };
   }, [authTokenRef]);
 
-  return (
-    <OfflineContext.Provider value={{ isOffline }}>
-      {children}
-    </OfflineContext.Provider>
-  );
+  return <OfflineContext.Provider value={{ isOffline }}>{children}</OfflineContext.Provider>;
 };
 
 export const useOffline = (): OfflineContextValue => {

@@ -7,7 +7,13 @@ import { FontAwesome6 } from '@expo/vector-icons';
 import { useTheme } from '../context/ThemeContext';
 import { useTranslation } from 'react-i18next';
 import { useUser } from '../context/UserContext';
-import type { ProfileFieldDef, ProfileFieldKey, ProfileFieldValue, Theme, TimeOfDay } from '../types';
+import type {
+  ProfileFieldDef,
+  ProfileFieldKey,
+  ProfileFieldValue,
+  Theme,
+  TimeOfDay,
+} from '../types';
 
 const screenWidth = Dimensions.get('window').width;
 
@@ -106,15 +112,24 @@ export default function ProfileItem({ value, field, changeUser }: ProfileItemPro
       <View key={field.key} style={styles.profileContainer}>
         <View style={styles.profileItem}>
           <Text style={styles.profileItemText}>{t(field.label)}</Text>
-          <Text style={[styles.statText, { color: theme.colors.textTertiary }]}>{displayValue}</Text>
+          <Text style={[styles.statText, { color: theme.colors.textTertiary }]}>
+            {displayValue}
+          </Text>
         </View>
         <TouchableOpacity onPress={() => setModalVisible(true)} style={styles.editContainer}>
-          <LinearGradient style={styles.editButton} colors={[theme.colors.primary, theme.colors.primaryDark]}>
+          <LinearGradient
+            style={styles.editButton}
+            colors={[theme.colors.primary, theme.colors.primaryDark]}
+          >
             <FontAwesome6 name="pen" size={21} color={theme.colors.contrast} />
           </LinearGradient>
         </TouchableOpacity>
       </View>
-      <CustomModal visible={modalVisible} onClose={() => setModalVisible(false)} borderColor={theme.colors.primaryDark}>
+      <CustomModal
+        visible={modalVisible}
+        onClose={() => setModalVisible(false)}
+        borderColor={theme.colors.primaryDark}
+      >
         <EditModal item={field.key} value={editValue} handleChange={onSave} />
       </CustomModal>
     </>

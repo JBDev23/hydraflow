@@ -36,9 +36,6 @@ export function showToast(
   }
 
   if (Platform.OS === 'android') {
-    ToastAndroid.show(
-      text,
-      duration === 'long' ? ToastAndroid.LONG : ToastAndroid.SHORT,
-    );
+    ToastAndroid.show(text, duration === 'long' ? ToastAndroid.LONG : ToastAndroid.SHORT);
   }
 }

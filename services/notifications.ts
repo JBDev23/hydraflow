@@ -45,7 +45,10 @@ const validateTimeConfig = (
   defaultMinute: number,
 ): HourMinute => {
   const hour = Math.max(0, Math.min(23, parseInt(String(timeConfig?.hours ?? defaultHour), 10)));
-  const minute = Math.max(0, Math.min(59, parseInt(String(timeConfig?.minutes ?? defaultMinute), 10)));
+  const minute = Math.max(
+    0,
+    Math.min(59, parseInt(String(timeConfig?.minutes ?? defaultMinute), 10)),
+  );
   return { hour, minute };
 };
 

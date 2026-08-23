@@ -15,7 +15,8 @@ export default function GenderEditor({ value, onChange }: GenderEditorProps) {
   const { theme } = useTheme();
   const styles = useMemo(() => createStyles(theme), [theme]);
 
-  const getColor = (gen: Gender) => (value === gen ? theme.colors.primaryDark : theme.colors.textTertiary);
+  const getColor = (gen: Gender) =>
+    value === gen ? theme.colors.primaryDark : theme.colors.textTertiary;
 
   return (
     <View style={styles.container}>

@@ -22,7 +22,11 @@ type HydraProps = {
 
 type HydraState = 'idle' | 'idleblink';
 
-export default function Hydra({ anim = 'default', height = screenWidth * 0.6, showSkins = false }: HydraProps) {
+export default function Hydra({
+  anim = 'default',
+  height = screenWidth * 0.6,
+  showSkins = false,
+}: HydraProps) {
   const { userProfile } = useUser();
 
   const [state, setState] = useState<HydraState>('idle');

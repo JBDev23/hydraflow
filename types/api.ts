@@ -171,9 +171,7 @@ export type UpdateUserOfflineResponse = {
 };
 
 export type UpdateUserResult =
-  | UpdateUserOnlineResponse
-  | UpdateUserSkippedResponse
-  | UpdateUserOfflineResponse;
+  UpdateUserOnlineResponse | UpdateUserSkippedResponse | UpdateUserOfflineResponse;
 
 export type StatsMode = 'day' | 'week' | 'month';
 

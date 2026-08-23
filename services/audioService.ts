@@ -1,13 +1,7 @@
 import { createAudioPlayer, setAudioModeAsync, type AudioPlayer } from 'expo-audio';
 
 export type SoundName =
-  | 'drink'
-  | 'swipe'
-  | 'levelUp'
-  | 'achievement'
-  | 'goalReached'
-  | 'equipItem'
-  | 'buyItem';
+  'drink' | 'swipe' | 'levelUp' | 'achievement' | 'goalReached' | 'equipItem' | 'buyItem';
 
 class AudioService {
   private players: Partial<Record<SoundName, AudioPlayer>> = {};

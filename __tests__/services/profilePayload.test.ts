@@ -1,9 +1,5 @@
 import { toProfileUpdatePayload } from '../../services/profilePayload';
-import {
-  partialProfilePatch,
-  profileWithIgnoredFields,
-  statsPatch,
-} from '../fixtures/userProfile';
+import { partialProfilePatch, profileWithIgnoredFields, statsPatch } from '../fixtures/userProfile';
 
 describe('toProfileUpdatePayload', () => {
   test('Debería devolver {} para null', () => {

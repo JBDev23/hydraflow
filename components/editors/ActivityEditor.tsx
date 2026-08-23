@@ -50,7 +50,12 @@ export default function ActivityEditor({ value, onChange }: ActivityEditorProps)
                   : [theme.colors.background, theme.colors.background]
               }
             >
-              <Text style={[styles.optionText, { color: isActive ? theme.colors.contrast : theme.colors.text }]}>
+              <Text
+                style={[
+                  styles.optionText,
+                  { color: isActive ? theme.colors.contrast : theme.colors.text },
+                ]}
+              >
                 {opt.label}
               </Text>
               <View style={styles.iconWrapper}>

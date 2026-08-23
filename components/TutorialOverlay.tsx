@@ -88,12 +88,11 @@ export default function TutorialOverlay({
       >
         <Animated.View style={[styles.card, { opacity: fadeAnim }]}>
           <View style={styles.iconContainer}>
-            <LinearGradient colors={[theme.colors.primary, theme.colors.primaryDark]} style={styles.iconGradient}>
-              <FontAwesome6
-                name={currentStep.icon}
-                size={30}
-                color={theme.colors.contrast}
-              />
+            <LinearGradient
+              colors={[theme.colors.primary, theme.colors.primaryDark]}
+              style={styles.iconGradient}
+            >
+              <FontAwesome6 name={currentStep.icon} size={30} color={theme.colors.contrast} />
             </LinearGradient>
           </View>
 
@@ -102,7 +101,10 @@ export default function TutorialOverlay({
 
           <View style={styles.dotsContainer}>
             {steps.map((_, index) => (
-              <View key={index} style={[styles.dot, index === currentStepIndex && styles.activeDot]} />
+              <View
+                key={index}
+                style={[styles.dot, index === currentStepIndex && styles.activeDot]}
+              />
             ))}
           </View>
 
@@ -112,11 +114,19 @@ export default function TutorialOverlay({
             </TouchableOpacity>
 
             <TouchableOpacity onPress={handleNext}>
-              <LinearGradient colors={[theme.colors.primary, theme.colors.primaryDark]} style={styles.nextButton}>
+              <LinearGradient
+                colors={[theme.colors.primary, theme.colors.primaryDark]}
+                style={styles.nextButton}
+              >
                 <Text style={styles.nextText}>
                   {currentStepIndex === steps.length - 1 ? t('buttons.start') : t('buttons.next')}
                 </Text>
-                <FontAwesome6 name="arrow-right" size={14} color={theme.colors.contrast} style={{ marginLeft: 8 }} />
+                <FontAwesome6
+                  name="arrow-right"
+                  size={14}
+                  color={theme.colors.contrast}
+                  style={{ marginLeft: 8 }}
+                />
               </LinearGradient>
             </TouchableOpacity>
           </View>

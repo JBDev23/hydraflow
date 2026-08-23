@@ -62,7 +62,11 @@ export default function Stats() {
   const { userProfile } = useUser();
   const { t } = useTranslation();
 
-  const TOGGLE_LABELS = [t('statsApp.toggleLabels.day'), t('statsApp.toggleLabels.week'), t('statsApp.toggleLabels.month')];
+  const TOGGLE_LABELS = [
+    t('statsApp.toggleLabels.day'),
+    t('statsApp.toggleLabels.week'),
+    t('statsApp.toggleLabels.month'),
+  ];
 
   const goal = userProfile?.goal || 2000;
 
@@ -146,7 +150,11 @@ export default function Stats() {
 
   const resetToToday = () => setDate(new Date());
 
-  useFocusEffect(useCallback(() => { resetToToday(); }, []));
+  useFocusEffect(
+    useCallback(() => {
+      resetToToday();
+    }, []),
+  );
 
   const onTouchStart = (e: GestureResponderEvent) => {
     e.stopPropagation();
@@ -189,7 +197,11 @@ export default function Stats() {
   };
 
   return (
-    <ScrollView style={{ flex: 1 }} contentContainerStyle={styles.container} showsVerticalScrollIndicator={false}>
+    <ScrollView
+      style={{ flex: 1 }}
+      contentContainerStyle={styles.container}
+      showsVerticalScrollIndicator={false}
+    >
       <View style={styles.toggleContainer}>
         <ToggleButton
           labels={TOGGLE_LABELS}
@@ -227,9 +239,27 @@ export default function Stats() {
         </View>
 
         <View style={styles.statGrid}>
-          <StatItem label={t('statsApp.streak')} value={streak} icon="fire-flame-curved" colors={['#FF0000', '#F9F918']} theme={theme} />
-          <StatItem label={t('statsApp.goal')} value={goals} icon="droplet" colors={['#79D8FE', '#6989E2']} theme={theme} />
-          <StatItem label={t('statsApp.liters')} value={totalVolume} icon="water" colors={['#79D8FE', '#7AACFE']} theme={theme} />
+          <StatItem
+            label={t('statsApp.streak')}
+            value={streak}
+            icon="fire-flame-curved"
+            colors={['#FF0000', '#F9F918']}
+            theme={theme}
+          />
+          <StatItem
+            label={t('statsApp.goal')}
+            value={goals}
+            icon="droplet"
+            colors={['#79D8FE', '#6989E2']}
+            theme={theme}
+          />
+          <StatItem
+            label={t('statsApp.liters')}
+            value={totalVolume}
+            icon="water"
+            colors={['#79D8FE', '#7AACFE']}
+            theme={theme}
+          />
         </View>
       </View>
     </ScrollView>

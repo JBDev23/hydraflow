@@ -73,7 +73,15 @@ function AppNavigator() {
     } else if (isLoggedIn && isOnboardingCompleted && inAuthGroup) {
       router.replace('/(app)');
     }
-  }, [userProfile, authToken, segments, isGlobalLoading, fontsLoaded, isSplashAnimationDone, router]);
+  }, [
+    userProfile,
+    authToken,
+    segments,
+    isGlobalLoading,
+    fontsLoaded,
+    isSplashAnimationDone,
+    router,
+  ]);
 
   if (!isSplashAnimationDone) {
     return <CustomSplashScreen progress={Math.round(progress)} />;

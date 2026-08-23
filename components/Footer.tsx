@@ -44,13 +44,25 @@ export default function Footer({ wave1 = 0, wave2 = 0, wave3 = 0 }: FooterProps)
   return (
     <View style={styles.footerContainer}>
       <Animated.View
-        style={[styles.wave, styles.wave1, { transform: [{ translateX: wave1 }, { rotate: rotate1 }] }]}
+        style={[
+          styles.wave,
+          styles.wave1,
+          { transform: [{ translateX: wave1 }, { rotate: rotate1 }] },
+        ]}
       />
       <Animated.View
-        style={[styles.wave, styles.wave2, { transform: [{ translateX: wave2 }, { rotate: rotate2 }] }]}
+        style={[
+          styles.wave,
+          styles.wave2,
+          { transform: [{ translateX: wave2 }, { rotate: rotate2 }] },
+        ]}
       />
       <Animated.View
-        style={[styles.wave, styles.wave3, { transform: [{ translateY: wave3 }, { rotate: rotate3 }] }]}
+        style={[
+          styles.wave,
+          styles.wave3,
+          { transform: [{ translateY: wave3 }, { rotate: rotate3 }] },
+        ]}
       />
       <Animated.View style={styles.bottomBar} />
     </View>

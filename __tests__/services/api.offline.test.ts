@@ -23,8 +23,7 @@ const mockFetchSuccess = (body: unknown = { success: true }) =>
     text: async () => JSON.stringify(body),
   });
 
-const mockFetchFailure = () =>
-  jest.fn().mockRejectedValue(new Error('Network error'));
+const mockFetchFailure = () => jest.fn().mockRejectedValue(new Error('Network error'));
 
 const mockFetchUnauthorized = () =>
   jest.fn().mockResolvedValue({
@@ -184,10 +183,7 @@ describe('api offline integration', () => {
     });
 
     test('Debería mantener acción fallida y posteriores en cola', async () => {
-      storage.set(
-        QUEUE_KEY,
-        JSON.stringify([queuedLogWater, queuedRevertLog, queuedUpdateUser]),
-      );
+      storage.set(QUEUE_KEY, JSON.stringify([queuedLogWater, queuedRevertLog, queuedUpdateUser]));
 
       global.fetch = jest
         .fn()

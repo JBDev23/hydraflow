@@ -5,15 +5,7 @@ import type { ThemeModePreference } from './theme';
 export type Gender = 'male' | 'female' | 'other';
 export type ActivityLevel = 'sedentary' | 'moderate' | 'active' | 'highActive';
 export type ProfileFieldKey =
-  | 'name'
-  | 'age'
-  | 'weight'
-  | 'height'
-  | 'gender'
-  | 'activity'
-  | 'wakeTime'
-  | 'sleepTime'
-  | 'goal';
+  'name' | 'age' | 'weight' | 'height' | 'gender' | 'activity' | 'wakeTime' | 'sleepTime' | 'goal';
 export type ProfileFieldDef = { key: ProfileFieldKey; label: string };
 export type SettingsViewId = 'home' | 'notifications' | 'preferences' | 'support' | 'account';
 export type WeekRange = { start: Date; end: Date; label: string };

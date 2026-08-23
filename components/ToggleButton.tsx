@@ -93,7 +93,11 @@ export default function ToggleButton({
       {labels.map((label, index) => {
         const textColor = animProgress.interpolate({
           inputRange: [index - 1, index, index + 1],
-          outputRange: [theme.colors.textSecondary, theme.colors.contrast, theme.colors.textSecondary],
+          outputRange: [
+            theme.colors.textSecondary,
+            theme.colors.contrast,
+            theme.colors.textSecondary,
+          ],
           extrapolate: 'clamp',
         });
 

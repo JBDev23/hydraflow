@@ -13,12 +13,7 @@ type CustomModalProps = {
   borderColor?: string;
 };
 
-export default function CustomModal({
-  visible,
-  onClose,
-  children,
-  borderColor,
-}: CustomModalProps) {
+export default function CustomModal({ visible, onClose, children, borderColor }: CustomModalProps) {
   const { theme } = useTheme();
   const styles = useMemo(() => createStyles(theme), [theme]);
 
@@ -27,22 +22,16 @@ export default function CustomModal({
   const stopPropagation = () => {};
 
   return (
-    <Modal
-      animationType="fade"
-      transparent={true}
-      visible={visible}
-      onRequestClose={onClose}
-    >
+    <Modal animationType="fade" transparent={true} visible={visible} onRequestClose={onClose}>
       <View style={styles.overlay} onTouchStart={stopPropagation} onTouchEnd={stopPropagation}>
-        <TouchableOpacity
-          style={styles.overlayTouchable}
-          onPress={onClose}
-          activeOpacity={1}
-        />
+        <TouchableOpacity style={styles.overlayTouchable} onPress={onClose} activeOpacity={1} />
 
         <View style={[styles.modalContent, { borderColor: activeBorderColor }]}>
           <View style={styles.header}>
-            <TouchableOpacity onPress={onClose} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
+            <TouchableOpacity
+              onPress={onClose}
+              hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+            >
               <FontAwesome6 name="xmark" size={32} color={theme.colors.text} />
             </TouchableOpacity>
           </View>

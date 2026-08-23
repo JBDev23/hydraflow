@@ -11,7 +11,13 @@ type TimeWheelProps = {
   loop?: boolean;
 };
 
-export default function TimeWheel({ value, onValueChange, max, min = 0, loop = false }: TimeWheelProps) {
+export default function TimeWheel({
+  value,
+  onValueChange,
+  max,
+  min = 0,
+  loop = false,
+}: TimeWheelProps) {
   const { theme } = useTheme();
   const styles = useMemo(() => createStyles(theme), [theme]);
 
@@ -41,7 +47,7 @@ export default function TimeWheel({ value, onValueChange, max, min = 0, loop = f
   const getSafeValue = (val: number) => {
     if (!loop) return val;
     const range = max - min + 1;
-    return (((val - min) % range) + range) % range + min;
+    return ((((val - min) % range) + range) % range) + min;
   };
 
   const smoothUpdate = (targetValue: number) => {
@@ -86,7 +92,9 @@ export default function TimeWheel({ value, onValueChange, max, min = 0, loop = f
       onStartShouldSetPanResponder: () => true,
 
       onMoveShouldSetPanResponder: (_evt, gestureState) => {
-        return Math.abs(gestureState.dy) > Math.abs(gestureState.dx) && Math.abs(gestureState.dy) > 5;
+        return (
+          Math.abs(gestureState.dy) > Math.abs(gestureState.dx) && Math.abs(gestureState.dy) > 5
+        );
       },
       onPanResponderGrant: () => {
         animY.stopAnimation();

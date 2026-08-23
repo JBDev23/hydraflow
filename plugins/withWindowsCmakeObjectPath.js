@@ -1,4 +1,4 @@
-const { withAppBuildGradle } = require("expo/config-plugins");
+const { withAppBuildGradle } = require('expo/config-plugins');
 
 /**
  * Forces CMake to hash long object paths on Windows (MAX_PATH / ninja Stat failures).
@@ -6,11 +6,11 @@ const { withAppBuildGradle } = require("expo/config-plugins");
  */
 function withWindowsCmakeObjectPath(config) {
   return withAppBuildGradle(config, (config) => {
-    if (config.modResults.language !== "groovy") {
+    if (config.modResults.language !== 'groovy') {
       return config;
     }
 
-    const marker = "CMAKE_OBJECT_PATH_MAX";
+    const marker = 'CMAKE_OBJECT_PATH_MAX';
     if (config.modResults.contents.includes(marker)) {
       return config;
     }
@@ -25,10 +25,10 @@ function withWindowsCmakeObjectPath(config) {
 `;
 
     // Inject into the existing defaultConfig { ... } block
-    if (config.modResults.contents.includes("defaultConfig {")) {
+    if (config.modResults.contents.includes('defaultConfig {')) {
       config.modResults.contents = config.modResults.contents.replace(
         /defaultConfig\s*\{/,
-        `defaultConfig {${injection}`
+        `defaultConfig {${injection}`,
       );
     }
 

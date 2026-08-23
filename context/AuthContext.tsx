@@ -36,11 +36,7 @@ type AuthProviderProps = {
   hydrationApiRef: MutableRefObject<Partial<HydrationApi>>;
 };
 
-export const AuthProvider = ({
-  children,
-  userApiRef,
-  hydrationApiRef,
-}: AuthProviderProps) => {
+export const AuthProvider = ({ children, userApiRef, hydrationApiRef }: AuthProviderProps) => {
   const [isLoading, setIsLoading] = useState(true);
   const [authToken, setAuthToken] = useState<string | null>(null);
   const logoutRef = useRef<(() => Promise<void>) | null>(null);
@@ -114,10 +110,7 @@ export const AuthProvider = ({
         setAuthToken(token);
 
         const waterToday = await hydrationApiRef.current?.refreshDailyWater?.();
-        await userApiRef.current?.syncNotificationsForProfile?.(
-          mappedProfile,
-          waterToday ?? 0,
-        );
+        await userApiRef.current?.syncNotificationsForProfile?.(mappedProfile, waterToday ?? 0);
 
         return mappedProfile;
       }

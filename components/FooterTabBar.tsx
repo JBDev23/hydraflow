@@ -45,11 +45,9 @@ type TabDescriptor = {
 };
 
 type TabNavigation = {
-  emit: (event: {
-    type: string;
-    target: string;
-    canPreventDefault: boolean;
-  }) => { defaultPrevented: boolean };
+  emit: (event: { type: string; target: string; canPreventDefault: boolean }) => {
+    defaultPrevented: boolean;
+  };
   navigate: (name: string, params?: { merge?: boolean }) => void;
 };
 
@@ -215,13 +213,23 @@ const FooterTabBar = forwardRef(function FooterTabBar(
       </TouchableOpacity>
 
       <Animated.View
-        style={[styles.wave, styles.wave1, { transform: [{ translateX: wave1 || 0 }, { rotate: rotate1 }] }]}
+        style={[
+          styles.wave,
+          styles.wave1,
+          { transform: [{ translateX: wave1 || 0 }, { rotate: rotate1 }] },
+        ]}
       />
       <Animated.View
-        style={[styles.wave, styles.wave2, { transform: [{ translateX: wave2 || 0 }, { rotate: rotate2 }] }]}
+        style={[
+          styles.wave,
+          styles.wave2,
+          { transform: [{ translateX: wave2 || 0 }, { rotate: rotate2 }] },
+        ]}
       />
 
-      <Animated.View style={[styles.wave, styles.wave3, { transform: [{ translateY: wave3 || 0 }] }]}>
+      <Animated.View
+        style={[styles.wave, styles.wave3, { transform: [{ translateY: wave3 || 0 }] }]}
+      >
         <Animated.View style={{ opacity: isChanging ? 0 : 1 }}>
           {options.title === 'Home' ? (
             <Text style={styles.title}>{formatedDate}</Text>

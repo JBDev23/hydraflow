@@ -20,10 +20,30 @@ function AnimatedDroplet({ isActive, color }: AnimatedDropletProps) {
 
       loopAnimation = Animated.loop(
         Animated.sequence([
-          Animated.timing(animY, { toValue: -5, duration, easing: Easing.out(Easing.sin), useNativeDriver: true }),
-          Animated.timing(animY, { toValue: 0, duration, easing: Easing.in(Easing.sin), useNativeDriver: true }),
-          Animated.timing(animY, { toValue: 5, duration, easing: Easing.out(Easing.sin), useNativeDriver: true }),
-          Animated.timing(animY, { toValue: 0, duration, easing: Easing.in(Easing.sin), useNativeDriver: true }),
+          Animated.timing(animY, {
+            toValue: -5,
+            duration,
+            easing: Easing.out(Easing.sin),
+            useNativeDriver: true,
+          }),
+          Animated.timing(animY, {
+            toValue: 0,
+            duration,
+            easing: Easing.in(Easing.sin),
+            useNativeDriver: true,
+          }),
+          Animated.timing(animY, {
+            toValue: 5,
+            duration,
+            easing: Easing.out(Easing.sin),
+            useNativeDriver: true,
+          }),
+          Animated.timing(animY, {
+            toValue: 0,
+            duration,
+            easing: Easing.in(Easing.sin),
+            useNativeDriver: true,
+          }),
         ]),
       );
 
@@ -71,9 +91,7 @@ export default function AuthProgressBar({ totalSteps, currentStep }: AuthProgres
       {Array.from({ length: totalSteps }).map((_, i) => {
         const isActive = i === currentStep - 1;
 
-        return (
-          <AnimatedDroplet key={i} isActive={isActive} color={getProgressColor(i + 1)} />
-        );
+        return <AnimatedDroplet key={i} isActive={isActive} color={getProgressColor(i + 1)} />;
       })}
     </View>
   );
