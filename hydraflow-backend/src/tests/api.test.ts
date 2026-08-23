@@ -1,6 +1,6 @@
 import '../load-env';
 import request from 'supertest';
-import { seedDatabase } from '../../prisma/seed';
+import { seedDatabase } from '../lib/seed-database';
 import { app } from '../index';
 import { prisma } from '../prisma/prisma';
 

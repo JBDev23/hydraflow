@@ -1,11 +1,15 @@
 {
-  "extends": "expo/tsconfig.base",
+  "extends": "../node_modules/expo/tsconfig.base",
   "compilerOptions": {
     "strict": true,
-    "noEmit": true,
-    "skipLibCheck": true,
-    "resolveJsonModule": true
+    "types": [],
+    "typeRoots": ["./types"]
   },
-  "include": ["**/*.ts", "**/*.tsx"],
-  "exclude": ["node_modules", "android", "ios", "__tests__"]
+  "include": [
+    "**/*.ts",
+    "**/*.tsx",
+    ".expo/types/**/*.ts",
+    "expo-env.d.ts"
+  ],
+  "exclude": ["node_modules", "android", "ios", "__tests__", "coverage"]
 }
