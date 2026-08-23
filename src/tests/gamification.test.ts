@@ -1,12 +1,11 @@
-import { 
-  calculateXpGain, 
-  processLevelUp, 
-  calculateNewStreak, 
-  checkStreakBreak 
+import {
+  calculateXpGain,
+  processLevelUp,
+  calculateNewStreak,
+  checkStreakBreak,
 } from '../lib/gamification';
 
 describe('🧩 Motor de Gamificación', () => {
-
   // 1. Pruebas de XP
   test('Debería calcular 25 XP para 250ml', () => {
     expect(calculateXpGain(250)).toBe(25);
@@ -21,7 +20,7 @@ describe('🧩 Motor de Gamificación', () => {
     // Nivel 1, 90 XP, gana 20 XP (Total 110) -> Sube a Nivel 2
     // Requisito Nivel 1 suele ser 100 XP
     const result = processLevelUp(1, 90, 20);
-    
+
     expect(result.didLevelUp).toBe(true);
     expect(result.newLevel).toBe(2);
     expect(result.dropsAwarded).toBeGreaterThan(0);
@@ -30,7 +29,7 @@ describe('🧩 Motor de Gamificación', () => {
   test('NO debería subir de nivel si XP es insuficiente', () => {
     // Nivel 1, 0 XP, gana 50 XP (Total 50) -> Se queda en Nivel 1
     const result = processLevelUp(1, 0, 50);
-    
+
     expect(result.didLevelUp).toBe(false);
     expect(result.newLevel).toBe(1);
     expect(result.newXp).toBe(50);
@@ -40,7 +39,7 @@ describe('🧩 Motor de Gamificación', () => {
   test('Debería mantener la racha si bebió hoy', () => {
     const rachaActual = 5;
     const ultimoTrago = new Date(); // Hoy
-    
+
     const nuevaRacha = calculateNewStreak(rachaActual, ultimoTrago);
     expect(nuevaRacha).toBe(5);
   });
@@ -49,7 +48,7 @@ describe('🧩 Motor de Gamificación', () => {
     const rachaActual = 5;
     const ayer = new Date();
     ayer.setDate(ayer.getDate() - 1); // Ayer
-    
+
     const nuevaRacha = calculateNewStreak(rachaActual, ayer);
     expect(nuevaRacha).toBe(6);
   });
@@ -58,7 +57,7 @@ describe('🧩 Motor de Gamificación', () => {
     const rachaActual = 5;
     const anteayer = new Date();
     anteayer.setDate(anteayer.getDate() - 2); // Anteayer
-    
+
     // Al beber hoy, la racha empieza de nuevo (1)
     const nuevaRacha = calculateNewStreak(rachaActual, anteayer);
     expect(nuevaRacha).toBe(1);
@@ -73,5 +72,4 @@ describe('🧩 Motor de Gamificación', () => {
     const rachaReal = checkStreakBreak(rachaActual, haceTresDias);
     expect(rachaReal).toBe(0);
   });
-
 });

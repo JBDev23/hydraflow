@@ -2,7 +2,7 @@ import { getSeedClient } from './seed-client';
 
 const prisma = getSeedClient();
 
-const TARGET_EMAIL = "jordi@gmail.com";
+const TARGET_EMAIL = 'jordi@gmail.com';
 const YEAR = 2026;
 const MONTH = 1;
 
@@ -11,7 +11,7 @@ async function main() {
 
   const user = await prisma.user.findUnique({
     where: { email: TARGET_EMAIL },
-    include: { profile: true }
+    include: { profile: true },
   });
 
   if (!user) {
@@ -32,8 +32,8 @@ async function main() {
       totalGoalsReached: 0,
       currentXp: 0,
       level: 1,
-      progress: 0
-    }
+      progress: 0,
+    },
   });
 
   const waterLogs = [];
@@ -54,7 +54,7 @@ async function main() {
     }
 
     const isToday = isCurrentMonth && day === currentDayOfMonth;
-    const skipDay = !isToday && Math.random() > 0.90;
+    const skipDay = !isToday && Math.random() > 0.9;
 
     if (skipDay) {
       currentStreak = 0;
@@ -72,7 +72,7 @@ async function main() {
         { h: 14, m: 30, amount: 500 },
         { h: 17, m: 0, amount: 250 },
         { h: 20, m: 30, amount: 250 },
-        { h: 22, m: 15, amount: 250 }
+        { h: 22, m: 15, amount: 250 },
       ];
 
       for (const sched of fixedSchedules) {
@@ -80,7 +80,7 @@ async function main() {
         waterLogs.push({
           userId: user.id,
           amount: sched.amount,
-          timestamp: date
+          timestamp: date,
         });
         dayTotalVolume += sched.amount;
       }
@@ -96,7 +96,7 @@ async function main() {
         waterLogs.push({
           userId: user.id,
           amount: amount,
-          timestamp: date
+          timestamp: date,
         });
 
         dayTotalVolume += amount;
@@ -124,8 +124,8 @@ async function main() {
       currentXp: xpGained,
       currentStreak: currentStreak,
       totalGoalsReached: totalGoalsReached,
-      lastActiveDate: lastActiveDate
-    }
+      lastActiveDate: lastActiveDate,
+    },
   });
 
   console.log(`Simulación completada.`);
@@ -135,5 +135,11 @@ async function main() {
 }
 
 main()
-  .then(async () => { await prisma.disconnect(); })
-  .catch(async (e) => { console.error(e); await prisma.disconnect(); throw e; });
+  .then(async () => {
+    await prisma.disconnect();
+  })
+  .catch(async (e) => {
+    console.error(e);
+    await prisma.disconnect();
+    throw e;
+  });

@@ -8,7 +8,7 @@ const router = Router();
 router.put('/profile', ensureAuth, updateProfile);
 
 // GET /user/profile
-router.get('/profile', ensureAuth, getProfile)
+router.get('/profile', ensureAuth, getProfile);
 
 // DELETE /user/account
 router.delete('/account', ensureAuth, deleteAccount);

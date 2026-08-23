@@ -101,15 +101,13 @@ export class AuthService {
       },
     });
 
-    const sessionToken = jwt.sign(
-      { userId: user.id, email: user.email },
-      getJwtSecret(),
-      { expiresIn: TOKEN_EXPIRATION }
-    );
+    const sessionToken = jwt.sign({ userId: user.id, email: user.email }, getJwtSecret(), {
+      expiresIn: TOKEN_EXPIRATION,
+    });
 
     if (user.settings?.preferences) {
       (user.settings as { preferences: unknown }).preferences = normalizePreferences(
-        user.settings.preferences as Record<string, unknown>
+        user.settings.preferences as Record<string, unknown>,
       );
     }
 

@@ -4,22 +4,22 @@ This backend is structured so Nest can reuse the ORM and domain layers with mini
 
 ## Preserve for the mobile app
 
-| Contract | Detail |
-|----------|--------|
-| Routes | `/auth`, `/user`, `/water`, `/achievements`, `/shop` |
-| Auth | `Authorization: Bearer <JWT>` with payload `{ userId, email }` (30d) |
-| Login | `POST /auth/login` — Google ID token or non-prod `provider: "test"` |
-| JSON shapes | Keep existing `{ success, ... }` / `{ error }` responses |
+| Contract    | Detail                                                               |
+| ----------- | -------------------------------------------------------------------- |
+| Routes      | `/auth`, `/user`, `/water`, `/achievements`, `/shop`                 |
+| Auth        | `Authorization: Bearer <JWT>` with payload `{ userId, email }` (30d) |
+| Login       | `POST /auth/login` — Google ID token or non-prod `provider: "test"`  |
+| JSON shapes | Keep existing `{ success, ... }` / `{ error }` responses             |
 
 ## Map Express → Nest
 
-| Today (Express) | Nest |
-|-----------------|------|
-| [`src/prisma/prisma.service.ts`](src/prisma/prisma.service.ts) | `@Injectable()` `PrismaService` + `OnModuleInit` / `OnModuleDestroy` calling `$connect` / `disconnect()` |
-| [`src/modules/*/`](src/modules) services | Same classes with `@Injectable()`; inject `PrismaService` instead of importing the singleton |
-| [`src/middleware/auth.middleware.ts`](src/middleware/auth.middleware.ts) | `AuthGuard` (JWT) setting `userId` on the request |
-| Controllers | Nest controllers; HTTP status mapping for `DomainError` stays the same |
-| `getTzOffsetFromRequest` | Pass offset from headers via a Nest decorator/pipe (decouple from Express `Request`) |
+| Today (Express)                                                          | Nest                                                                                                     |
+| ------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------- |
+| [`src/prisma/prisma.service.ts`](src/prisma/prisma.service.ts)           | `@Injectable()` `PrismaService` + `OnModuleInit` / `OnModuleDestroy` calling `$connect` / `disconnect()` |
+| [`src/modules/*/`](src/modules) services                                 | Same classes with `@Injectable()`; inject `PrismaService` instead of importing the singleton             |
+| [`src/middleware/auth.middleware.ts`](src/middleware/auth.middleware.ts) | `AuthGuard` (JWT) setting `userId` on the request                                                        |
+| Controllers                                                              | Nest controllers; HTTP status mapping for `DomainError` stays the same                                   |
+| `getTzOffsetFromRequest`                                                 | Pass offset from headers via a Nest decorator/pipe (decouple from Express `Request`)                     |
 
 ## Suggested Nest modules
 

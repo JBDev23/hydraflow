@@ -14,7 +14,7 @@ export const ensureAuth = (req: AuthRequest, res: Response, next: NextFunction) 
     return res.status(401).json({ error: 'Token missing' });
   }
 
-  const token = authHeader.split(' ')[1]; 
+  const token = authHeader.split(' ')[1];
 
   try {
     const payload = jwt.verify(token, getJwtSecret()) as { userId: string };

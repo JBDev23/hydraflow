@@ -1,5 +1,11 @@
 import { Router } from 'express';
-import { logWater, getDailyMetrics, revertLog, getRangeMetrics, getStatsGraph } from '../controllers/water.controller';
+import {
+  logWater,
+  getDailyMetrics,
+  revertLog,
+  getRangeMetrics,
+  getStatsGraph,
+} from '../controllers/water.controller';
 import { ensureAuth } from '../middleware/auth.middleware';
 import { exportUserData } from '../controllers/user.controller';
 
@@ -9,7 +15,7 @@ const router = Router();
 router.post('/log', ensureAuth, logWater);
 
 // DELETE /water/log
-router.delete('/log', ensureAuth, revertLog)
+router.delete('/log', ensureAuth, revertLog);
 
 // GET /water/metrics
 // GET /water/metrics?date=2023-12-25
@@ -22,7 +28,6 @@ router.get('/range', ensureAuth, getRangeMetrics);
 router.get('/stats', ensureAuth, getStatsGraph);
 
 // GET water/export
-router.get('/export', ensureAuth, exportUserData);    
-
+router.get('/export', ensureAuth, exportUserData);
 
 export default router;

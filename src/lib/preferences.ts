@@ -13,7 +13,7 @@ export const DEFAULT_PREFERENCES = {
  */
 export function normalizePreferences(
   prefs: Record<string, unknown> | null | undefined,
-  languageFallback?: string
+  languageFallback?: string,
 ): typeof DEFAULT_PREFERENCES & Record<string, unknown> {
   const base = { ...DEFAULT_PREFERENCES, ...(prefs || {}) } as Record<string, unknown>;
 

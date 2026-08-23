@@ -17,7 +17,9 @@ export function parseTzOffset(raw: unknown): number {
 export function getTzOffsetFromRequest(req: Request): number {
   const header = req.headers['x-timezone-offset'];
   const headerVal = Array.isArray(header) ? header[0] : header;
-  return parseTzOffset(headerVal ?? req.query.tzOffset ?? (req.body as { tzOffset?: unknown })?.tzOffset);
+  return parseTzOffset(
+    headerVal ?? req.query.tzOffset ?? (req.body as { tzOffset?: unknown })?.tzOffset,
+  );
 }
 
 /**
@@ -26,7 +28,7 @@ export function getTzOffsetFromRequest(req: Request): number {
  */
 export function getCalendarDayRange(
   dateString?: string | null,
-  tzOffsetMinutes = 0
+  tzOffsetMinutes = 0,
 ): { start: Date; end: Date; year: number; month: number; day: number } {
   let year: number;
   let month: number;
@@ -67,7 +69,10 @@ export function getLocalHour(date: Date, tzOffsetMinutes = 0): number {
 }
 
 /** Local calendar components for an instant */
-export function getLocalYmd(date: Date, tzOffsetMinutes = 0): { year: number; month: number; day: number } {
+export function getLocalYmd(
+  date: Date,
+  tzOffsetMinutes = 0,
+): { year: number; month: number; day: number } {
   const local = new Date(date.getTime() - tzOffsetMinutes * 60_000);
   return {
     year: local.getUTCFullYear(),

@@ -4,17 +4,17 @@ import { app } from '../index';
 import { prisma } from '../prisma/prisma';
 
 // Aumentamos el timeout por si la BD tarda en responder
-jest.setTimeout(10000); 
+jest.setTimeout(10000);
 
 describe('🚀 API Integration Tests (End-to-End)', () => {
   let token: string;
-  
+
   // Usuario ficticio para las pruebas
   const testUser = {
     email: 'api_tester@hydraflow.com',
     name: 'Jest Tester',
-    provider: 'test', 
-    providerId: 'jest_123'
+    provider: 'test',
+    providerId: 'jest_123',
   };
 
   // Evita estado residual (upsert reutiliza el email si un run anterior no limpió)
@@ -26,9 +26,9 @@ describe('🚀 API Integration Tests (End-to-End)', () => {
 
   // Limpieza posterior para que los tests sean repetibles
   afterAll(async () => {
-    console.log("🧹 Limpiando usuario de prueba...");
+    console.log('🧹 Limpiando usuario de prueba...');
     await prisma.user.deleteMany({
-      where: { email: testUser.email }
+      where: { email: testUser.email },
     });
     await prisma.disconnect();
   });
@@ -36,19 +36,17 @@ describe('🚀 API Integration Tests (End-to-End)', () => {
   // --- 1. AUTENTICACIÓN ---
   describe('🔐 Auth Flow', () => {
     test('POST /auth/login - Debe crear usuario y devolver Token', async () => {
-      const response = await request(app)
-        .post('/auth/login')
-        .send({
-          provider: 'test',
-          manualEmail: testUser.email,
-          manualName: testUser.name,
-        });
+      const response = await request(app).post('/auth/login').send({
+        provider: 'test',
+        manualEmail: testUser.email,
+        manualName: testUser.name,
+      });
 
       expect(response.status).toBe(200);
       expect(response.body.success).toBe(true);
       expect(response.body).toHaveProperty('token');
       expect(response.body.user.email).toBe(testUser.email);
-      
+
       token = response.body.token;
     });
   });
@@ -60,7 +58,7 @@ describe('🚀 API Integration Tests (End-to-End)', () => {
         weight: 85.5,
         height: 190,
         goal: 3000,
-        activity: 'active'
+        activity: 'active',
       };
 
       const response = await request(app)
@@ -175,30 +173,30 @@ describe('🚀 API Integration Tests (End-to-End)', () => {
 
     // Test de Compra: Usuario nuevo tiene 10 drops. 'hat1' cuesta 8.
     test('POST /shop/buy - Debe comprar "hat1" con saldo inicial', async () => {
-        const response = await request(app)
-            .post('/shop/buy')
-            .set('Authorization', `Bearer ${token}`)
-            .send({ itemId: 'hat1' });
+      const response = await request(app)
+        .post('/shop/buy')
+        .set('Authorization', `Bearer ${token}`)
+        .send({ itemId: 'hat1' });
 
-        expect(response.status).toBe(200);
-        expect(response.body.success).toBe(true);
-        // Deberían quedar 2 drops (10 - 8)
-        expect(response.body.data.dropsBalance).toBe(2);
+      expect(response.status).toBe(200);
+      expect(response.body.success).toBe(true);
+      // Deberían quedar 2 drops (10 - 8)
+      expect(response.body.data.dropsBalance).toBe(2);
     });
 
     // Test de Equipar
     test('POST /shop/equip - Debe equipar "hat1"', async () => {
-        const response = await request(app)
-            .post('/shop/equip')
-            .set('Authorization', `Bearer ${token}`)
-            .send({ itemId: 'hat1' });
+      const response = await request(app)
+        .post('/shop/equip')
+        .set('Authorization', `Bearer ${token}`)
+        .send({ itemId: 'hat1' });
 
-        expect(response.status).toBe(200);
-        
-        // Buscamos 'hat1' en la lista devuelta y verificamos que isEquipped es true
-        const hatItem = response.body.items.find((i: any) => i.itemId === 'hat1');
-        expect(hatItem).toBeDefined();
-        expect(hatItem.isEquipped).toBe(true);
+      expect(response.status).toBe(200);
+
+      // Buscamos 'hat1' en la lista devuelta y verificamos que isEquipped es true
+      const hatItem = response.body.items.find((i: any) => i.itemId === 'hat1');
+      expect(hatItem).toBeDefined();
+      expect(hatItem.isEquipped).toBe(true);
     });
 
     test('GET /achievements/catalog - Debe devolver logros', async () => {
@@ -210,5 +208,4 @@ describe('🚀 API Integration Tests (End-to-End)', () => {
       expect(Array.isArray(response.body.achievements)).toBe(true);
     });
   });
-
 });

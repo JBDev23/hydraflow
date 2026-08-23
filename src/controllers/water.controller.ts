@@ -1,11 +1,7 @@
 import { Response } from 'express';
 import { AuthRequest } from '../middleware/auth.middleware';
 import { getTzOffsetFromRequest } from '../lib/dayRange';
-import {
-  waterService,
-  parseAmount,
-  MAX_LOG_AMOUNT_ML,
-} from '../modules/water/water.service';
+import { waterService, parseAmount, MAX_LOG_AMOUNT_ML } from '../modules/water/water.service';
 import { DomainError } from '../modules/common/domain-error';
 
 export const logWater = async (req: AuthRequest, res: Response) => {
@@ -17,11 +13,7 @@ export const logWater = async (req: AuthRequest, res: Response) => {
       });
     }
 
-    const result = await waterService.logWater(
-      req.userId!,
-      amount,
-      getTzOffsetFromRequest(req)
-    );
+    const result = await waterService.logWater(req.userId!, amount, getTzOffsetFromRequest(req));
 
     return res.json({ success: true, ...result });
   } catch (error) {
@@ -36,7 +28,7 @@ export const getDailyMetrics = async (req: AuthRequest, res: Response) => {
     const metrics = await waterService.getDailyMetrics(
       req.userId!,
       dateStr,
-      getTzOffsetFromRequest(req)
+      getTzOffsetFromRequest(req),
     );
     return res.json({ success: true, ...metrics });
   } catch (error) {
@@ -47,10 +39,7 @@ export const getDailyMetrics = async (req: AuthRequest, res: Response) => {
 
 export const revertLog = async (req: AuthRequest, res: Response) => {
   try {
-    const result = await waterService.revertLog(
-      req.userId!,
-      getTzOffsetFromRequest(req)
-    );
+    const result = await waterService.revertLog(req.userId!, getTzOffsetFromRequest(req));
     return res.json({ success: true, ...result });
   } catch (error) {
     if (error instanceof DomainError) {
@@ -72,7 +61,7 @@ export const getRangeMetrics = async (req: AuthRequest, res: Response) => {
       req.userId!,
       String(startDate),
       String(endDate),
-      getTzOffsetFromRequest(req)
+      getTzOffsetFromRequest(req),
     );
 
     return res.json({ success: true, totals });
@@ -93,7 +82,7 @@ export const getStatsGraph = async (req: AuthRequest, res: Response) => {
       req.userId!,
       String(mode),
       String(refDate),
-      getTzOffsetFromRequest(req)
+      getTzOffsetFromRequest(req),
     );
 
     return res.json({ success: true, data });

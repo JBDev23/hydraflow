@@ -42,7 +42,7 @@ export class UserService {
       const realStreak = checkStreakBreak(
         user.gameStats.currentStreak,
         user.gameStats.lastActiveDate,
-        tzOffset
+        tzOffset,
       );
 
       if (realStreak !== user.gameStats.currentStreak) {
@@ -56,7 +56,7 @@ export class UserService {
 
     if (user.settings?.preferences) {
       (user.settings as { preferences: unknown }).preferences = normalizePreferences(
-        user.settings.preferences as Record<string, unknown>
+        user.settings.preferences as Record<string, unknown>,
       );
     }
 

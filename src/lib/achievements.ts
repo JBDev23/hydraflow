@@ -9,17 +9,17 @@ type GameStatsData = {
 
 // Mapa de reglas: "CONDICIÓN_DB" -> Función(stats) => boolean
 export const ACHIEVEMENT_RULES: Record<string, (stats: GameStatsData) => boolean> = {
-  'FIRST_DRINK': (stats) => stats.totalVolume > 0,
-  'GOAL_REACHED_1': (stats) => stats.totalGoalsReached >= 1,
-  'STREAK_3': (stats) => stats.currentStreak >= 3,
-  'LEVEL_5': (stats) => stats.level >= 5,
-  'TOTAL_10L': (stats) => stats.totalVolume >= 10000, // 10l
+  FIRST_DRINK: (stats) => stats.totalVolume > 0,
+  GOAL_REACHED_1: (stats) => stats.totalGoalsReached >= 1,
+  STREAK_3: (stats) => stats.currentStreak >= 3,
+  LEVEL_5: (stats) => stats.level >= 5,
+  TOTAL_10L: (stats) => stats.totalVolume >= 10000, // 10l
 };
 
 export const checkAndUnlockAchievements = async (
   tx: Prisma.TransactionClient,
   userId: string,
-  currentStats: GameStatsData
+  currentStats: GameStatsData,
 ) => {
   // 1. Obtener todos los logros del catálogo
   const catalog = await tx.catalogAchievement.findMany();
@@ -27,9 +27,9 @@ export const checkAndUnlockAchievements = async (
   // 2. Obtener los logros que el usuario YA tiene
   const owned = await tx.userAchievement.findMany({
     where: { userId },
-    select: { achievementId: true }
+    select: { achievementId: true },
   });
-  const ownedIds = new Set(owned.map(a => a.achievementId));
+  const ownedIds = new Set(owned.map((a) => a.achievementId));
 
   const newUnlocks = [];
 
@@ -40,16 +40,16 @@ export const checkAndUnlockAchievements = async (
 
     // Buscar la regla correspondiente
     const rule = ACHIEVEMENT_RULES[achievement.condition];
-    
+
     // Si existe regla y se cumple la condición
     if (rule && rule(currentStats)) {
       await tx.userAchievement.create({
         data: {
           userId,
-          achievementId: achievement.id
-        }
+          achievementId: achievement.id,
+        },
       });
-      
+
       // Añadimos a la lista para avisar al frontend
       newUnlocks.push(achievement);
     }
@@ -60,12 +60,12 @@ export const checkAndUnlockAchievements = async (
   // 4. ACTUALIZAR STATS: Si hubo desbloqueos, actualizamos el contador en GameStats
   if (newUnlocks.length > 0) {
     await tx.gameStats.update({
-        where: { userId },
-        data: {
-            achievementsCount: totalCount // Guardamos el valor absoluto exacto
-        }
+      where: { userId },
+      data: {
+        achievementsCount: totalCount, // Guardamos el valor absoluto exacto
+      },
     });
   }
 
-  return {newUnlocks, totalCount};
+  return { newUnlocks, totalCount };
 };

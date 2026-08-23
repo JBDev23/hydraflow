@@ -1,6 +1,6 @@
 const XP_PER_ML = 0.1;
-const BASE_XP = 100;   
-const MULTIPLIER = 2; 
+const BASE_XP = 100;
+const MULTIPLIER = 2;
 const DROPS_PER_LEVEL = 5;
 
 export const calculateXpGain = (amountMl: number): number => {
@@ -11,11 +11,11 @@ export const getXpRequiredForLevel = (level: number): number => {
   return Math.floor(BASE_XP * Math.pow(MULTIPLIER, level - 1));
 };
 
-export const calculateProgress = (currentLevel: number, currentXp : number):number => {
-    let xpRequired = getXpRequiredForLevel(currentLevel);
-    if (xpRequired === 0) return 0;
-    return Math.floor((currentXp*100)/xpRequired)
-}
+export const calculateProgress = (currentLevel: number, currentXp: number): number => {
+  let xpRequired = getXpRequiredForLevel(currentLevel);
+  if (xpRequired === 0) return 0;
+  return Math.floor((currentXp * 100) / xpRequired);
+};
 
 export const processLevelUp = (currentLevel: number, currentXp: number, xpGained: number) => {
   let newLevel = currentLevel;
@@ -25,7 +25,7 @@ export const processLevelUp = (currentLevel: number, currentXp: number, xpGained
 
   while (true) {
     const xpRequired = getXpRequiredForLevel(newLevel);
-    
+
     if (newXp >= xpRequired) {
       newXp -= xpRequired;
       newLevel++;
@@ -36,14 +36,14 @@ export const processLevelUp = (currentLevel: number, currentXp: number, xpGained
     }
   }
 
-  let newProgress = calculateProgress(newLevel, newXp)
+  let newProgress = calculateProgress(newLevel, newXp);
 
   return {
     newLevel,
     newXp,
     newProgress,
     dropsAwarded,
-    didLevelUp
+    didLevelUp,
   };
 };
 
@@ -69,18 +69,14 @@ export const processLevelDown = (currentLevel: number, currentXp: number, xpToDe
     newLevel,
     newXp,
     newProgress,
-    dropsToDeduct
+    dropsToDeduct,
   };
 };
 
 import { getCalendarDayRange, toCalendarDateString } from './dayRange';
 
 /** Diff in calendar days between two instants in the user's timezone */
-const calendarDayDiff = (
-  later: Date,
-  earlier: Date,
-  tzOffsetMinutes = 0
-): number => {
+const calendarDayDiff = (later: Date, earlier: Date, tzOffsetMinutes = 0): number => {
   const a = toCalendarDateString(later, tzOffsetMinutes);
   const b = toCalendarDateString(earlier, tzOffsetMinutes);
   const startA = getCalendarDayRange(a, tzOffsetMinutes).start.getTime();
@@ -91,7 +87,7 @@ const calendarDayDiff = (
 export const calculateNewStreak = (
   currentStreak: number,
   lastActiveDate: Date | null,
-  tzOffsetMinutes = 0
+  tzOffsetMinutes = 0,
 ): number => {
   if (!lastActiveDate) return 1;
 
@@ -109,7 +105,7 @@ export const calculateNewStreak = (
 export const checkStreakBreak = (
   currentStreak: number,
   lastActiveDate: Date | null,
-  tzOffsetMinutes = 0
+  tzOffsetMinutes = 0,
 ): number => {
   if (!lastActiveDate) return 0;
 

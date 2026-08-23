@@ -59,7 +59,7 @@ export class WaterService {
     const monD = mondayDate.getUTCDate();
     const weekStart = getCalendarDayRange(
       `${monY}-${String(monM).padStart(2, '0')}-${String(monD).padStart(2, '0')}`,
-      tzOffset
+      tzOffset,
     );
 
     const sundayDate = new Date(Date.UTC(monY, monM - 1, monD));
@@ -69,7 +69,7 @@ export class WaterService {
     const sunD = sundayDate.getUTCDate();
     const weekEnd = getCalendarDayRange(
       `${sunY}-${String(sunM).padStart(2, '0')}-${String(sunD).padStart(2, '0')}`,
-      tzOffset
+      tzOffset,
     );
 
     const start = weekStart.start;
@@ -97,13 +97,13 @@ export class WaterService {
     const { year, month } = getCalendarDayRange(dateString, tzOffset);
     const monthStart = getCalendarDayRange(
       `${year}-${String(month).padStart(2, '0')}-01`,
-      tzOffset
+      tzOffset,
     );
 
     const lastDay = new Date(Date.UTC(year, month, 0)).getUTCDate();
     const monthEnd = getCalendarDayRange(
       `${year}-${String(month).padStart(2, '0')}-${String(lastDay).padStart(2, '0')}`,
-      tzOffset
+      tzOffset,
     );
 
     const start = monthStart.start;
@@ -196,11 +196,7 @@ export class WaterService {
         },
       });
 
-      const { newUnlocks, totalCount } = await checkAndUnlockAchievements(
-        tx,
-        userId,
-        updatedStats
-      );
+      const { newUnlocks, totalCount } = await checkAndUnlockAchievements(tx, userId, updatedStats);
 
       return {
         log,
@@ -342,12 +338,7 @@ export class WaterService {
     }
   }
 
-  async getRangeMetrics(
-    userId: string,
-    startDate: string,
-    endDate: string,
-    tzOffset: number
-  ) {
+  async getRangeMetrics(userId: string, startDate: string, endDate: string, tzOffset: number) {
     const { start } = getCalendarDayRange(startDate, tzOffset);
     const { end } = getCalendarDayRange(endDate, tzOffset);
 
@@ -368,12 +359,7 @@ export class WaterService {
     return dailyTotals;
   }
 
-  async getStatsGraph(
-    userId: string,
-    mode: string,
-    refDate: string,
-    tzOffset: number
-  ) {
+  async getStatsGraph(userId: string, mode: string, refDate: string, tzOffset: number) {
     if (!/^\d{4}-\d{2}-\d{2}$/.test(refDate)) {
       throw new DomainError('INVALID_DATE', 'Invalid date format (use YYYY-MM-DD)', 400);
     }
@@ -390,11 +376,7 @@ export class WaterService {
         result = await this.getMonthStats(userId, refDate, tzOffset);
         break;
       default:
-        throw new DomainError(
-          'INVALID_MODE',
-          "Invalid mode. Use 'day', 'week' or 'month'",
-          400
-        );
+        throw new DomainError('INVALID_MODE', "Invalid mode. Use 'day', 'week' or 'month'", 400);
     }
 
     return {

@@ -1,14 +1,14 @@
 import './load-env';
 import express from 'express';
-import type { Request, Response } from 'express'; 
+import type { Request, Response } from 'express';
 import cors from 'cors';
 import morgan from 'morgan';
 import rateLimit from 'express-rate-limit';
-import authRouter from './routes/auth.routes'
-import userRouter from './routes/user.routes'
-import waterRoutes from './routes/water.routes'
-import achievementRoutes from './routes/achievements.routes'
-import itemsRoutes from './routes/items.routes'
+import authRouter from './routes/auth.routes';
+import userRouter from './routes/user.routes';
+import waterRoutes from './routes/water.routes';
+import achievementRoutes from './routes/achievements.routes';
+import itemsRoutes from './routes/items.routes';
 
 export const app = express();
 const PORT = parseInt(process.env.PORT || '3000', 10);
@@ -19,25 +19,27 @@ const allowedOrigins = (process.env.CORS_ORIGINS || '')
   .map((o) => o.trim())
   .filter(Boolean);
 
-app.use(cors({
-  origin: (origin, callback) => {
-    // React Native / server-to-server often omit Origin
-    if (!origin) return callback(null, true);
+app.use(
+  cors({
+    origin: (origin, callback) => {
+      // React Native / server-to-server often omit Origin
+      if (!origin) return callback(null, true);
 
-    if (allowedOrigins.length === 0) {
-      if (isProd) {
-        return callback(null, false);
+      if (allowedOrigins.length === 0) {
+        if (isProd) {
+          return callback(null, false);
+        }
+        return callback(null, true);
       }
-      return callback(null, true);
-    }
 
-    if (allowedOrigins.includes(origin) || allowedOrigins.includes('*')) {
-      return callback(null, true);
-    }
-    return callback(null, false);
-  },
-  credentials: true,
-}));
+      if (allowedOrigins.includes(origin) || allowedOrigins.includes('*')) {
+        return callback(null, true);
+      }
+      return callback(null, false);
+    },
+    credentials: true,
+  }),
+);
 
 app.use(express.json({ limit: '100kb' }));
 
