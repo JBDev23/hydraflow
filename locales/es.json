@@ -64,6 +64,10 @@
     "legalNotice": "Aviso legal",
     "aboutUs": "Sobre nosotros",
     "exportData": "Exportar datos (csv)",
+    "exportCsvDate": "Fecha",
+    "exportCsvTime": "Hora",
+    "exportCsvAmount": "Cantidad (ml)",
+    "exportDialogTitle": "Exportar datos de hidratación",
     "feedback": "Enviar comentarios",
     "deleteAccount": "Eliminar / Reiniciar cuenta",
     "dangerZone": "Zona de Peligro",
@@ -92,7 +96,8 @@
   },
   "indexApp":{
     "remaining": "restantes",
-    "goalCompleted": "¡Meta alcanzada!"
+    "goalCompleted": "¡Meta alcanzada!",
+    "custom": "Personalizado"
   },
   "statsApp":{
     "average": "PROMEDIO",
@@ -218,7 +223,13 @@
     "offlineSave" : "Guardado offline. Se sincronizará al conectar.",
     "offlineMode" : "Modo offline",
     "conecctionError" : "Error de conexión. Esta acción requiere internet.",
-    "syncData" : "datos sincronizados"
+    "syncData" : "datos sincronizados",
+    "loadStatsError" : "No se pudieron cargar las estadísticas.",
+    "loadAchievementsError" : "No se pudieron cargar los logros.",
+    "loadShopError" : "No se pudo cargar la tienda.",
+    "purchaseError" : "Error en la compra. Revisa tu conexión o saldo.",
+    "equipError" : "No se pudo equipar. Requiere conexión.",
+    "deleteAccountError" : "No se pudo eliminar la cuenta. Revisa tu conexión."
   },
   "tutorial": {
     "steps": [

@@ -4,10 +4,15 @@
   "main": "expo-router/entry",
   "scripts": {
     "start": "expo start",
+    "start:clear": "expo start --clear",
     "android": "expo run:android",
     "ios": "expo run:ios",
     "web": "expo start --web",
-    "prebuild:android": "expo prebuild --platform android"
+    "prebuild:android": "expo prebuild --platform android",
+    "typecheck": "node ./node_modules/typescript/bin/tsc --noEmit",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage"
   },
   "dependencies": {
     "@expo-google-fonts/aldrich": "^0.4.1",
@@ -55,11 +60,12 @@
   },
   "private": true,
   "devDependencies": {
-    "react-native-svg-transformer": "^1.5.2"
+    "@types/jest": "^29.5.14",
+    "@types/react": "~19.2.4",
+    "jest": "^29.7.0",
+    "jest-expo": "~57.0.4",
+    "react-native-svg-transformer": "^1.5.2",
+    "typescript": "~6.0.3"
   },
-  "pnpm": {
-    "onlyBuiltDependencies": [
-      "protobufjs"
-    ]
-  }
+  "packageManager": "pnpm@11.22.0+sha512.1ff870c4c6133dfd88fb2afc46dd13d47f09c9794b438c6fdb47ca98caf3bc16381ee0be93a091b8e3824cf01f889f46d7d9e20910fb0be1ab0fb5baa80dd621"
 }

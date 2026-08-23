@@ -64,6 +64,10 @@
     "legalNotice": "Avís legal",
     "aboutUs": "Sobre nosaltres",
     "exportData": "Exportar dades (csv)",
+    "exportCsvDate": "Data",
+    "exportCsvTime": "Hora",
+    "exportCsvAmount": "Quantitat (ml)",
+    "exportDialogTitle": "Exportar dades d'hidratació",
     "feedback": "Enviar comentaris",
     "deleteAccount": "Eliminar / Reiniciar compte",
     "dangerZone": "Zona de perill",
@@ -92,7 +96,8 @@
   },
   "indexApp":{
     "remaining": "restants",
-    "goalCompleted": "Meta assolida!"
+    "goalCompleted": "Meta assolida!",
+    "custom": "Personalitzat"
   },
   "statsApp":{
     "average": "MITJANA",
@@ -210,7 +215,13 @@
     "offlineSave": "Desat fora de línia. Se sincronitzarà en connectar-se.",
     "offlineMode": "Mode fora de línia",
     "conecctionError": "Error de connexió. Aquesta acció requereix internet.",
-    "syncData": "dades sincronitzades"
+    "syncData": "dades sincronitzades",
+    "loadStatsError": "No s'han pogut carregar les estadístiques.",
+    "loadAchievementsError": "No s'han pogut carregar els assoliments.",
+    "loadShopError": "No s'ha pogut carregar la botiga.",
+    "purchaseError": "Error en la compra. Revisa la teva connexió o saldo.",
+    "equipError": "No s'ha pogut equipar. Requereix connexió.",
+    "deleteAccountError": "No s'ha pogut eliminar el compte. Revisa la teva connexió."
   },
   "tutorial": {
     "steps": [

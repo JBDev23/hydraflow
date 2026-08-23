@@ -64,6 +64,7 @@ Para unirte, envía un correo electrónico a:
 * `assets/`: Imágenes, iconos y accesorios SVG de Hydra.
 * `context/`: Estado global partido por dominio + `AppProviders`.
 * `services/`: API, notificaciones, audio y cola offline.
+* `types/`: Tipos TypeScript compartidos (perfil, API, tema, componentes).
 * `locales/`: Traducciones i18n.
 * `plugins/`: Config plugins de Expo (p. ej. CMake en Windows).
 * `utils/` / `constants/`: Helpers y constantes compartidas.

@@ -64,6 +64,10 @@
     "legalNotice": "Legal Notice",
     "aboutUs": "About us",
     "exportData": "Export data (csv)",
+    "exportCsvDate": "Date",
+    "exportCsvTime": "Time",
+    "exportCsvAmount": "Amount (ml)",
+    "exportDialogTitle": "Export hydration data",
     "feedback": "Send comments",
     "deleteAccount": "Delete / Reset account",
     "dangerZone": "Danger Zone",
@@ -92,7 +96,8 @@
   },
   "indexApp":{
     "remaining": "remaining",
-    "goalCompleted": "Goal achieved!"
+    "goalCompleted": "Goal achieved!",
+    "custom": "Custom"
   },
   "statsApp":{
     "average": "AVERAGE",
@@ -210,7 +215,13 @@
     "offlineSave": "Saved offline. It will sync when connected.",
     "offlineMode": "Offline mode",
     "conecctionError": "Connection error. This action requires internet.",
-    "syncData": "data synchronized"
+    "syncData": "data synchronized",
+    "loadStatsError": "Could not load statistics.",
+    "loadAchievementsError": "Could not load achievements.",
+    "loadShopError": "Could not load the shop.",
+    "purchaseError": "Purchase failed. Check your connection or balance.",
+    "equipError": "Could not equip item. Connection required.",
+    "deleteAccountError": "Could not delete account. Check your connection."
   },
   "tutorial": {
     "steps": [
