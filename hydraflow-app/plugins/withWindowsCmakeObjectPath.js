@@ -5,6 +5,10 @@ const { withAppBuildGradle } = require('expo/config-plugins');
  * Complements android.cmakeVersion=3.31.6 (Ninja 1.12+) from expo-build-properties.
  */
 function withWindowsCmakeObjectPath(config) {
+  if (process.platform !== 'win32') {
+    return config;
+  }
+
   return withAppBuildGradle(config, (config) => {
     if (config.modResults.language !== 'groovy') {
       return config;

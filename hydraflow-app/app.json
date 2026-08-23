@@ -52,15 +52,6 @@
           "enforceContrast": true
         }
       ],
-      [
-        "expo-build-properties",
-        {
-          "android": {
-            "cmakeVersion": "3.31.6"
-          }
-        }
-      ],
-      "./plugins/withWindowsCmakeObjectPath",
       "@react-native-google-signin/google-signin",
       "expo-asset"
     ],
