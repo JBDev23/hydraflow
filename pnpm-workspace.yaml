@@ -1,0 +1,13 @@
+packages:
+  - 'hydraflow-app'
+  - 'hydraflow-backend'
+
+nodeLinker: hoisted
+packageImportMethod: copy
+
+allowBuilds:
+  '@prisma/client': true
+  '@prisma/engines': true
+  prisma: true
+  unrs-resolver: true
+  protobufjs: true

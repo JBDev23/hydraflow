@@ -9,7 +9,7 @@
 Este repositorio contiene exclusivamente el **Backend** del proyecto Hydraflow. Se encarga de gestionar la lógica de negocio, la base de datos, la autenticación de usuarios, el registro de consumo de agua y el sistema de logros (gamificación).
 
 ⚠️ **Nota:** Este proyecto se encuentra actualmente en **fase de pruebas (Testing)**.  
-👉 _El código del Frontend se encuentra en un repositorio separado: [hydraflow-app](https://github.com/JBDev23/hydraflow-app)._
+👉 _El código del Frontend vive en el mismo monorepo: [`../hydraflow-app`](../hydraflow-app)._
 
 ---
 
@@ -81,12 +81,15 @@ Este proyecto es de Código Abierto. Consulta el archivo `LICENSE` (si aplica) p
 
 ## Checks de CI (local)
 
-GitHub Actions ejecuta en cada push/PR a `main`/`master` los mismos checks que puedes correr localmente. Usa las variables de `.env.example` (Postgres local con Docker; no uses `.env.production` ni credenciales de Neon):
+GitHub Actions ejecuta en cada push/PR a `main`/`master` los mismos checks que puedes correr localmente desde la raíz del monorepo. Usa las variables de `.env.example` (Postgres local con Docker; no uses `.env.production` ni credenciales de Neon):
 
 ```bash
 cd hydraflow-backend
 docker compose up -d
+cd ..
 pnpm install
-pnpm prisma:migrate:deploy   # en desarrollo puedes usar prisma:migrate
-pnpm format:check && pnpm lint && pnpm build && pnpm test
+pnpm backend:test
+# o por paquete:
+pnpm --filter hydraflow-backend prisma:migrate:deploy
+pnpm --filter hydraflow-backend format:check && pnpm --filter hydraflow-backend lint && pnpm --filter hydraflow-backend build && pnpm --filter hydraflow-backend test
 ```

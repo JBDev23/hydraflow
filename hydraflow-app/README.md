@@ -9,7 +9,7 @@
 Este repositorio contiene el código **Frontend** (Aplicación Móvil) de Hydraflow, desarrollado con React Native y Expo. Aquí reside toda la interfaz de usuario, las animaciones de nuestra mascota (Hydra), el sistema de gráficos de progreso, y la gestión del almacenamiento local y notificaciones.
 
 ⚠️ **Nota:** Este proyecto se encuentra actualmente en **fase de pruebas (Testing)**.  
-👉 _El código del Backend (API) se encuentra en un repositorio separado: [hydraflow-backend](https://github.com/JBDev23/hydraflow-backend)._
+👉 _El código del Backend (API) vive en el mismo monorepo: [`../hydraflow-backend`](../hydraflow-backend)._
 
 ---
 
@@ -94,10 +94,11 @@ Este proyecto es de Código Abierto. Consulta el archivo `LICENSE` (si aplica) p
 
 ## Checks de CI (local)
 
-GitHub Actions ejecuta en cada push/PR a `main`/`master` los mismos checks que puedes correr localmente desde esta carpeta:
+GitHub Actions ejecuta en cada push/PR a `main`/`master` los mismos checks que puedes correr localmente desde la raíz del monorepo:
 
 ```bash
-cd hydraflow-app
 pnpm install
-pnpm format:check && pnpm lint && pnpm typecheck && pnpm test
+pnpm app:test
+# o por paquete:
+pnpm --filter hydroflow format:check && pnpm --filter hydroflow lint && pnpm --filter hydroflow typecheck && pnpm --filter hydroflow test
 ```

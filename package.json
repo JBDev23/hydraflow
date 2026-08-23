@@ -1,0 +1,18 @@
+{
+  "name": "hydraflow",
+  "private": true,
+  "packageManager": "pnpm@11.22.0",
+  "scripts": {
+    "app:start": "pnpm --filter hydroflow start",
+    "app:test": "pnpm --filter hydroflow test",
+    "app:lint": "pnpm --filter hydroflow lint",
+    "app:typecheck": "pnpm --filter hydroflow typecheck",
+    "backend:dev": "pnpm --filter hydraflow-backend dev",
+    "backend:test": "pnpm --filter hydraflow-backend test",
+    "backend:build": "pnpm --filter hydraflow-backend build",
+    "format": "pnpm -r format",
+    "format:check": "pnpm -r format:check",
+    "lint": "pnpm -r lint",
+    "test": "pnpm -r test"
+  }
+}

@@ -1,0 +1,47 @@
+# dependencies
+node_modules/
+
+# IDE / editor (local only)
+.vscode/*
+!.vscode/settings.json
+.idea/
+**/.idea/
+
+# env files
+.env
+.env.*
+!.env.example
+
+# Expo / app
+.expo/
+dist/
+web-build/
+expo-env.d.ts
+.kotlin/
+*.orig.*
+*.jks
+*.p8
+*.p12
+*.key
+*.mobileprovision
+.metro-health-check*
+/ios
+/android
+
+# Backend
+src/generated/
+
+# debug / logs
+npm-debug.*
+yarn-debug.*
+yarn-error.*
+*.log
+gradle-build-error.log
+
+# OS
+.DS_Store
+*.pem
+*.lnk
+
+# typescript
+*.tsbuildinfo

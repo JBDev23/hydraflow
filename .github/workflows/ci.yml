@@ -1,0 +1,97 @@
+name: CI
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+
+jobs:
+  changes:
+    runs-on: ubuntu-latest
+    outputs:
+      app: ${{ steps.filter.outputs.app }}
+      backend: ${{ steps.filter.outputs.backend }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            app:
+              - 'hydraflow-app/**'
+              - 'pnpm-lock.yaml'
+              - 'pnpm-workspace.yaml'
+              - '.github/workflows/ci.yml'
+            backend:
+              - 'hydraflow-backend/**'
+              - 'pnpm-lock.yaml'
+              - 'pnpm-workspace.yaml'
+              - '.github/workflows/ci.yml'
+
+  app:
+    needs: changes
+    if: needs.changes.outputs.app == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 11.22.0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+          cache-dependency-path: pnpm-lock.yaml
+
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm --filter hydroflow format:check
+      - run: pnpm --filter hydroflow lint
+      - run: pnpm --filter hydroflow typecheck
+      - run: pnpm --filter hydroflow test
+
+  backend:
+    needs: changes
+    if: needs.changes.outputs.backend == 'true'
+    runs-on: ubuntu-latest
+    env:
+      DATABASE_URL: postgresql://admin:password123@localhost:5432/hydraflow
+      DIRECT_URL: postgresql://admin:password123@localhost:5432/hydraflow
+      JWT_SECRET: ci-test-jwt-secret-min-32-chars-long
+      ALLOW_TEST_LOGIN: 'true'
+      NODE_ENV: test
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_USER: admin
+          POSTGRES_PASSWORD: password123
+          POSTGRES_DB: hydraflow
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U admin -d hydraflow"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 11.22.0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+          cache-dependency-path: pnpm-lock.yaml
+
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm --filter hydraflow-backend prisma:migrate:deploy
+      - run: pnpm --filter hydraflow-backend format:check
+      - run: pnpm --filter hydraflow-backend lint
+      - run: pnpm --filter hydraflow-backend build
+      - run: pnpm --filter hydraflow-backend test
