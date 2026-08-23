@@ -1,0 +1,13 @@
+# Railway deploy config when Root Directory = hydraflow-backend.
+#
+# With this root, Railpack only sees hydraflow-backend/package.json (no pnpm-lock.yaml
+# at repo root), so it uses npm — not pnpm. Do NOT set pnpm build/start commands
+# in the Railway dashboard; they will fail with "pnpm: not found".
+#
+# Clear any custom Build/Start commands in Railway Settings so this file is used.
+
+[build]
+buildCommand = "npm run build"
+
+[deploy]
+startCommand = "npm start"

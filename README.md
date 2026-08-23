@@ -252,11 +252,10 @@ Repositorio: **`JBDev23/hydraflow`**
 
 1. Conecta el servicio al repo `JBDev23/hydraflow`.
 2. **Root Directory:** `hydraflow-backend`
-3. **Build Command:** `pnpm install --frozen-lockfile && pnpm build`
-4. **Start Command:** `pnpm start`
-5. Variables: `DATABASE_URL`, `DIRECT_URL`, `JWT_SECRET`, `GOOGLE_CLIENT_ID`, etc.
+3. Build/start: definidos en [`hydraflow-backend/railway.toml`](hydraflow-backend/railway.toml) (`npm run build` / `npm start`). No pongas comandos `pnpm` en el dashboard.
+4. Variables: `DATABASE_URL`, `DIRECT_URL`, `JWT_SECRET`, `GOOGLE_CLIENT_ID`, etc.
 
-pnpm resuelve el workspace padre gracias a `pnpm-workspace.yaml` en la raíz del clone.
+**Alternativa (pnpm desde raíz del monorepo):** Root Directory vacío + `pnpm install --frozen-lockfile && pnpm --filter hydraflow-backend build` / `pnpm --filter hydraflow-backend start`.
 
 ### Expo EAS (app)
 
