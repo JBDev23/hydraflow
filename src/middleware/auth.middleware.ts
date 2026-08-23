@@ -20,7 +20,7 @@ export const ensureAuth = (req: AuthRequest, res: Response, next: NextFunction) 
     const payload = jwt.verify(token, getJwtSecret()) as { userId: string };
     req.userId = payload.userId;
     next();
-  } catch (error) {
+  } catch {
     return res.status(401).json({ error: 'Invalid token' });
   }
 };

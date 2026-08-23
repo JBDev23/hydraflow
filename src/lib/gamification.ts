@@ -12,7 +12,7 @@ export const getXpRequiredForLevel = (level: number): number => {
 };
 
 export const calculateProgress = (currentLevel: number, currentXp: number): number => {
-  let xpRequired = getXpRequiredForLevel(currentLevel);
+  const xpRequired = getXpRequiredForLevel(currentLevel);
   if (xpRequired === 0) return 0;
   return Math.floor((currentXp * 100) / xpRequired);
 };
@@ -36,7 +36,7 @@ export const processLevelUp = (currentLevel: number, currentXp: number, xpGained
     }
   }
 
-  let newProgress = calculateProgress(newLevel, newXp);
+  const newProgress = calculateProgress(newLevel, newXp);
 
   return {
     newLevel,

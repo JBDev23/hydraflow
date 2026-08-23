@@ -30,9 +30,9 @@ export class AuthService {
   async socialLogin(input: SocialLoginInput) {
     const { token, provider, manualEmail, manualName, deviceLanguage } = input;
 
-    let email = '';
-    let name = '';
-    let providerId = '';
+    let email: string;
+    let name: string;
+    let providerId: string;
 
     if (provider === 'google') {
       if (!token) {

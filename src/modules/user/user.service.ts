@@ -21,6 +21,8 @@ const safeInt = (val: unknown) => {
   return isNaN(parsed) ? undefined : parsed;
 };
 
+type UpdateProfileInput = Record<string, unknown>;
+
 export class UserService {
   async getProfile(userId: string, tzOffset: number) {
     const user = await prisma.user.findUnique({
@@ -63,23 +65,24 @@ export class UserService {
     return user;
   }
 
-  async updateProfile(userId: string, data: Record<string, any>) {
-    const activityLevel = data.activity;
+  async updateProfile(userId: string, data: UpdateProfileInput) {
+    const activityLevel = data.activity as string | undefined;
     const dailyGoal = safeInt(data.goal);
-    const dropsBalance = safeInt(data.stats?.dropsBalance);
-    const currentStreak = safeInt(data.stats?.currentStreak);
+    const stats = data.stats as Record<string, unknown> | undefined;
+    const dropsBalance = safeInt(stats?.dropsBalance);
+    const currentStreak = safeInt(stats?.currentStreak);
 
     return prisma.user.update({
       where: { id: userId },
       data: {
-        name: data.name || undefined,
+        name: (data.name as string | undefined) || undefined,
         profile: {
           upsert: {
             create: {
               weight: safeFloat(data.weight),
               height: safeFloat(data.height),
               age: safeInt(data.age),
-              gender: data.gender || undefined,
+              gender: (data.gender as string | undefined) || undefined,
               activityLevel: activityLevel || undefined,
               dailyGoal: dailyGoal || 2000,
             },
@@ -87,7 +90,7 @@ export class UserService {
               weight: safeFloat(data.weight),
               height: safeFloat(data.height),
               age: safeInt(data.age),
-              gender: data.gender || undefined,
+              gender: (data.gender as string | undefined) || undefined,
               activityLevel: activityLevel || undefined,
               dailyGoal: dailyGoal,
             },
@@ -96,32 +99,35 @@ export class UserService {
         settings: {
           upsert: {
             create: {
-              notifications: data.notifications || DEFAULT_NOTIFICATIONS,
+              notifications:
+                (data.notifications as typeof DEFAULT_NOTIFICATIONS | undefined) ||
+                DEFAULT_NOTIFICATIONS,
               preferences: (data.preferences
-                ? normalizePreferences(data.preferences)
+                ? normalizePreferences(data.preferences as Record<string, unknown>)
                 : DEFAULT_PREFERENCES) as object,
-              wakeTime: data.wakeTime || undefined,
-              sleepTime: data.sleepTime || undefined,
+              wakeTime: (data.wakeTime as string | undefined) || undefined,
+              sleepTime: (data.sleepTime as string | undefined) || undefined,
             },
             update: {
-              notifications: data.notifications || undefined,
+              notifications:
+                (data.notifications as typeof DEFAULT_NOTIFICATIONS | undefined) || undefined,
               preferences: data.preferences
-                ? (normalizePreferences(data.preferences) as object)
+                ? (normalizePreferences(data.preferences as Record<string, unknown>) as object)
                 : undefined,
-              wakeTime: data.wakeTime || undefined,
-              sleepTime: data.sleepTime || undefined,
+              wakeTime: (data.wakeTime as string | undefined) || undefined,
+              sleepTime: (data.sleepTime as string | undefined) || undefined,
             },
           },
         },
         gameStats: {
           upsert: {
             create: {
-              level: safeInt(data.stats?.level) || 1,
+              level: safeInt(stats?.level) || 1,
               dropsBalance: dropsBalance ?? 0,
               currentStreak: currentStreak ?? 0,
             },
             update: {
-              level: safeInt(data.stats?.level),
+              level: safeInt(stats?.level),
               dropsBalance,
               currentStreak,
             },

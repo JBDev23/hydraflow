@@ -194,7 +194,9 @@ describe('🚀 API Integration Tests (End-to-End)', () => {
       expect(response.status).toBe(200);
 
       // Buscamos 'hat1' en la lista devuelta y verificamos que isEquipped es true
-      const hatItem = response.body.items.find((i: any) => i.itemId === 'hat1');
+      const hatItem = response.body.items.find(
+        (i: { itemId: string; isEquipped: boolean }) => i.itemId === 'hat1',
+      );
       expect(hatItem).toBeDefined();
       expect(hatItem.isEquipped).toBe(true);
     });
