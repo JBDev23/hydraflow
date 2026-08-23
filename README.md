@@ -76,3 +76,17 @@ La estructura de `modules/` está preparada para una migración futura a Nest (v
 ## 📄 Licencia
 
 Este proyecto es de Código Abierto. Consulta el archivo `LICENSE` (si aplica) para más detalles.
+
+---
+
+## Checks de CI (local)
+
+GitHub Actions ejecuta en cada push/PR a `main`/`master` los mismos checks que puedes correr localmente. Usa las variables de `.env.example` (Postgres local con Docker; no uses `.env.production` ni credenciales de Neon):
+
+```bash
+cd hydraflow-backend
+docker compose up -d
+pnpm install
+pnpm prisma:migrate:deploy   # en desarrollo puedes usar prisma:migrate
+pnpm format:check && pnpm lint && pnpm build && pnpm test
+```
