@@ -159,7 +159,7 @@ function AppNavigator() {
         return;
       }
 
-      const authScreen = segments[1];
+      const authScreen = (segments as readonly string[])[1];
       const onAuthEntry = !authScreen || authScreen === 'index' || authScreen === 'login';
       if (onAuthEntry) {
         router.replace('/(auth)/age');

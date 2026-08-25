@@ -159,7 +159,8 @@
     "permissionsDenied": "Permisos no concedits",
     "wakeBeforeSleep": "L'hora de despertar ha de ser anterior a dormir",
     "noRemindersToday": "No calen recordatoris per avui",
-    "scheduledSmart": "{{count}} recordatoris programats (Avui)",
+    "cancelFailed": "No s'han pogut cancel·lar les notificacions anteriors",
+    "scheduledSmart": "Proper recordatori programat",
     "scheduledDaily": "{{count}} recordatoris programats (Diaris)"
   },
   "buttons": {

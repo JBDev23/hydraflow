@@ -108,8 +108,8 @@ export class UserService {
               preferences: (data.preferences
                 ? normalizePreferences(data.preferences)
                 : DEFAULT_PREFERENCES) as object,
-              wakeTime: data.wakeTime || undefined,
-              sleepTime: data.sleepTime || undefined,
+              wakeTime: (data.wakeTime as object) || undefined,
+              sleepTime: (data.sleepTime as object) || undefined,
             },
             update: {
               notifications:
@@ -117,8 +117,8 @@ export class UserService {
               preferences: data.preferences
                 ? (normalizePreferences(data.preferences) as object)
                 : undefined,
-              wakeTime: data.wakeTime || undefined,
-              sleepTime: data.sleepTime || undefined,
+              wakeTime: (data.wakeTime as object) || undefined,
+              sleepTime: (data.sleepTime as object) || undefined,
             },
           },
         },

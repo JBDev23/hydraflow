@@ -19,6 +19,7 @@ const FREQUENCY_MAP: Record<string, number> = {
 };
 
 const ANDROID_CHANNEL_ID = 'hydration-reminders';
+const SMART_NOTIFICATION_ID = 'hydraflow-smart-next';
 
 type HourMinute = { hour: number; minute: number };
 
@@ -70,7 +71,8 @@ const setupAndroidChannel = async (): Promise<void> => {
   }
 };
 
-const generateFixedScheduleTimes = (
+/** Fixed frequency: all HH:MM slots from wake→sleep (daily repeating). */
+export const generateFixedScheduleTimes = (
   wakeTime: HourMinute,
   sleepTime: HourMinute,
   intervalMinutes: number,
@@ -90,72 +92,90 @@ const generateFixedScheduleTimes = (
   return times;
 };
 
-const generateSmartScheduleTimes = (
+/**
+ * Smart mode: only the next one-shot reminder.
+ * Spacing = remaining cups of 250ml distributed until sleep (min 30 min).
+ */
+export const generateSmartNextReminderDate = (
   sleepTime: HourMinute,
   dailyGoal: number,
   currentDrinked: number,
-): HourMinute[] => {
+  now: Date = new Date(),
+): Date | null => {
   const remainingWater = dailyGoal - currentDrinked;
-
-  if (remainingWater <= 0) return [];
+  if (remainingWater <= 0) return null;
 
   const cupsNeeded = Math.ceil(remainingWater / 250);
-
-  const now = new Date();
   const currentMinutes = now.getHours() * 60 + now.getMinutes();
   const sleepMinutes = sleepTime.hour * 60 + sleepTime.minute;
 
-  if (currentMinutes >= sleepMinutes - 30) return [];
+  if (currentMinutes >= sleepMinutes - 30) return null;
 
   const availableMinutes = sleepMinutes - currentMinutes;
   const calculatedInterval = Math.max(30, Math.floor(availableMinutes / cupsNeeded));
+  const nextNotificationMinute = currentMinutes + calculatedInterval;
 
-  const times: HourMinute[] = [];
-  let nextNotificationMinute = currentMinutes + calculatedInterval;
+  if (nextNotificationMinute >= sleepMinutes) return null;
 
-  for (let i = 0; i < cupsNeeded; i++) {
-    if (nextNotificationMinute >= sleepMinutes) break;
+  const hour = Math.floor(nextNotificationMinute / 60) % 24;
+  const minute = nextNotificationMinute % 60;
 
-    const hour = Math.floor(nextNotificationMinute / 60);
-    const minute = nextNotificationMinute % 60;
-    const normalizedHour = hour >= 24 ? hour - 24 : hour;
+  const date = new Date(now);
+  date.setSeconds(0, 0);
+  date.setHours(hour, minute, 0, 0);
 
-    times.push({ hour: normalizedHour, minute });
-    nextNotificationMinute += calculatedInterval;
-  }
-  return times;
+  if (date.getTime() <= now.getTime()) return null;
+
+  return date;
 };
 
-const scheduleNotificationAtTime = async (
+const notificationContent = (channelId: string) => ({
+  title: i18n.t('pushNotifications.title'),
+  body: i18n.t('pushNotifications.body'),
+  sound: true as const,
+  vibrate: [0, 250, 250, 250],
+  data: { type: 'hydration-reminder' },
+  ...(Platform.OS === 'android' && { channelId }),
+});
+
+const scheduleDailyAtTime = async (
   hour: number,
   minute: number,
   channelId: string,
-  repeats: boolean,
 ): Promise<string | null> => {
   try {
-    const notificationId = await Notifications.scheduleNotificationAsync({
-      content: {
-        title: i18n.t('pushNotifications.title'),
-        body: i18n.t('pushNotifications.body'),
-        sound: true,
-        vibrate: [0, 250, 250, 250],
-        data: { type: 'hydration-reminder' },
-        ...(Platform.OS === 'android' && { channelId }),
-      },
+    return await Notifications.scheduleNotificationAsync({
+      identifier: `hydraflow-daily-${hour}-${minute}`,
+      content: notificationContent(channelId),
       trigger: {
         type: Notifications.SchedulableTriggerInputTypes.DAILY,
         hour,
         minute,
-        repeats,
-      } as Notifications.NotificationTriggerInput,
+        ...(Platform.OS === 'android' && { channelId }),
+      },
     });
-
-    return notificationId;
   } catch (error) {
     console.error(
-      `❌ Error programando notificación a las ${hour}:${minute.toString().padStart(2, '0')}:`,
+      `❌ Error programando notificación diaria a las ${hour}:${minute.toString().padStart(2, '0')}:`,
       error,
     );
+    return null;
+  }
+};
+
+const scheduleOneShotAtDate = async (date: Date, channelId: string): Promise<string | null> => {
+  try {
+    return await Notifications.scheduleNotificationAsync({
+      identifier: SMART_NOTIFICATION_ID,
+      content: notificationContent(channelId),
+      trigger: {
+        type: Notifications.SchedulableTriggerInputTypes.DATE,
+        date,
+        ...(Platform.OS === 'android' && { channelId }),
+      },
+    });
+  } catch (error) {
+    console.error(`❌ Error programando notificación one-shot:`, error);
     return null;
   }
 };
@@ -191,15 +211,30 @@ export const notificationService = {
   ): Promise<NotificationScheduleResult> => {
     try {
       if (!settings?.notifications?.enabled) {
-        await notificationService.cancelAll();
+        const cancelWhenDisabled = await notificationService.cancelAll();
+        if (!cancelWhenDisabled.success) {
+          return {
+            success: false,
+            scheduled: 0,
+            message: i18n.t('pushNotifications.cancelFailed'),
+            error: cancelWhenDisabled.error,
+          };
+        }
         return { success: true, scheduled: 0, message: i18n.t('pushNotifications.disabled') };
       }
 
       const hasPermission = await notificationService.requestPermissions();
       if (!hasPermission) throw new Error(i18n.t('pushNotifications.permissionsDenied'));
 
-      await Notifications.getAllScheduledNotificationsAsync();
-      await notificationService.cancelAll();
+      const cancelResult = await notificationService.cancelAll();
+      if (!cancelResult.success) {
+        return {
+          success: false,
+          scheduled: 0,
+          message: i18n.t('pushNotifications.cancelFailed'),
+          error: cancelResult.error,
+        };
+      }
 
       const wakeTime = validateTimeConfig(settings.wakeTime, 8, 0);
       const sleepTime = validateTimeConfig(settings.sleepTime, 23, 0);
@@ -213,41 +248,45 @@ export const notificationService = {
         throw new Error(i18n.t('pushNotifications.wakeBeforeSleep'));
       }
 
-      let scheduleTimes: HourMinute[] = [];
-      let shouldRepeat = true;
+      let scheduledCount = 0;
 
       if (isSmartMode) {
-        scheduleTimes = generateSmartScheduleTimes(sleepTime, dailyGoal, currentDrinked);
-        shouldRepeat = false;
+        const nextDate = generateSmartNextReminderDate(sleepTime, dailyGoal, currentDrinked);
+        if (!nextDate) {
+          return {
+            success: true,
+            scheduled: 0,
+            message: i18n.t('pushNotifications.noRemindersToday'),
+          };
+        }
+
+        const id = await scheduleOneShotAtDate(nextDate, ANDROID_CHANNEL_ID);
+        scheduledCount = id ? 1 : 0;
       } else {
         const intervalMinutes = FREQUENCY_MAP[freqKey] || 90;
-        scheduleTimes = generateFixedScheduleTimes(wakeTime, sleepTime, intervalMinutes);
-        shouldRepeat = true;
+        const scheduleTimes = generateFixedScheduleTimes(wakeTime, sleepTime, intervalMinutes);
+
+        if (scheduleTimes.length === 0) {
+          return {
+            success: true,
+            scheduled: 0,
+            message: i18n.t('pushNotifications.noRemindersToday'),
+          };
+        }
+
+        const results = await Promise.all(
+          scheduleTimes.map(({ hour, minute }) =>
+            scheduleDailyAtTime(hour, minute, ANDROID_CHANNEL_ID),
+          ),
+        );
+        scheduledCount = results.filter((id) => id !== null).length;
       }
-
-      if (scheduleTimes.length === 0) {
-        return {
-          success: true,
-          scheduled: 0,
-          message: i18n.t('pushNotifications.noRemindersToday'),
-        };
-      }
-
-      const results = await Promise.all(
-        scheduleTimes.map(({ hour, minute }) =>
-          scheduleNotificationAtTime(hour, minute, ANDROID_CHANNEL_ID, shouldRepeat),
-        ),
-      );
-
-      const scheduledCount = results.filter((id) => id !== null).length;
-
-      await Notifications.getAllScheduledNotificationsAsync();
 
       return {
         success: true,
         scheduled: scheduledCount,
         message: isSmartMode
-          ? i18n.t('pushNotifications.scheduledSmart', { count: scheduledCount })
+          ? i18n.t('pushNotifications.scheduledSmart')
           : i18n.t('pushNotifications.scheduledDaily', { count: scheduledCount }),
       };
     } catch (error) {
@@ -256,14 +295,29 @@ export const notificationService = {
         success: false,
         scheduled: 0,
         message: error instanceof Error ? error.message : String(error),
+        error,
       };
     }
   },
 
   cancelAll: async (): Promise<NotificationCancelResult> => {
     try {
-      await Notifications.getAllScheduledNotificationsAsync();
       await Notifications.cancelAllScheduledNotificationsAsync();
+
+      let remaining = await Notifications.getAllScheduledNotificationsAsync();
+      if (remaining.length > 0) {
+        await Notifications.cancelAllScheduledNotificationsAsync();
+        remaining = await Notifications.getAllScheduledNotificationsAsync();
+      }
+
+      if (remaining.length > 0) {
+        const error = new Error(
+          `Still have ${remaining.length} scheduled notifications after cancel`,
+        );
+        console.error('❌ Error cancelando notificaciones:', error);
+        return { success: false, error };
+      }
+
       return { success: true };
     } catch (error) {
       console.error('❌ Error cancelando notificaciones:', error);
@@ -276,8 +330,11 @@ export const notificationService = {
     console.log(
       `📋 Notificaciones programadas: ${scheduled.length}`,
       scheduled.map((n) => {
-        const trigger = n.trigger as { hour?: number; minute?: number };
-        return `${trigger.hour}:${String(trigger.minute).padStart(2, '0')}`;
+        const trigger = n.trigger as { hour?: number; minute?: number; type?: string };
+        if (trigger.hour != null && trigger.minute != null) {
+          return `${trigger.hour}:${String(trigger.minute).padStart(2, '0')}`;
+        }
+        return `${n.identifier}(${trigger.type ?? 'unknown'})`;
       }),
     );
     return scheduled;

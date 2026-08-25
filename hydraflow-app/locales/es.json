@@ -163,7 +163,8 @@
     "permissionsDenied": "Permisos no otorgados",
     "wakeBeforeSleep": "Hora de despertar debe ser anterior a dormir",
     "noRemindersToday": "No hay recordatorios necesarios para hoy",
-    "scheduledSmart": "{{count}} recordatorios programados (Hoy)",
+    "cancelFailed": "No se pudieron cancelar las notificaciones anteriores",
+    "scheduledSmart": "Próximo recordatorio programado",
     "scheduledDaily": "{{count}} recordatorios programados (Diarios)"
   },
 

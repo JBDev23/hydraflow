@@ -159,7 +159,8 @@
     "permissionsDenied": "Permissions not granted",
     "wakeBeforeSleep": "Wake time must be before bedtime",
     "noRemindersToday": "No reminders needed for today",
-    "scheduledSmart": "{{count}} reminders scheduled (Today)",
+    "cancelFailed": "Could not cancel previous notifications",
+    "scheduledSmart": "Next reminder scheduled",
     "scheduledDaily": "{{count}} reminders scheduled (Daily)"
   },
   "buttons": {
