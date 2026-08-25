@@ -11,8 +11,8 @@ import {
 import { useFocusEffect, useRouter } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import Slider from '@react-native-community/slider';
 import Hydra from '../../components/Hydra';
-import HorizontalSelector from '../../components/HorizontalSelector';
 import ToggleButton from '../../components/ToggleButton';
 import { useTheme } from '../../context/ThemeContext';
 import { useUser } from '../../context/UserContext';
@@ -101,7 +101,22 @@ export default function WeightScreen() {
           <Text style={styles.title}>{t('ask.weight')}</Text>
         </View>
         <ToggleButton labels={['KG', 'LB']} value={measureUnit} onValueChange={changeMeasureUnit} />
-        <HorizontalSelector min={minVal} max={maxVal} value={weight} onValueChange={setWeight} />
+        <View style={styles.sliderBlock}>
+          <Text style={styles.number}>{weight}</Text>
+          <Slider
+            style={styles.slider}
+            minimumValue={minVal}
+            maximumValue={maxVal}
+            step={1}
+            value={Math.min(maxVal, Math.max(minVal, weight))}
+            onValueChange={setWeight}
+            minimumTrackTintColor={theme.colors.primaryMid}
+            maximumTrackTintColor={theme.colors.text}
+            thumbTintColor={theme.colors.primaryDark}
+            onTouchStart={(e) => e.stopPropagation()}
+            onTouchEnd={(e) => e.stopPropagation()}
+          />
+        </View>
         <TouchableOpacity onPress={handleNext} style={styles.button}>
           <LinearGradient colors={[theme.colors.primary, theme.colors.primaryDark]}>
             <Text style={styles.buttonText}>{t('buttons.next')}</Text>
@@ -128,6 +143,7 @@ const createStyles = (theme: Theme) =>
       borderRadius: 10,
       overflow: 'hidden',
       alignSelf: 'center',
+      marginTop: 20,
     },
     buttonText: {
       fontSize: 30,
@@ -145,5 +161,24 @@ const createStyles = (theme: Theme) =>
       fontSize: 30,
       fontFamily: theme.regular,
       textAlign: 'center',
+    },
+    sliderBlock: {
+      width: screenWidth * 0.8,
+      marginBottom: 20,
+    },
+    slider: {
+      width: '50%',
+      alignSelf: 'center',
+      transform: [{ scale: 2 }],
+      marginTop: 20,
+    },
+    number: {
+      fontSize: 70,
+      fontFamily: theme.regular,
+      textAlign: 'center',
+      color: theme.colors.text,
+      textShadowColor: 'rgba(0, 0, 0, 0.25)',
+      textShadowOffset: { width: 0, height: 4 },
+      textShadowRadius: 5,
     },
   });

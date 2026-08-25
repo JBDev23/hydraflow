@@ -177,6 +177,20 @@ export const createEmptyProfile = (): UserProfile => ({
 export const mergeProfilePatch = (prev: UserProfile, newData: UserProfilePatch): UserProfile => {
   let updatedProfile: UserProfile = { ...prev, ...newData } as UserProfile;
 
+  if (newData.preferences) {
+    updatedProfile = {
+      ...updatedProfile,
+      preferences: { ...prev.preferences, ...newData.preferences },
+    };
+  }
+
+  if (newData.notifications) {
+    updatedProfile = {
+      ...updatedProfile,
+      notifications: { ...prev.notifications, ...newData.notifications },
+    };
+  }
+
   if (newData.stats) {
     updatedProfile = {
       ...updatedProfile,

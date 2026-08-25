@@ -75,6 +75,23 @@ export class UserService {
     const dropsBalance = safeInt(stats?.dropsBalance);
     const currentStreak = safeInt(stats?.currentStreak);
 
+    let preferencesToSave: object | undefined;
+    if (data.preferences) {
+      const existingSettings = await this.prisma.settings.findUnique({
+        where: { userId },
+        select: { preferences: true },
+      });
+      const existingPrefs =
+        existingSettings?.preferences && typeof existingSettings.preferences === 'object'
+          ? (existingSettings.preferences as Record<string, unknown>)
+          : {};
+      // Merge with existing so keys like onboardingCompleted are not wiped by partial updates.
+      preferencesToSave = normalizePreferences({
+        ...existingPrefs,
+        ...(data.preferences as Record<string, unknown>),
+      }) as object;
+    }
+
     return this.prisma.user.update({
       where: { id: userId },
       data: {
@@ -105,18 +122,14 @@ export class UserService {
               notifications:
                 (data.notifications as typeof DEFAULT_NOTIFICATIONS | undefined) ||
                 DEFAULT_NOTIFICATIONS,
-              preferences: (data.preferences
-                ? normalizePreferences(data.preferences)
-                : DEFAULT_PREFERENCES) as object,
+              preferences: preferencesToSave ?? (DEFAULT_PREFERENCES as object),
               wakeTime: (data.wakeTime as object) || undefined,
               sleepTime: (data.sleepTime as object) || undefined,
             },
             update: {
               notifications:
                 (data.notifications as typeof DEFAULT_NOTIFICATIONS | undefined) || undefined,
-              preferences: data.preferences
-                ? (normalizePreferences(data.preferences) as object)
-                : undefined,
+              preferences: preferencesToSave,
               wakeTime: (data.wakeTime as object) || undefined,
               sleepTime: (data.sleepTime as object) || undefined,
             },

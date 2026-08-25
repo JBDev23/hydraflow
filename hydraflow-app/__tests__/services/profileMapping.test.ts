@@ -187,6 +187,18 @@ describe('mergeProfilePatch', () => {
     expect(merged.stats.skinsCount).toBe(4);
     expect(merged.skins.owned).toEqual(['sunGlasses', 'hat', 'scarf', 'boots']);
   });
+
+  test('Debería hacer deep merge de preferences sin pisar el resto', () => {
+    const merged = mergeProfilePatch(fullUserProfile, {
+      preferences: { theme: 'dark', language: 'en' },
+    });
+
+    expect(merged.preferences.theme).toBe('dark');
+    expect(merged.preferences.language).toBe('en');
+    expect(merged.preferences.unitDist).toBe(fullUserProfile.preferences.unitDist);
+    expect(merged.preferences.soundEffects).toBe(fullUserProfile.preferences.soundEffects);
+    expect(merged.onboardingCompleted).toBe(fullUserProfile.onboardingCompleted);
+  });
 });
 
 describe('calculateIdealGoal', () => {

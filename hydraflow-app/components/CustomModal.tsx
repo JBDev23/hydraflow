@@ -1,7 +1,7 @@
+import { useMemo, type ReactNode } from 'react';
 import { Modal, View, StyleSheet, TouchableOpacity, Dimensions } from 'react-native';
 import { FontAwesome6 } from '@expo/vector-icons';
 import { useTheme } from '../context/ThemeContext';
-import { useMemo, type ReactNode } from 'react';
 import type { Theme } from '../types';
 
 const { height, width } = Dimensions.get('window');
@@ -18,14 +18,13 @@ export default function CustomModal({ visible, onClose, children, borderColor }:
   const styles = useMemo(() => createStyles(theme), [theme]);
 
   const activeBorderColor = borderColor || theme.colors.primaryDark;
-
   const stopPropagation = () => {};
 
   // Unmount when hidden so nested RN Modals (e.g. tutorial + profile editors) do not stack.
   if (!visible) return null;
 
   return (
-    <Modal animationType="fade" transparent={true} visible onRequestClose={onClose}>
+    <Modal animationType="fade" transparent visible onRequestClose={onClose}>
       <View style={styles.overlay} onTouchStart={stopPropagation} onTouchEnd={stopPropagation}>
         <TouchableOpacity style={styles.overlayTouchable} onPress={onClose} activeOpacity={1} />
 

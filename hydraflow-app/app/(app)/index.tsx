@@ -711,7 +711,7 @@ const createStyles = (theme: Theme, screenWidth: number) =>
       textShadowOffset: { width: 0, height: 4 },
       textShadowRadius: 5,
       color: theme.colors.primaryDark,
-      flexShrink: 0,
+      flexShrink: 1,
       marginLeft: 4,
     },
     goalContainer: {

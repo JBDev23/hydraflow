@@ -7,7 +7,6 @@ import {
   Text,
   type NativeSyntheticEvent,
   type NativeScrollEvent,
-  type GestureResponderEvent,
 } from 'react-native';
 import { useFocusEffect, useRouter } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -76,8 +75,6 @@ export default function SleepScreen() {
     router.push('/(auth)/creatingPlan');
   };
 
-  const stopPropagation = (e: GestureResponderEvent) => e.stopPropagation();
-
   return (
     <>
       <ScrollView
@@ -93,19 +90,17 @@ export default function SleepScreen() {
         <View style={styles.text}>
           <Text style={styles.title}>{t('ask.sleep')}</Text>
         </View>
-        <View onTouchStart={stopPropagation} onTouchEnd={stopPropagation}>
-          <View style={styles.TimeSelectorContainer}>
-            <GradientIcon size={40} colors={['#FFD700', '#FF8C00']}>
-              <FontAwesome6 name="sun" size={40} solid />
-            </GradientIcon>
-            <TimeSelector time={wakeTime} onTimeChange={setWakeTime} />
-          </View>
-          <View style={styles.TimeSelectorContainer}>
-            <GradientIcon size={40}>
-              <FontAwesome6 name="moon" size={40} solid />
-            </GradientIcon>
-            <TimeSelector time={sleepTime} onTimeChange={setSleepTime} />
-          </View>
+        <View style={styles.TimeSelectorContainer}>
+          <GradientIcon size={40} colors={['#FFD700', '#FF8C00']}>
+            <FontAwesome6 name="sun" size={40} solid />
+          </GradientIcon>
+          <TimeSelector time={wakeTime} onTimeChange={setWakeTime} />
+        </View>
+        <View style={styles.TimeSelectorContainer}>
+          <GradientIcon size={40}>
+            <FontAwesome6 name="moon" size={40} solid />
+          </GradientIcon>
+          <TimeSelector time={sleepTime} onTimeChange={setSleepTime} />
         </View>
 
         <TouchableOpacity onPress={handleNext} style={styles.button}>

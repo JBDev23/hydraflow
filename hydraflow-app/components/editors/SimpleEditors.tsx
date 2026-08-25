@@ -2,7 +2,6 @@ import { useMemo } from 'react';
 import { View, Text, TextInput, StyleSheet, Dimensions } from 'react-native';
 import Slider from '@react-native-community/slider';
 import { useTranslation } from 'react-i18next';
-import HorizontalSelector from '../HorizontalSelector';
 import { useTheme } from '../../context/ThemeContext';
 import type { Theme } from '../../types';
 
@@ -78,23 +77,9 @@ export const SliderEditor = ({ value, onChange, min, max, step, unit }: SliderEd
   );
 };
 
-export const WeightEditor = ({ value, onChange, min, max }: WeightEditorProps) => {
-  const { theme } = useTheme();
-  const styles = useMemo(() => createStyles(theme), [theme]);
-  return (
-    <View style={styles.horizontalContainer}>
-      <HorizontalSelector
-        width1={screenWidth * 0.8}
-        width2={screenWidth * 0.8 * 0.81}
-        fontSize={40}
-        value={value}
-        onValueChange={onChange}
-        min={min}
-        max={max}
-      />
-    </View>
-  );
-};
+export const WeightEditor = ({ value, onChange, min, max }: WeightEditorProps) => (
+  <SliderEditor value={value} onChange={onChange} min={min} max={max} step={1} />
+);
 
 const createStyles = (theme: Theme) =>
   StyleSheet.create({
@@ -118,9 +103,6 @@ const createStyles = (theme: Theme) =>
     sliderContainer: {
       width: screenWidth * 0.7,
       alignItems: 'center',
-    },
-    horizontalContainer: {
-      marginTop: 25,
     },
     number: {
       fontSize: 50,

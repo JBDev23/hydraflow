@@ -123,7 +123,15 @@ export const UserProvider = ({ children, userApiRef, hydrationApiRef }: UserProv
       const backendUser = await api.getUser();
 
       if (backendUser) {
-        const mappedProfile = mapBackendToFrontend(backendUser);
+        let mappedProfile = mapBackendToFrontend(backendUser);
+
+        // Heal prefs that were overwritten without onboardingCompleted (e.g. settings save).
+        if (userProfileRef.current?.onboardingCompleted && !mappedProfile.onboardingCompleted) {
+          mappedProfile = { ...mappedProfile, onboardingCompleted: true };
+          void api.updateUser({
+            preferences: preferencesWithOnboardingFlag(mappedProfile.preferences, true),
+          });
+        }
 
         const nextLang = mappedProfile.preferences?.language;
         if (nextLang && nextLang !== i18n.language) {
@@ -185,16 +193,18 @@ export const UserProvider = ({ children, userApiRef, hydrationApiRef }: UserProv
 
     const token = authTokenRef?.current ?? authToken;
     if (token) {
+      // Always re-attach onboardingCompleted when sending preferences so a settings
+      // save cannot wipe the flag stored inside backend preferences JSON.
       const apiPayload: UserProfilePatch =
-        newData.onboardingCompleted === undefined
-          ? newData
-          : {
+        newData.preferences !== undefined || newData.onboardingCompleted !== undefined
+          ? {
               ...newData,
               preferences: preferencesWithOnboardingFlag(
                 updatedProfile.preferences,
-                newData.onboardingCompleted,
+                newData.onboardingCompleted ?? updatedProfile.onboardingCompleted,
               ),
-            };
+            }
+          : newData;
       void api.updateUser(apiPayload);
     }
 
