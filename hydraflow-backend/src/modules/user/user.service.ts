@@ -1,7 +1,9 @@
-import { prisma } from '../../prisma/prisma';
+import { Injectable } from '@nestjs/common';
+import { PrismaService } from '../../prisma/prisma';
 import { checkStreakBreak } from '../../lib/gamification';
 import { DEFAULT_PREFERENCES, normalizePreferences } from '../../lib/preferences';
 import { DomainError } from '../common/domain-error';
+import type { UpdateProfileDto } from './dto/update-profile.dto';
 
 const DEFAULT_NOTIFICATIONS = {
   enabled: true,
@@ -21,11 +23,12 @@ const safeInt = (val: unknown) => {
   return isNaN(parsed) ? undefined : parsed;
 };
 
-type UpdateProfileInput = Record<string, unknown>;
-
+@Injectable()
 export class UserService {
+  constructor(private readonly prisma: PrismaService) {}
+
   async getProfile(userId: string, tzOffset: number) {
-    const user = await prisma.user.findUnique({
+    const user = await this.prisma.user.findUnique({
       where: { id: userId },
       include: {
         profile: true,
@@ -48,7 +51,7 @@ export class UserService {
       );
 
       if (realStreak !== user.gameStats.currentStreak) {
-        const updatedStats = await prisma.gameStats.update({
+        const updatedStats = await this.prisma.gameStats.update({
           where: { id: user.gameStats.id },
           data: { currentStreak: realStreak },
         });
@@ -65,24 +68,24 @@ export class UserService {
     return user;
   }
 
-  async updateProfile(userId: string, data: UpdateProfileInput) {
-    const activityLevel = data.activity as string | undefined;
+  async updateProfile(userId: string, data: UpdateProfileDto) {
+    const activityLevel = data.activity;
     const dailyGoal = safeInt(data.goal);
-    const stats = data.stats as Record<string, unknown> | undefined;
+    const stats = data.stats;
     const dropsBalance = safeInt(stats?.dropsBalance);
     const currentStreak = safeInt(stats?.currentStreak);
 
-    return prisma.user.update({
+    return this.prisma.user.update({
       where: { id: userId },
       data: {
-        name: (data.name as string | undefined) || undefined,
+        name: data.name || undefined,
         profile: {
           upsert: {
             create: {
               weight: safeFloat(data.weight),
               height: safeFloat(data.height),
               age: safeInt(data.age),
-              gender: (data.gender as string | undefined) || undefined,
+              gender: data.gender || undefined,
               activityLevel: activityLevel || undefined,
               dailyGoal: dailyGoal || 2000,
             },
@@ -90,7 +93,7 @@ export class UserService {
               weight: safeFloat(data.weight),
               height: safeFloat(data.height),
               age: safeInt(data.age),
-              gender: (data.gender as string | undefined) || undefined,
+              gender: data.gender || undefined,
               activityLevel: activityLevel || undefined,
               dailyGoal: dailyGoal,
             },
@@ -103,19 +106,19 @@ export class UserService {
                 (data.notifications as typeof DEFAULT_NOTIFICATIONS | undefined) ||
                 DEFAULT_NOTIFICATIONS,
               preferences: (data.preferences
-                ? normalizePreferences(data.preferences as Record<string, unknown>)
+                ? normalizePreferences(data.preferences)
                 : DEFAULT_PREFERENCES) as object,
-              wakeTime: (data.wakeTime as string | undefined) || undefined,
-              sleepTime: (data.sleepTime as string | undefined) || undefined,
+              wakeTime: data.wakeTime || undefined,
+              sleepTime: data.sleepTime || undefined,
             },
             update: {
               notifications:
                 (data.notifications as typeof DEFAULT_NOTIFICATIONS | undefined) || undefined,
               preferences: data.preferences
-                ? (normalizePreferences(data.preferences as Record<string, unknown>) as object)
+                ? (normalizePreferences(data.preferences) as object)
                 : undefined,
-              wakeTime: (data.wakeTime as string | undefined) || undefined,
-              sleepTime: (data.sleepTime as string | undefined) || undefined,
+              wakeTime: data.wakeTime || undefined,
+              sleepTime: data.sleepTime || undefined,
             },
           },
         },
@@ -138,15 +141,13 @@ export class UserService {
   }
 
   async deleteAccount(userId: string) {
-    await prisma.user.delete({ where: { id: userId } });
+    await this.prisma.user.delete({ where: { id: userId } });
   }
 
   async exportUserData(userId: string) {
-    return prisma.waterLog.findMany({
+    return this.prisma.waterLog.findMany({
       where: { userId },
       orderBy: { timestamp: 'desc' },
     });
   }
 }
-
-export const userService = new UserService();

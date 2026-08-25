@@ -1,9 +1,11 @@
-import { prisma } from '../../prisma/prisma';
+import { Injectable } from '@nestjs/common';
+import { PrismaService } from '../../prisma/prisma';
 
+@Injectable()
 export class AchievementsService {
+  constructor(private readonly prisma: PrismaService) {}
+
   async getCatalog() {
-    return prisma.catalogAchievement.findMany();
+    return this.prisma.catalogAchievement.findMany();
   }
 }
-
-export const achievementsService = new AchievementsService();

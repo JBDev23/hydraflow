@@ -1,13 +1,17 @@
-import { prisma } from '../../prisma/prisma';
+import { Injectable } from '@nestjs/common';
+import { PrismaService } from '../../prisma/prisma';
 import { DomainError } from '../common/domain-error';
 
+@Injectable()
 export class ItemsService {
+  constructor(private readonly prisma: PrismaService) {}
+
   async getCatalog() {
-    return prisma.catalogItem.findMany();
+    return this.prisma.catalogItem.findMany();
   }
 
   async buyItem(userId: string, itemId: string) {
-    const item = await prisma.catalogItem.findUnique({
+    const item = await this.prisma.catalogItem.findUnique({
       where: { id: itemId },
     });
 
@@ -16,7 +20,7 @@ export class ItemsService {
     }
 
     try {
-      return await prisma.$transaction(async (tx) => {
+      return await this.prisma.$transaction(async (tx) => {
         const alreadyOwned = await tx.userItem.findFirst({
           where: { userId, itemId },
         });
@@ -62,7 +66,7 @@ export class ItemsService {
   }
 
   async equipItem(userId: string, itemId: string) {
-    const userItem = await prisma.userItem.findFirst({
+    const userItem = await this.prisma.userItem.findFirst({
       where: { userId, itemId },
       include: { item: true },
     });
@@ -74,7 +78,7 @@ export class ItemsService {
     const category = userItem.item.category;
     const isCurrentlyEquipped = userItem.isEquipped;
 
-    await prisma.$transaction(async (tx) => {
+    await this.prisma.$transaction(async (tx) => {
       if (isCurrentlyEquipped) {
         await tx.userItem.update({
           where: { id: userItem.id },
@@ -103,8 +107,6 @@ export class ItemsService {
       }
     });
 
-    return prisma.userItem.findMany({ where: { userId } });
+    return this.prisma.userItem.findMany({ where: { userId } });
   }
 }
-
-export const itemsService = new ItemsService();

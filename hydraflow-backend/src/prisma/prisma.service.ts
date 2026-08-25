@@ -1,17 +1,20 @@
 import '../load-env';
+import { Injectable, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
 import { PrismaClient } from '../generated/prisma/client';
 import { PrismaPg } from '@prisma/adapter-pg';
 import { Pool } from 'pg';
 
 /**
- * Nest-ready Prisma wrapper: add @Injectable() + OnModuleInit/OnModuleDestroy later.
- * Runtime uses DATABASE_URL (pooled). CLI migrations use DIRECT_URL via prisma.config.ts.
+ * Nest Prisma wrapper. Runtime uses DATABASE_URL (pooled).
+ * CLI migrations use DIRECT_URL via prisma.config.ts.
+ * The `prisma` singleton is for tests and seed scripts only.
  */
 export function createPrismaClient(): PrismaService {
   return new PrismaService();
 }
 
-export class PrismaService extends PrismaClient {
+@Injectable()
+export class PrismaService extends PrismaClient implements OnModuleInit, OnModuleDestroy {
   private readonly pool: Pool;
 
   constructor() {
@@ -34,6 +37,14 @@ export class PrismaService extends PrismaClient {
     this.pool = pool;
   }
 
+  async onModuleInit(): Promise<void> {
+    await this.$connect();
+  }
+
+  async onModuleDestroy(): Promise<void> {
+    await this.disconnect();
+  }
+
   async disconnect(): Promise<void> {
     await this.$disconnect();
     await this.pool.end();
@@ -42,6 +53,7 @@ export class PrismaService extends PrismaClient {
 
 const globalForPrisma = globalThis as unknown as { prisma?: PrismaService };
 
+/** Test / CLI singleton — Nest modules inject `PrismaService` instead. */
 export const prisma = globalForPrisma.prisma ?? createPrismaClient();
 
 if (process.env.NODE_ENV !== 'production') {

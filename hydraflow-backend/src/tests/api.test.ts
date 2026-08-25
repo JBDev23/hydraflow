@@ -1,7 +1,8 @@
 import '../load-env';
+import type { INestApplication } from '@nestjs/common';
 import request from 'supertest';
 import { seedDatabase } from '../lib/seed-database';
-import { app } from '../index';
+import { createNestApp } from '../nest-app';
 import { prisma } from '../prisma/prisma';
 
 // Aumentamos el timeout por si la BD tarda en responder
@@ -9,6 +10,7 @@ jest.setTimeout(10000);
 
 describe('🚀 API Integration Tests (End-to-End)', () => {
   let token: string;
+  let app: INestApplication;
 
   // Usuario ficticio para las pruebas
   const testUser = {
@@ -20,6 +22,7 @@ describe('🚀 API Integration Tests (End-to-End)', () => {
 
   // Catalog rows must exist before auth creates default user_items (sunGlasses FK).
   beforeAll(async () => {
+    app = await createNestApp();
     await seedDatabase(prisma);
     await prisma.user.deleteMany({
       where: { email: testUser.email },
@@ -32,13 +35,16 @@ describe('🚀 API Integration Tests (End-to-End)', () => {
     await prisma.user.deleteMany({
       where: { email: testUser.email },
     });
+    await app.close();
     await prisma.disconnect();
   });
+
+  const http = () => request(app.getHttpServer());
 
   // --- 1. AUTENTICACIÓN ---
   describe('🔐 Auth Flow', () => {
     test('POST /auth/login - Debe crear usuario y devolver Token', async () => {
-      const response = await request(app).post('/auth/login').send({
+      const response = await http().post('/auth/login').send({
         provider: 'test',
         manualEmail: testUser.email,
         manualName: testUser.name,
@@ -63,7 +69,7 @@ describe('🚀 API Integration Tests (End-to-End)', () => {
         activity: 'active',
       };
 
-      const response = await request(app)
+      const response = await http()
         .put('/user/profile')
         .set('Authorization', `Bearer ${token}`)
         .send(updateData);
@@ -74,9 +80,7 @@ describe('🚀 API Integration Tests (End-to-End)', () => {
     });
 
     test('GET /user/profile - Debe devolver los datos persistidos', async () => {
-      const response = await request(app)
-        .get('/user/profile')
-        .set('Authorization', `Bearer ${token}`);
+      const response = await http().get('/user/profile').set('Authorization', `Bearer ${token}`);
 
       expect(response.status).toBe(200);
       expect(response.body.user.profile.weight).toBe(85.5);
@@ -85,7 +89,7 @@ describe('🚀 API Integration Tests (End-to-End)', () => {
     });
 
     test('PUT /user/profile - Debe actualizar stats canónicos', async () => {
-      const response = await request(app)
+      const response = await http()
         .put('/user/profile')
         .set('Authorization', `Bearer ${token}`)
         .send({
@@ -109,7 +113,7 @@ describe('🚀 API Integration Tests (End-to-End)', () => {
       expect(user?.gameStats?.level).toBe(2);
 
       // Restaurar saldo inicial esperado por tests de shop
-      await request(app)
+      await http()
         .put('/user/profile')
         .set('Authorization', `Bearer ${token}`)
         .send({ stats: { dropsBalance: 10 } });
@@ -119,7 +123,7 @@ describe('🚀 API Integration Tests (End-to-End)', () => {
   // --- 3. CICLO DEL AGUA Y ESTADÍSTICAS ---
   describe('💧 Water Loop & Stats', () => {
     test('POST /water/log - Debe registrar 500ml', async () => {
-      const response = await request(app)
+      const response = await http()
         .post('/water/log')
         .set('Authorization', `Bearer ${token}`)
         .send({ amount: 500 });
@@ -131,9 +135,7 @@ describe('🚀 API Integration Tests (End-to-End)', () => {
     });
 
     test('GET /water/metrics - Debe reflejar los 500ml bebidos hoy', async () => {
-      const response = await request(app)
-        .get('/water/metrics')
-        .set('Authorization', `Bearer ${token}`);
+      const response = await http().get('/water/metrics').set('Authorization', `Bearer ${token}`);
 
       expect(response.status).toBe(200);
       expect(response.body.total).toBeGreaterThanOrEqual(500);
@@ -142,7 +144,7 @@ describe('🚀 API Integration Tests (End-to-End)', () => {
     // Nuevo test para gráficos
     test('GET /water/stats - Debe devolver datos del gráfico diario', async () => {
       const today = new Date().toISOString().split('T')[0];
-      const response = await request(app)
+      const response = await http()
         .get(`/water/stats?mode=day&refDate=${today}`)
         .set('Authorization', `Bearer ${token}`);
 
@@ -153,9 +155,7 @@ describe('🚀 API Integration Tests (End-to-End)', () => {
     });
 
     test('DELETE /water/log - Debe eliminar el último registro', async () => {
-      const response = await request(app)
-        .delete('/water/log')
-        .set('Authorization', `Bearer ${token}`);
+      const response = await http().delete('/water/log').set('Authorization', `Bearer ${token}`);
 
       expect(response.status).toBe(200);
       expect(response.body.deletedAmount).toBe(500);
@@ -165,9 +165,7 @@ describe('🚀 API Integration Tests (End-to-End)', () => {
   // --- 4. CONTENIDOS Y TIENDA ---
   describe('🛒 Shop & Achievements', () => {
     test('GET /shop/catalog - Debe devolver items de la tienda', async () => {
-      const response = await request(app)
-        .get('/shop/catalog')
-        .set('Authorization', `Bearer ${token}`);
+      const response = await http().get('/shop/catalog').set('Authorization', `Bearer ${token}`);
 
       expect(response.status).toBe(200);
       expect(response.body.items.length).toBeGreaterThan(0);
@@ -175,7 +173,7 @@ describe('🚀 API Integration Tests (End-to-End)', () => {
 
     // Test de Compra: Usuario nuevo tiene 10 drops. 'hat1' cuesta 8.
     test('POST /shop/buy - Debe comprar "hat1" con saldo inicial', async () => {
-      const response = await request(app)
+      const response = await http()
         .post('/shop/buy')
         .set('Authorization', `Bearer ${token}`)
         .send({ itemId: 'hat1' });
@@ -188,7 +186,7 @@ describe('🚀 API Integration Tests (End-to-End)', () => {
 
     // Test de Equipar
     test('POST /shop/equip - Debe equipar "hat1"', async () => {
-      const response = await request(app)
+      const response = await http()
         .post('/shop/equip')
         .set('Authorization', `Bearer ${token}`)
         .send({ itemId: 'hat1' });
@@ -204,7 +202,7 @@ describe('🚀 API Integration Tests (End-to-End)', () => {
     });
 
     test('GET /achievements/catalog - Debe devolver logros', async () => {
-      const response = await request(app)
+      const response = await http()
         .get('/achievements/catalog')
         .set('Authorization', `Bearer ${token}`);
 

@@ -1,5 +1,3 @@
-import type { Request } from 'express';
-
 /** Max |offset| accepted: 14h in minutes */
 const MAX_TZ_OFFSET = 14 * 60;
 
@@ -14,12 +12,17 @@ export function parseTzOffset(raw: unknown): number {
   return Math.trunc(n);
 }
 
-export function getTzOffsetFromRequest(req: Request): number {
+/** Incoming HTTP request fields needed to resolve timezone offset. */
+export type TzOffsetRequest = {
+  headers: { [key: string]: string | string[] | undefined };
+  query?: Record<string, unknown>;
+  body?: { tzOffset?: unknown };
+};
+
+export function getTzOffsetFromRequest(req: TzOffsetRequest): number {
   const header = req.headers['x-timezone-offset'];
   const headerVal = Array.isArray(header) ? header[0] : header;
-  return parseTzOffset(
-    headerVal ?? req.query.tzOffset ?? (req.body as { tzOffset?: unknown })?.tzOffset,
-  );
+  return parseTzOffset(headerVal ?? req.query?.tzOffset ?? req.body?.tzOffset);
 }
 
 /**

@@ -1,4 +1,5 @@
-import { prisma } from '../../prisma/prisma';
+import { Injectable } from '@nestjs/common';
+import { PrismaService } from '../../prisma/prisma';
 import {
   calculateXpGain,
   processLevelUp,
@@ -26,13 +27,16 @@ export const parseAmount = (raw: unknown): number | null => {
 
 export { MAX_LOG_AMOUNT_ML };
 
+@Injectable()
 export class WaterService {
+  constructor(private readonly prisma: PrismaService) {}
+
   async getDayStats(userId: string, dateString: string, tzOffset: number) {
     const { start, end } = getCalendarDayRange(dateString, tzOffset);
     const labels = ['0', '3', '6', '9', '12', '15', '18', '21'];
     const values = new Array(8).fill(0);
 
-    const logs = await prisma.waterLog.findMany({
+    const logs = await this.prisma.waterLog.findMany({
       where: { userId, timestamp: { gte: start, lte: end } },
     });
 
@@ -77,7 +81,7 @@ export class WaterService {
     const labels = ['L', 'M', 'X', 'J', 'V', 'S', 'D'];
     const values = new Array(7).fill(0);
 
-    const logs = await prisma.waterLog.findMany({
+    const logs = await this.prisma.waterLog.findMany({
       where: { userId, timestamp: { gte: start, lte: end } },
     });
 
@@ -115,7 +119,7 @@ export class WaterService {
     const labels = ['S-1', 'S-2', 'S-3', 'S-4', 'S-5'];
     const values = new Array(5).fill(0);
 
-    const logs = await prisma.waterLog.findMany({
+    const logs = await this.prisma.waterLog.findMany({
       where: { userId, timestamp: { gte: start, lte: end } },
     });
 
@@ -140,7 +144,7 @@ export class WaterService {
   async logWater(userId: string, amount: number, tzOffset: number) {
     const { start, end } = getCalendarDayRange(undefined, tzOffset);
 
-    const result = await prisma.$transaction(async (tx) => {
+    const result = await this.prisma.$transaction(async (tx) => {
       const userProfile = await tx.profile.findUnique({ where: { userId } });
       const dailyGoal = userProfile?.dailyGoal || 2000;
 
@@ -234,7 +238,7 @@ export class WaterService {
 
   async getDailyMetrics(userId: string, date: string | undefined, tzOffset: number) {
     const { start, end } = getCalendarDayRange(date, tzOffset);
-    const aggregations = await prisma.waterLog.aggregate({
+    const aggregations = await this.prisma.waterLog.aggregate({
       _sum: { amount: true },
       where: {
         userId,
@@ -252,7 +256,7 @@ export class WaterService {
     const { start } = getCalendarDayRange(undefined, tzOffset);
 
     try {
-      const result = await prisma.$transaction(async (tx) => {
+      const result = await this.prisma.$transaction(async (tx) => {
         const userProfile = await tx.profile.findUnique({ where: { userId } });
         const dailyGoal = userProfile?.dailyGoal || 2000;
 
@@ -342,7 +346,7 @@ export class WaterService {
     const { start } = getCalendarDayRange(startDate, tzOffset);
     const { end } = getCalendarDayRange(endDate, tzOffset);
 
-    const logs = await prisma.waterLog.findMany({
+    const logs = await this.prisma.waterLog.findMany({
       where: {
         userId,
         timestamp: { gte: start, lte: end },
@@ -388,5 +392,3 @@ export class WaterService {
     };
   }
 }
-
-export const waterService = new WaterService();

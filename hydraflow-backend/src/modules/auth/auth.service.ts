@@ -1,6 +1,7 @@
+import { Injectable } from '@nestjs/common';
 import jwt from 'jsonwebtoken';
 import { OAuth2Client } from 'google-auth-library';
-import { prisma } from '../../prisma/prisma';
+import { PrismaService } from '../../prisma/prisma';
 import { getJwtSecret } from '../../lib/jwt';
 import { DEFAULT_PREFERENCES, normalizePreferences } from '../../lib/preferences';
 import { DomainError } from '../common/domain-error';
@@ -26,7 +27,10 @@ export type SocialLoginInput = {
   deviceLanguage?: string;
 };
 
+@Injectable()
 export class AuthService {
+  constructor(private readonly prisma: PrismaService) {}
+
   async socialLogin(input: SocialLoginInput) {
     const { token, provider, manualEmail, manualName, deviceLanguage } = input;
 
@@ -72,7 +76,7 @@ export class AuthService {
     const userLang = deviceLanguage || 'es';
     const preferences = normalizePreferences(DEFAULT_PREFERENCES, userLang);
 
-    const user = await prisma.user.upsert({
+    const user = await this.prisma.user.upsert({
       where: { email },
       update: { name: name || undefined },
       create: {
@@ -114,5 +118,3 @@ export class AuthService {
     return { token: sessionToken, user };
   }
 }
-
-export const authService = new AuthService();

@@ -6,7 +6,7 @@
 
 > **Tu compañero de hidratación diario — app móvil gamificada + API backend.**
 
-Repositorio monorepo en [**github.com/JBDev23/hydraflow**](https://github.com/JBDev23/hydraflow) con [pnpm workspaces](https://pnpm.io/workspaces): cliente móvil (Expo/React Native) y API REST (Express/Prisma/PostgreSQL).
+Repositorio monorepo en [**github.com/JBDev23/hydraflow**](https://github.com/JBDev23/hydraflow) con [pnpm workspaces](https://pnpm.io/workspaces): cliente móvil (Expo/React Native) y API REST (NestJS/Prisma/PostgreSQL).
 
 | Paquete | Ruta | Descripción |
 |---------|------|-------------|
@@ -77,7 +77,7 @@ Asunto sugerido: **"Solicitud Beta Hydraflow"** o **"Solicitud Beta Hydraflow Ap
 
 | Área | Tecnología |
 |------|------------|
-| Runtime | Node.js >= 22.13, TypeScript, Express 4 |
+| Runtime | Node.js >= 22.13, TypeScript, NestJS 11 |
 | Base de datos | PostgreSQL 15, Prisma 7 |
 | Auth | google-auth-library, JWT |
 | Contenedores | Docker Compose |
@@ -96,9 +96,8 @@ hydraflow/
 │   ├── services/           # API, offline, notificaciones
 │   ├── locales/            # ca, en, es
 │   └── __tests__/
-├── hydraflow-backend/      # API Express
-│   ├── src/modules/        # Dominio (auth, water, achievements…)
-│   ├── src/routes/         # Endpoints HTTP
+├── hydraflow-backend/      # API NestJS
+│   ├── src/modules/        # Dominio + controllers
 │   ├── prisma/             # Esquema, migraciones, seed
 │   └── docker-compose.yml  # Postgres local
 ├── .github/workflows/      # CI por paquete
@@ -106,7 +105,7 @@ hydraflow/
 └── package.json            # Scripts raíz
 ```
 
-Documentación detallada por paquete:
+Detalle de cada paquete (scripts, env, carpetas):
 
 - [hydraflow-app/README.md](hydraflow-app/README.md)
 - [hydraflow-backend/README.md](hydraflow-backend/README.md)
@@ -201,7 +200,7 @@ Los perfiles EAS en `eas.json` definen estas variables para builds de desarrollo
 | POST/DELETE | `/water/log` | Sí |
 | GET | `/water/metrics`, `/water/range`, `/water/stats`, `/water/export` | Sí |
 | GET | `/achievements/catalog` | Sí |
-| GET/POST | `/items/catalog`, `/items/buy`, `/items/equip` | Sí |
+| GET/POST | `/shop/catalog`, `/shop/buy`, `/shop/equip` | Sí |
 
 ---
 
