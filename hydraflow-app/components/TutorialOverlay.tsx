@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Modal, View, Text, StyleSheet, TouchableOpacity, Animated } from 'react-native';
 import { FontAwesome6 } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -30,6 +30,11 @@ export default function TutorialOverlay({
   const [currentStepIndex, setCurrentStepIndex] = useState(0);
   const fadeAnim = useMemo(() => new Animated.Value(0), []);
   const [backColor, setBackColor] = useState(theme.colors.semiTransparentMain);
+  const stepsRef = useRef(steps);
+
+  useEffect(() => {
+    stepsRef.current = steps;
+  }, [steps]);
 
   const fadeIn = useCallback(() => {
     setBackColor(theme.colors.semiTransparentMain);
@@ -43,14 +48,10 @@ export default function TutorialOverlay({
   useEffect(() => {
     if (!visible) return;
 
-    queueMicrotask(() => setCurrentStepIndex(0));
-    queueMicrotask(() => fadeIn());
-  }, [visible, fadeIn]);
+    const currentSteps = stepsRef.current;
+    if (!currentSteps.length) return;
 
-  useEffect(() => {
-    if (!visible || !steps.length) return;
-
-    const currentStep = steps[currentStepIndex];
+    const currentStep = currentSteps[currentStepIndex];
     if (!currentStep) return;
 
     fadeAnim.setValue(0);
@@ -78,7 +79,8 @@ export default function TutorialOverlay({
     }
 
     queueMicrotask(() => fadeIn());
-  }, [visible, currentStepIndex, steps, fadeAnim, fadeIn, changeTab, isNavigating]);
+    // Intentionally omit `steps`: profile refresh / i18n updates must not re-trigger tab changes.
+  }, [visible, currentStepIndex, fadeAnim, fadeIn, changeTab, isNavigating]);
 
   const handleNext = () => {
     if (currentStepIndex < steps.length - 1) {

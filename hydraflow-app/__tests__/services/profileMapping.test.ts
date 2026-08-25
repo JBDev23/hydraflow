@@ -7,11 +7,13 @@ import {
   mapGameStats,
   mergeProfilePatch,
   normalizeLocalProfile,
+  preferencesWithOnboardingFlag,
+  resolveOnboardingCompleted,
 } from '../../services/profileMapping';
 import { toProfileUpdatePayload } from '../../services/profilePayload';
 import {
-  backendUserCompleteBiometrics,
-  backendUserIncompleteBiometrics,
+  backendUserComplete,
+  backendUserIncomplete,
   backendUserSoundEffectsZero,
   backendUserWithAchievements,
   backendUserWithItems,
@@ -55,14 +57,14 @@ describe('mapBackendToFrontend', () => {
     ]);
   });
 
-  test('Debería marcar onboardingCompleted false con biometrics incompletos', () => {
-    const profile = mapBackendToFrontend(backendUserIncompleteBiometrics);
+  test('Debería marcar onboardingCompleted false sin flag o con false', () => {
+    const profile = mapBackendToFrontend(backendUserIncomplete);
 
     expect(profile.onboardingCompleted).toBe(false);
   });
 
-  test('Debería marcar onboardingCompleted true con biometrics completos', () => {
-    const profile = mapBackendToFrontend(backendUserCompleteBiometrics);
+  test('Debería mapear perfil completo con onboardingCompleted true', () => {
+    const profile = mapBackendToFrontend(backendUserComplete);
 
     expect(profile.onboardingCompleted).toBe(true);
     expect(profile.name).toBe('Test User');
@@ -72,6 +74,36 @@ describe('mapBackendToFrontend', () => {
     expect(profile.activity).toBe('moderate');
     expect(profile.stats.level).toBe(3);
     expect(profile.stats.dropsBalance).toBe(25);
+    expect(profile.preferences).not.toHaveProperty('onboardingCompleted');
+  });
+
+  test('Debería marcar onboardingCompleted false si el flag es false', () => {
+    const profile = mapBackendToFrontend({
+      ...backendUserComplete,
+      settings: {
+        ...backendUserComplete.settings!,
+        preferences: {
+          ...backendUserComplete.settings!.preferences,
+          onboardingCompleted: false,
+        },
+      },
+    });
+
+    expect(profile.onboardingCompleted).toBe(false);
+  });
+
+  test('Debería marcar onboardingCompleted true solo por el flag en preferences', () => {
+    const profile = mapBackendToFrontend({
+      ...backendUserIncomplete,
+      settings: {
+        ...backendUserIncomplete.settings!,
+        preferences: {
+          onboardingCompleted: true,
+        },
+      },
+    });
+
+    expect(profile.onboardingCompleted).toBe(true);
   });
 
   test('Debería coercionar soundEffects 0 a false', () => {
@@ -86,12 +118,25 @@ describe('mapBackendToFrontend', () => {
     expect(profile.weight).toBe(0);
     expect(profile.height).toBe(0);
     expect(profile.goal).toBe(2000);
-    expect(profile.gender).toBe('other');
+    expect(profile.gender).toBe('male');
     expect(profile.activity).toBe('sedentary');
     expect(profile.wakeTime).toEqual({ hours: 8, minutes: 0 });
     expect(profile.sleepTime).toEqual({ hours: 23, minutes: 0 });
     expect(profile.preferences.soundEffects).toBe(true);
     expect(profile.onboardingCompleted).toBe(false);
+  });
+
+  test('Debería reemplazar wakeTime/sleepTime string "[object Object]" por defaults', () => {
+    const profile = mapBackendToFrontend({
+      ...minimalBackendUser,
+      settings: {
+        wakeTime: '[object Object]' as unknown as { hours: number; minutes: number },
+        sleepTime: '[object Object]' as unknown as { hours: number; minutes: number },
+      },
+    });
+
+    expect(profile.wakeTime).toEqual({ hours: 8, minutes: 0 });
+    expect(profile.sleepTime).toEqual({ hours: 23, minutes: 0 });
   });
 });
 
@@ -145,18 +190,18 @@ describe('mergeProfilePatch', () => {
 });
 
 describe('calculateIdealGoal', () => {
+  // Yamada WT × 0.68 with defaults: 20°C, 50% RH, 100 m, HDI=0
   const baseProfile = {
     weight: 70,
-    height: 175,
     age: 30,
     gender: 'male' as const,
     activity: 'sedentary' as const,
   };
 
-  test('Debería calcular meta para male sedentary', () => {
+  test('Debería calcular meta Yamada para male sedentary', () => {
     const goal = calculateIdealGoal(baseProfile);
 
-    expect(goal).toBe(2000);
+    expect(goal).toBe(2300);
     expect(goal % 100).toBe(0);
   });
 
@@ -164,47 +209,53 @@ describe('calculateIdealGoal', () => {
     const maleGoal = calculateIdealGoal({ ...baseProfile, gender: 'male' });
     const femaleGoal = calculateIdealGoal({ ...baseProfile, gender: 'female' });
 
+    expect(femaleGoal).toBe(2100);
     expect(femaleGoal).toBeLessThan(maleGoal);
   });
 
-  test('Debería calcular meta distinta para other', () => {
+  test('Debería calcular meta intermedia para other', () => {
+    const maleGoal = calculateIdealGoal({ ...baseProfile, gender: 'male' });
+    const femaleGoal = calculateIdealGoal({ ...baseProfile, gender: 'female' });
     const otherGoal = calculateIdealGoal({ ...baseProfile, gender: 'other' });
 
-    expect(otherGoal).toBeGreaterThan(0);
-    expect(otherGoal % 100).toBe(0);
+    expect(otherGoal).toBe(2200);
+    expect(otherGoal).toBeGreaterThan(femaleGoal);
+    expect(otherGoal).toBeLessThan(maleGoal);
   });
 
-  test('Debería aplicar factor de actividad moderate', () => {
+  test('Debería aplicar PAL moderate', () => {
     const sedentary = calculateIdealGoal({ ...baseProfile, activity: 'sedentary' });
     const moderate = calculateIdealGoal({ ...baseProfile, activity: 'moderate' });
 
+    expect(moderate).toBe(2500);
     expect(moderate).toBeGreaterThan(sedentary);
   });
 
-  test('Debería aplicar factor de actividad active', () => {
+  test('Debería aplicar PAL active', () => {
     const moderate = calculateIdealGoal({ ...baseProfile, activity: 'moderate' });
     const active = calculateIdealGoal({ ...baseProfile, activity: 'active' });
 
+    expect(active).toBe(2700);
     expect(active).toBeGreaterThan(moderate);
   });
 
-  test('Debería aplicar factor de actividad highActive', () => {
+  test('Debería marcar atleta en highActive (PAL 2.15 + athlete)', () => {
     const active = calculateIdealGoal({ ...baseProfile, activity: 'active' });
     const highActive = calculateIdealGoal({ ...baseProfile, activity: 'highActive' });
 
+    expect(highActive).toBe(3500);
     expect(highActive).toBeGreaterThan(active);
   });
 
   test('Debería parsear inputs string', () => {
     const goal = calculateIdealGoal({
       weight: '70',
-      height: '175',
       age: '30',
       gender: 'male',
       activity: 'sedentary',
-    });
+    } as Parameters<typeof calculateIdealGoal>[0]);
 
-    expect(goal).toBe(2000);
+    expect(goal).toBe(2300);
   });
 });
 
@@ -222,9 +273,34 @@ describe('createEmptyProfile', () => {
   });
 });
 
+describe('resolveOnboardingCompleted / preferencesWithOnboardingFlag', () => {
+  test('Debería devolver false cuando onboardingCompleted es false', () => {
+    expect(
+      resolveOnboardingCompleted({
+        ...backendUserComplete,
+        settings: {
+          ...backendUserComplete.settings!,
+          preferences: { onboardingCompleted: false },
+        },
+      }),
+    ).toBe(false);
+  });
+
+  test('Debería devolver false si no hay flag en preferences', () => {
+    expect(resolveOnboardingCompleted(minimalBackendUser)).toBe(false);
+  });
+
+  test('Debería incluir onboardingCompleted en preferences para el API', () => {
+    const prefs = preferencesWithOnboardingFlag(INITIAL_USER_PROFILE.preferences, true);
+
+    expect(prefs.onboardingCompleted).toBe(true);
+    expect(prefs.language).toBe(INITIAL_USER_PROFILE.preferences.language);
+  });
+});
+
 describe('round-trip BackendUser → mapBackendToFrontend → toProfileUpdatePayload', () => {
   test('No debería perder campos editables del perfil completo', () => {
-    const frontend = mapBackendToFrontend(backendUserCompleteBiometrics);
+    const frontend = mapBackendToFrontend(backendUserComplete);
     const payload = toProfileUpdatePayload(frontend);
 
     expect(payload.name).toBe('Test User');

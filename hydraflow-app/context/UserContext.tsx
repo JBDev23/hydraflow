@@ -20,6 +20,7 @@ import {
   createEmptyProfile,
   mergeProfilePatch,
   calculateIdealGoal as calcIdealGoal,
+  preferencesWithOnboardingFlag,
 } from '../services/profileMapping';
 import { syncNotifications } from '../services/syncNotifications';
 import { STORAGE_KEYS } from '../constants/storageKeys';
@@ -97,8 +98,17 @@ export const UserProvider = ({ children, userApiRef, hydrationApiRef }: UserProv
   };
 
   const applySessionProfile = async (mappedProfile: UserProfile) => {
-    setUserProfile(mappedProfile);
-    await AsyncStorage.setItem(STORAGE_KEYS.USER_PROFILE, JSON.stringify(mappedProfile));
+    let profile = mappedProfile;
+
+    if (!profile.onboardingCompleted) {
+      profile = { ...profile, onboardingCompleted: false };
+      void api.updateUser({
+        preferences: preferencesWithOnboardingFlag(profile.preferences, false),
+      });
+    }
+
+    setUserProfile(profile);
+    await AsyncStorage.setItem(STORAGE_KEYS.USER_PROFILE, JSON.stringify(profile));
   };
 
   const syncNotificationsForProfile = async (profile: UserProfile, currentWater: number) => {
@@ -115,8 +125,9 @@ export const UserProvider = ({ children, userApiRef, hydrationApiRef }: UserProv
       if (backendUser) {
         const mappedProfile = mapBackendToFrontend(backendUser);
 
-        if (mappedProfile.preferences?.language) {
-          void i18n.changeLanguage(mappedProfile.preferences.language);
+        const nextLang = mappedProfile.preferences?.language;
+        if (nextLang && nextLang !== i18n.language) {
+          void i18n.changeLanguage(nextLang);
         }
 
         setUserProfile(mappedProfile);
@@ -174,7 +185,17 @@ export const UserProvider = ({ children, userApiRef, hydrationApiRef }: UserProv
 
     const token = authTokenRef?.current ?? authToken;
     if (token) {
-      void api.updateUser(newData);
+      const apiPayload: UserProfilePatch =
+        newData.onboardingCompleted === undefined
+          ? newData
+          : {
+              ...newData,
+              preferences: preferencesWithOnboardingFlag(
+                updatedProfile.preferences,
+                newData.onboardingCompleted,
+              ),
+            };
+      void api.updateUser(apiPayload);
     }
 
     if (newData.notifications || newData.wakeTime || newData.sleepTime) {

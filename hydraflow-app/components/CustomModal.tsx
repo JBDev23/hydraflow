@@ -21,8 +21,11 @@ export default function CustomModal({ visible, onClose, children, borderColor }:
 
   const stopPropagation = () => {};
 
+  // Unmount when hidden so nested RN Modals (e.g. tutorial + profile editors) do not stack.
+  if (!visible) return null;
+
   return (
-    <Modal animationType="fade" transparent={true} visible={visible} onRequestClose={onClose}>
+    <Modal animationType="fade" transparent={true} visible onRequestClose={onClose}>
       <View style={styles.overlay} onTouchStart={stopPropagation} onTouchEnd={stopPropagation}>
         <TouchableOpacity style={styles.overlayTouchable} onPress={onClose} activeOpacity={1} />
 

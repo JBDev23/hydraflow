@@ -52,6 +52,12 @@ export const AuthProvider = ({ children, userApiRef, hydrationApiRef }: AuthProv
       let token: string | null = null;
 
       try {
+        await userApiRef.current?.bootstrapLocalProfile?.();
+      } catch (e) {
+        console.error('Error perfil local:', e);
+      }
+
+      try {
         token = await AsyncStorage.getItem(STORAGE_KEYS.AUTH_TOKEN);
         if (token) {
           setAuthToken(token);
@@ -60,12 +66,6 @@ export const AuthProvider = ({ children, userApiRef, hydrationApiRef }: AuthProv
         console.error('Error carga local:', e);
       } finally {
         setIsLoading(false);
-      }
-
-      try {
-        await userApiRef.current?.bootstrapLocalProfile?.();
-      } catch (e) {
-        console.error('Error perfil local:', e);
       }
     };
 

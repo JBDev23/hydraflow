@@ -79,7 +79,7 @@ export default function WeightScreen() {
   );
 
   const handleNext = () => {
-    router.push('/(auth)/gender');
+    router.push('/(auth)/height');
   };
 
   const minVal = measureUnit === 0 ? 30 : 66;

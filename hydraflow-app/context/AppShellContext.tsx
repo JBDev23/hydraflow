@@ -63,15 +63,17 @@ export function AppShellProvider() {
   const { selectedDay } = useHydration();
 
   const TUTORIAL_STEPS = useMemo((): TutorialStep[] => {
-    const steps = (t('tutorial.steps', { returnObjects: true }) as TutorialStep[]) || [];
-    return steps.map((step, index) => {
-      if (index === 4) return { ...step, tab: 1 };
-      if (index === 5) return { ...step, tab: 2 };
-      if (index === 6) return { ...step, tab: 3 };
-      if (index === 7) return { ...step, tab: 4 };
-      if (index === 8) return { ...step, tab: 0 };
-      return step;
-    });
+    const raw = t('tutorial.steps', { returnObjects: true });
+    const steps = Array.isArray(raw) ? (raw as TutorialStep[]) : [];
+    const tabByStep: Record<number, number> = {
+      4: 1, // stats
+      5: 2, // achievements
+      6: 3, // shop
+      7: 4, // profile
+    };
+    return steps.map((step, index) =>
+      tabByStep[index] != null ? { ...step, tab: tabByStep[index] } : step,
+    );
   }, [t]);
 
   const [headerHeight, setHeaderHeight] = useState(0);
@@ -305,14 +307,16 @@ export function AppShellProvider() {
           />
         )}
       </View>
-      <TutorialOverlay
-        visible={showTutorial}
-        steps={TUTORIAL_STEPS}
-        onFinish={closeTutorial}
-        onSkip={closeTutorial}
-        changeTab={changeTab}
-        isNavigating={isTabNavigating}
-      />
+      {showTutorial ? (
+        <TutorialOverlay
+          visible
+          steps={TUTORIAL_STEPS}
+          onFinish={closeTutorial}
+          onSkip={closeTutorial}
+          changeTab={changeTab}
+          isNavigating={isTabNavigating}
+        />
+      ) : null}
       <CustomModal
         visible={showLevelUpModal}
         onClose={() => setShowLevelUpModal(false)}
@@ -395,7 +399,7 @@ const createStyles = (theme: Theme) =>
       zIndex: 0,
     },
     bottomfade2: {
-      height: '5%',
+      height: '3%',
       width: '100%',
       position: 'absolute',
       top: 70,

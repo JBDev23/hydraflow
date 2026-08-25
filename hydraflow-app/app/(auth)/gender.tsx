@@ -60,7 +60,7 @@ export default function GenderScreen() {
   );
 
   const handleNext = () => {
-    router.push('/(auth)/height');
+    router.push('/(auth)/weight');
   };
 
   const getBorderStyle = (selectedGender: Gender) => {

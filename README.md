@@ -4,16 +4,14 @@
   <img width="1200" height="400" alt="HydraBanner" src="https://github.com/user-attachments/assets/3ea6c8ba-238d-485c-bd86-dae82c1d92d0" />
 </p>
 
-> **Tu compañero de hidratación diario — app móvil gamificada + API backend.**
+**HydraFlow** es un proyecto de **código abierto** en **beta cerrada**: una app de seguimiento de hidratación que registra el agua que bebes, te recuerda tus metas y convierte el hábito en un juego con mascota, logros, XP y una tienda de accesorios.
 
-Repositorio monorepo en [**github.com/JBDev23/hydraflow**](https://github.com/JBDev23/hydraflow) con [pnpm workspaces](https://pnpm.io/workspaces): cliente móvil (Expo/React Native) y API REST (NestJS/Prisma/PostgreSQL).
+El código vive en este [monorepo](https://github.com/JBDev23/hydraflow) con [pnpm workspaces](https://pnpm.io/workspaces): cliente móvil (Expo/React Native) y API REST (NestJS/Prisma/PostgreSQL). La app aún no está en tiendas; si quieres probarla, pide acceso en la [solicitud de beta](#-solicitud-de-acceso-beta).
 
 | Paquete | Ruta | Descripción |
 |---------|------|-------------|
 | **App** | [`hydraflow-app/`](hydraflow-app/) | Cliente móvil Expo |
 | **Backend** | [`hydraflow-backend/`](hydraflow-backend/) | API REST + PostgreSQL |
-
-⚠️ **Nota:** El proyecto se encuentra en **fase de pruebas (Testing)**.
 
 ---
 

@@ -31,6 +31,21 @@ export class UpdateGameStatsDto {
   level?: number;
 }
 
+/** Matches frontend TimeOfDay and Prisma Json settings.wakeTime / sleepTime. */
+export class TimeOfDayDto {
+  @Type(() => Number)
+  @IsInt()
+  @Min(0)
+  @Max(23)
+  hours!: number;
+
+  @Type(() => Number)
+  @IsInt()
+  @Min(0)
+  @Max(59)
+  minutes!: number;
+}
+
 export class UpdateProfileDto {
   @IsOptional()
   @IsString()
@@ -84,14 +99,14 @@ export class UpdateProfileDto {
   preferences?: Record<string, unknown>;
 
   @IsOptional()
-  @IsString()
-  @MaxLength(16)
-  wakeTime?: string;
+  @ValidateNested()
+  @Type(() => TimeOfDayDto)
+  wakeTime?: TimeOfDayDto;
 
   @IsOptional()
-  @IsString()
-  @MaxLength(16)
-  sleepTime?: string;
+  @ValidateNested()
+  @Type(() => TimeOfDayDto)
+  sleepTime?: TimeOfDayDto;
 
   @IsOptional()
   @ValidateNested()

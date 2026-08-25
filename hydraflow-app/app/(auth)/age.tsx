@@ -46,7 +46,7 @@ export default function AgeScreen() {
   };
 
   const handleNext = () => {
-    router.push('/(auth)/weight');
+    router.push('/(auth)/gender');
   };
 
   const ageRef = useRef(age);

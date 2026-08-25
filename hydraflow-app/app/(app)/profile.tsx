@@ -82,7 +82,7 @@ export default function Profile() {
   };
   const name = userProfile?.name || '';
   const level = stats.level || 1;
-  const progress = userProfile?.stats.progress || 0;
+  const progress = userProfile?.stats?.progress || 0;
 
   const changeUser = (id: ProfileFieldKey, newVal: ProfileFieldValue) => {
     updateUserProfile({ [id]: newVal } as Partial<UserProfile>);

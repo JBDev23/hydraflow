@@ -153,8 +153,17 @@ function AppNavigator() {
       return;
     }
 
-    if (isLoggedIn && !isOnboardingCompleted && !onAuthRoute) {
-      router.replace('/(auth)');
+    if (isLoggedIn && !isOnboardingCompleted) {
+      if (!onAuthRoute) {
+        router.replace('/(auth)/age');
+        return;
+      }
+
+      const authScreen = segments[1];
+      const onAuthEntry = !authScreen || authScreen === 'index' || authScreen === 'login';
+      if (onAuthEntry) {
+        router.replace('/(auth)/age');
+      }
       return;
     }
 
@@ -170,6 +179,7 @@ function AppNavigator() {
     onAuthRoute,
     onAppRoute,
     router,
+    segments,
   ]);
 
   const isWaitingForContent =

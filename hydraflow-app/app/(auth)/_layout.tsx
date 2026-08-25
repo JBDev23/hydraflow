@@ -25,8 +25,8 @@ const PAGES_ORDER = [
   '',
   'login',
   'age',
-  'weight',
   'gender',
+  'weight',
   'height',
   'activity',
   'sleep',
@@ -55,8 +55,8 @@ export default function AuthLayout() {
     if (pathname === '/' || pathname.endsWith('/(auth)')) return { title: 'index', step: 0 };
     if (pathname.includes('login')) return { title: 'login', step: 1 };
     if (pathname.includes('age')) return { title: 'age', step: 2 };
-    if (pathname.includes('weight')) return { title: 'weight', step: 3 };
-    if (pathname.includes('gender')) return { title: 'gender', step: 4 };
+    if (pathname.includes('gender')) return { title: 'gender', step: 3 };
+    if (pathname.includes('weight')) return { title: 'weight', step: 4 };
     if (pathname.includes('height')) return { title: 'height', step: 5 };
     if (pathname.includes('activity')) return { title: 'activity', step: 6 };
     if (pathname.includes('sleep')) return { title: 'sleep', step: 7 };

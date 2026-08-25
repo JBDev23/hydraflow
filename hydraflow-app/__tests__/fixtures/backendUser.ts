@@ -25,7 +25,7 @@ export const backendUserWithAchievements: BackendUser = {
   ],
 };
 
-export const backendUserCompleteBiometrics: BackendUser = {
+export const backendUserComplete: BackendUser = {
   ...minimalBackendUser,
   profile: {
     weight: 70,
@@ -46,6 +46,7 @@ export const backendUserCompleteBiometrics: BackendUser = {
       vibration: true,
       theme: 'dark',
       language: 'es',
+      onboardingCompleted: true,
     },
     notifications: {
       enabled: true,
@@ -68,7 +69,7 @@ export const backendUserCompleteBiometrics: BackendUser = {
   achievements: [{ achievementId: 'FIRST_DRINK', unlockedAt: '2026-01-01T00:00:00Z' }],
 };
 
-export const backendUserIncompleteBiometrics: BackendUser = {
+export const backendUserIncomplete: BackendUser = {
   ...minimalBackendUser,
   profile: {
     weight: 70,
@@ -81,6 +82,9 @@ export const backendUserIncompleteBiometrics: BackendUser = {
   settings: {
     wakeTime: { hours: 8, minutes: 0 },
     sleepTime: null,
+    preferences: {
+      onboardingCompleted: false,
+    },
   },
 };
 
